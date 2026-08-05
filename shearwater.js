@@ -14,11 +14,11 @@
   const view = value => new DataView(value.buffer, value.byteOffset, value.byteLength);
 
   class Stream {
-    constructor(write) { this.writeChunk = write; this.queue = []; this.waiters = []; this.packet = []; this.escaped = false; }
+    constructor(write, transport = 'ble') { this.writeChunk = write; this.transport = transport; this.queue = []; this.waiters = []; this.packet = []; this.escaped = false; }
     push(value) {
       const data = bytes(value);
       // Shearwater V1 BLE notifications have a two-byte frame count/index prefix.
-      for (let i = data.length >= 2 ? 2 : 0; i < data.length; i++) {
+      for (let i = this.transport === 'ble' && data.length >= 2 ? 2 : 0; i < data.length; i++) {
         let c = data[i];
         if (c === END) {
           if (this.packet.length) { const packet = new Uint8Array(this.packet); this.packet = []; this.deliver(packet); }
@@ -35,6 +35,10 @@
       const encoded = [];
       for (const c of packet) c === END ? encoded.push(ESC, ESC_END) : c === ESC ? encoded.push(ESC, ESC_ESC) : encoded.push(c);
       encoded.push(END);
+      if (this.transport === 'serial') {
+        await this.writeChunk(new Uint8Array(encoded));
+        return;
+      }
       const frames = Math.ceil((encoded.length + 1) / 18);
       let offset = 0;
       for (let index = 0; index < frames; index++) {
@@ -119,12 +123,41 @@
     return { device, stream };
   }
 
+  async function serialConnection(progress) {
+    if (!navigator.serial) throw new Error('Bluetooth Classic requires current Chrome or Edge on Windows.');
+    progress('Choose the paired Perdix serial port...');
+    const port = await navigator.serial.requestPort();
+    progress('Opening Perdix Bluetooth Classic...');
+    await port.open({ baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none', flowControl: 'none' });
+    const stream = new Stream(async data => {
+      const writer = port.writable.getWriter();
+      try { await writer.write(data); } finally { writer.releaseLock(); }
+    }, 'serial');
+    (async () => {
+      while (port.readable) {
+        const reader = port.readable.getReader();
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            if (value) stream.push(value);
+          }
+        } catch (error) {
+          console.warn('Perdix serial read stopped:', error);
+        } finally {
+          reader.releaseLock();
+        }
+      }
+    })();
+    return { device: { name: 'Perdix' }, stream, port };
+  }
+
   const text = data => new TextDecoder().decode(data).replace(/\0/g, '').trim();
   const be32 = (d, o) => ((d[o] * 0x1000000) + (d[o + 1] << 16) + (d[o + 2] << 8) + d[o + 3]) >>> 0;
-  async function connectAndInspect(progress) {
-    progress('Connecting to Bluetooth…');
+  async function connectAndInspect(progress, transport = 'ble') {
+    progress(transport === 'serial' ? 'Connecting with Bluetooth Classic...' : 'Connecting to Bluetooth…');
     const plugin = window.Capacitor?.Plugins?.BluetoothLe;
-    const connection = plugin ? await nativeConnection(plugin) : await webConnection(progress);
+    const connection = transport === 'serial' ? await serialConnection(progress) : plugin ? await nativeConnection(plugin) : await webConnection(progress);
     progress('Bluetooth linked. Starting Shearwater protocol…');
     await new Promise(resolve => setTimeout(resolve, 350));
     const serial = text(await connection.stream.rdbi(0x8010));
