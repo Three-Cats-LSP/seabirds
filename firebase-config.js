@@ -1,3 +1,3 @@
-// Uses the same Firebase project and Google account system as Get in Water.
+// SeaBirds has its own Firebase project, separate from Get in Water.
 // Firestore data is isolated under users/{uid}/seabirds/state.
-window.SEABIRDS_FIREBASE_CONFIG={apiKey:'AIzaSyCHmG7_E_gYgsfFywVe-XEMenE_E_zkO5M',authDomain:'giw-threecats-lsp.firebaseapp.com',projectId:'giw-threecats-lsp',storageBucket:'giw-threecats-lsp.firebasestorage.app',messagingSenderId:'173494913161',appId:'1:173494913161:web:13b399080dfb05b7f65e58'};
+window.SEABIRDS_FIREBASE_CONFIG={apiKey:'AIzaSyByyWasR5jBeszUuYe3n1_aynhvBK6pOnU',authDomain:'seabirds-threecats-lsp.firebaseapp.com',projectId:'seabirds-threecats-lsp',storageBucket:'seabirds-threecats-lsp.firebasestorage.app',messagingSenderId:'968952198912',appId:'1:968952198912:web:f49730a1dd10bebee925e5',measurementId:'G-YW8GJ42KTW'};

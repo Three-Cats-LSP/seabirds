@@ -1,6 +1,6 @@
 # SeaBirds
 
-SeaBirds is an offline-first dive log for Android, Windows and the web. It shares accounts and Firebase infrastructure with Get in Water while storing its data separately at `users/{uid}/seabirds/state`.
+SeaBirds is an offline-first dive log for Android, Windows and the web. It uses the dedicated `seabirds-threecats-lsp` Firebase project and stores user data at `users/{uid}/seabirds/state`.
 
 ## Current features
 

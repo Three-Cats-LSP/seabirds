@@ -26,6 +26,13 @@ jobs:
           java-version: 21
           cache: gradle
       - run: npm ci
+      - name: Install SeaBirds Firebase Android configuration
+        shell: bash
+        env:
+          FIREBASE_GOOGLE_SERVICES_JSON: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
+        run: |
+          test -n "$FIREBASE_GOOGLE_SERVICES_JSON" || { echo "FIREBASE_GOOGLE_SERVICES_JSON is not configured"; exit 1; }
+          printf '%s' "$FIREBASE_GOOGLE_SERVICES_JSON" > android/app/google-services.json
       - name: Sync native assets
         shell: pwsh
         run: npm run android:sync
