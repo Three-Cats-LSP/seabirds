@@ -10,7 +10,7 @@ SeaBirds is an offline-first dive log for Android, Windows and the web. It uses 
 - Google sign-in and Firestore cross-device synchronization
 - Interactive dive profile graph adapted from LSP+ (zoom, pan, crosshair and tooltip)
 - Shearwater BLE discovery for Perdix, Perdix AI/2, Teric and related computers
-- Installable web app and Capacitor Android project
+- Installable web app and Capacitor Android project with signed APK/AAB builds
 
 ## Android
 
