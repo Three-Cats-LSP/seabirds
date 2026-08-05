@@ -4,6 +4,7 @@
   const SERVICE = 'fe25c237-0ece-443c-b0aa-e02033e7029d';
   const END = 0xc0, ESC = 0xdb, ESC_END = 0xdc, ESC_ESC = 0xdd;
   const timeout = (ms, message) => new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
+  const withTimeout = (promise, ms, message) => Promise.race([promise, timeout(ms, message)]);
   const bytes = value => {
     if (value instanceof DataView) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
     if (value instanceof ArrayBuffer) return new Uint8Array(value);
@@ -100,9 +101,9 @@
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         progress(attempt === 1 ? 'Connecting to Perdix GATT…' : `Perdix disconnected. Reconnecting (${attempt}/3)…`);
-        server = device.gatt.connected ? device.gatt : await device.gatt.connect();
+        server = device.gatt.connected ? device.gatt : await withTimeout(device.gatt.connect(), 7000, 'Windows timed out opening the Perdix GATT connection.');
         if (!server.connected) throw new Error('GATT connection closed immediately.');
-        service = await server.getPrimaryService(SERVICE);
+        service = await withTimeout(server.getPrimaryService(SERVICE), 5000, 'Windows timed out discovering the Shearwater service.');
         break;
       } catch (error) {
         lastError = error;
@@ -110,7 +111,7 @@
         if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
-    if (!service) throw new Error(`Windows disconnected before Shearwater service discovery after 3 attempts. ${lastError?.message || ''}`.trim());
+    if (!service) throw new Error(`Windows could not open the Perdix BLE service after 3 attempts. Close other dive/Bluetooth apps, remove Perdix from Windows Bluetooth devices, restart its Bluetooth mode, and reconnect. ${lastError?.message || ''}`.trim());
     const selected = selectCharacteristics(await service.getCharacteristics());
     const stream = new Stream(data => selected.write.properties.writeWithoutResponse ? selected.write.writeValueWithoutResponse(data) : selected.write.writeValueWithResponse(data));
     selected.notify.addEventListener('characteristicvaluechanged', event => stream.push(event.target.value));
