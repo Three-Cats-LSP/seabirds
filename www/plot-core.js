@@ -818,7 +818,7 @@ function attachDiveProfileInteraction(canvasId) {
     const pathWps = waypoints.filter(wp => wp.type !== 'gasswitch');
 
     // Interpolate depth at time t
-    let depth = null, gas = null, ppo2 = null, cns = null, phase = null;
+    let depth = null, gas = null, ppo2 = null, cns = null, phase = null, telemetry = null;
     for (let i = 0; i < pathWps.length - 1; i++) {
       const a = pathWps[i], b = pathWps[i + 1];
       if (t >= a.t && t <= b.t) {
@@ -829,6 +829,7 @@ function attachDiveProfileInteraction(canvasId) {
         if (a.ppo2 != null && b.ppo2 != null) ppo2 = a.ppo2 + (b.ppo2 - a.ppo2) * frac;
         else if (a.ppo2 != null) ppo2 = a.ppo2;
         cns = a.cns || b.cns || null;
+        telemetry = frac < 0.5 ? a : b;
         break;
       }
     }
@@ -853,14 +854,14 @@ function attachDiveProfileInteraction(canvasId) {
       }
     }
 
-    return { t, depth, gas, ppo2, cns, phase, cx, cy, rect, ceiling };
+    return { t, depth, gas, ppo2, cns, phase, cx, cy, rect, ceiling, telemetry };
   }
 
   function showTooltip(clientX, clientY) {
     const info = getInfo(clientX, clientY);
     if (!info) { hideTooltip(); return; }
 
-    const { t, depth, gas, ppo2, cns, phase, cx, cy, rect, ceiling } = info;
+    const { t, depth, gas, ppo2, cns, phase, cx, cy, rect, ceiling, telemetry } = info;
     const du    = units === 'imperial' ? 'ft' : 'm';
     const dDisp = units === 'imperial' ? Math.round(depth * 3.28084) : Math.round(depth * 10) / 10;
 
@@ -869,6 +870,16 @@ function attachDiveProfileInteraction(canvasId) {
     let html = `<div style="color:var(--accent);font-size:10px;letter-spacing:1px;margin-bottom:4px;">${phaseLabel[phase] || phase || ''}</div>`;
     html += `<div>⏱ ${Math.round(t * 10) / 10} min</div>`;
     html += `<div>⬇ ${dDisp} ${du}</div>`;
+    if (telemetry?.temperature != null) {
+      const temperature = units === 'imperial' ? telemetry.temperature * 9 / 5 + 32 : telemetry.temperature;
+      html += `<div>🌡 ${temperature.toFixed(1)}°${units === 'imperial' ? 'F' : 'C'}</div>`;
+    }
+    if (telemetry?.ndl != null) html += `<div>NDL ${telemetry.ndl} min</div>`;
+    if (telemetry?.tts != null) html += `<div>TTS ${telemetry.tts} min</div>`;
+    if (telemetry?.stopDepth > 0) {
+      const stopDepth = units === 'imperial' ? telemetry.stopDepth * 3.28084 : telemetry.stopDepth;
+      html += `<div style="color:var(--red)">Stop ${stopDepth.toFixed(0)} ${du} · ${telemetry.stopTime} min</div>`;
+    }
     if (gas) html += `<div>⛽ ${gas.toUpperCase()}</div>`;
     if (ppo2 != null) {
       const pCol = ppo2 >= 1.6 ? 'var(--red)' : ppo2 >= 1.4 ? 'var(--yellow)' : 'var(--green)';
@@ -879,6 +890,9 @@ function attachDiveProfileInteraction(canvasId) {
       const cCol = cnsNum >= 80 ? 'var(--red)' : cnsNum >= 40 ? 'var(--yellow)' : 'var(--muted)';
       html += `<div style="color:${cCol}">CNS ${cns}</div>`;
     }
+    if (telemetry?.setpoint != null) html += `<div>Setpoint ${telemetry.setpoint.toFixed(2)}</div>`;
+    if (telemetry?.pressure != null) html += `<div>Tank ${telemetry.pressure.toFixed(0)} bar</div>`;
+    if (telemetry?.rbt != null) html += `<div>Gas time ${telemetry.rbt} min</div>`;
     if (ceiling != null && ceiling > 0.5) {
       const ceilDisp = units === 'imperial' ? Math.round(ceiling * 3.28084) : Math.round(ceiling * 10) / 10;
       html += `<div style="color:var(--red);font-size:10px;">⚠ Ceiling ${ceilDisp} ${du}</div>`;

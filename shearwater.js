@@ -191,7 +191,25 @@
       if (temperature < 0) { temperature += 102; if (temperature > 0) temperature = 0; }
       if (imperial) temperature = (temperature - 32) * 5 / 9;
       lowestTemp = lowestTemp == null ? temperature : Math.min(lowestTemp, temperature);
-      profile.push({ t: timeMs / 60000, depth, temp: temperature });
+      const status = raw[record.offset + 12];
+      const ccr = (status & 0x10) === 0;
+      const stopDepthRaw = be16(raw, record.offset + 3);
+      const stopDepth = imperial ? stopDepthRaw * 0.3048 : stopDepthRaw;
+      const o2 = raw[record.offset + 8], he = raw[record.offset + 9];
+      const pressureRaw = be16(raw, record.offset + 28);
+      profile.push({
+        t: timeMs / 60000, depth, temperature,
+        ndl: stopDepthRaw ? null : raw[record.offset + 10],
+        stopDepth: stopDepthRaw ? stopDepth : 0,
+        stopTime: stopDepthRaw ? raw[record.offset + 10] : 0,
+        tts: be16(raw, record.offset + 5),
+        gas: o2 || he ? `${o2}/${he}` : null,
+        ppo2: ccr ? raw[record.offset + 7] / 100 : null,
+        setpoint: ccr ? raw[record.offset + 19] / 100 : null,
+        cns: raw[record.offset + 23],
+        pressure: pressureRaw < 0xfff0 ? (pressureRaw & 0x0fff) * 2 * 0.0689476 : null,
+        rbt: raw[record.offset + 22] < 0xf0 ? raw[record.offset + 22] : null
+      });
     }
     let maxDepth = be16(raw, closing0 + 4) / 10;
     if (imperial) maxDepth *= 0.3048;
