@@ -11,7 +11,7 @@
     "android:debug": "npm run android:sync && cd android && gradlew assembleDebug",
     "android:release": "npm run android:sync && cd android && gradlew bundleRelease",
     "windows:run": "npm run sync:www && electron .",
-    "windows:build": "npm run sync:www && electron-builder --win portable nsis"
+    "windows:build": "npm run sync:www && electron-builder --win portable nsis --publish never"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
@@ -29,7 +29,7 @@
     "productName": "SeaBirds",
     "directories": { "output": "dist-windows" },
     "files": ["electron/**/*", "www/**/*", "package.json"],
-    "win": { "target": ["portable", "nsis"], "artifactName": "SeaBirds-${version}-${arch}.${ext}" },
+    "win": { "target": ["portable", "nsis"], "artifactName": "SeaBirds-${version}-${arch}-${target}.${ext}" },
     "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
   }
 }
