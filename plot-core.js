@@ -874,6 +874,14 @@ function attachDiveProfileInteraction(canvasId) {
       const temperature = units === 'imperial' ? telemetry.temperature * 9 / 5 + 32 : telemetry.temperature;
       html += `<div>🌡 ${temperature.toFixed(1)}°${units === 'imperial' ? 'F' : 'C'}</div>`;
     }
+    if (telemetry?.verticalSpeed != null) {
+      const speed = units === 'imperial' ? telemetry.verticalSpeed * 3.28084 : telemetry.verticalSpeed;
+      html += `<div>V ${speed.toFixed(1)} ${du}/min</div>`;
+    }
+    if (telemetry?.meanDepth != null) {
+      const meanDepth = units === 'imperial' ? telemetry.meanDepth * 3.28084 : telemetry.meanDepth;
+      html += `<div>Mean depth ${meanDepth.toFixed(1)} ${du}</div>`;
+    }
     if (telemetry?.ndl != null) html += `<div>NDL ${telemetry.ndl} min</div>`;
     if (telemetry?.tts != null) html += `<div>TTS ${telemetry.tts} min</div>`;
     if (telemetry?.stopDepth > 0) {

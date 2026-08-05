@@ -181,7 +181,7 @@
     const logVersion = opening4 == null ? 0 : raw[opening4 + 16];
     const intervalMs = logVersion >= 9 && opening5 != null ? be16(raw, opening5 + 23) : 10000;
     const profile = [];
-    let timeMs = 0, lowestTemp = null;
+    let timeMs = 0, lowestTemp = null, depthSum = 0, sampleCount = 0, previousDepth = 0;
     for (const record of records) {
       if (record.type !== 0x01 && record.type !== 0x03) continue;
       timeMs += intervalMs;
@@ -191,6 +191,10 @@
       if (temperature < 0) { temperature += 102; if (temperature > 0) temperature = 0; }
       if (imperial) temperature = (temperature - 32) * 5 / 9;
       lowestTemp = lowestTemp == null ? temperature : Math.min(lowestTemp, temperature);
+      sampleCount++;
+      depthSum += depth;
+      const verticalSpeed = (depth - previousDepth) / (intervalMs / 60000);
+      previousDepth = depth;
       const status = raw[record.offset + 12];
       const ccr = (status & 0x10) === 0;
       const stopDepthRaw = be16(raw, record.offset + 3);
@@ -198,7 +202,7 @@
       const o2 = raw[record.offset + 8], he = raw[record.offset + 9];
       const pressureRaw = be16(raw, record.offset + 28);
       profile.push({
-        t: timeMs / 60000, depth, temperature,
+        t: timeMs / 60000, depth, temperature, verticalSpeed, meanDepth: depthSum / sampleCount,
         ndl: stopDepthRaw ? null : raw[record.offset + 10],
         stopDepth: stopDepthRaw ? stopDepth : 0,
         stopTime: stopDepthRaw ? raw[record.offset + 10] : 0,
@@ -215,7 +219,7 @@
     if (imperial) maxDepth *= 0.3048;
     const durationSeconds = be24(raw, closing0 + 6);
     const started = new Date(be32(raw, opening0 + 12) * 1000);
-    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: 'Downloaded from Shearwater', depth: maxDepth, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, notes: 'Downloaded from Perdix', profile };
+    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: 'Downloaded from Shearwater', depth: maxDepth, avgDepth: sampleCount ? depthSum / sampleCount : 0, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, gfLow: raw[opening0 + 4], gfHigh: raw[opening0 + 5], notes: 'Downloaded from Perdix', profile };
   }
   async function connectAndInspect(progress, transport = 'ble') {
     progress(transport === 'serial' ? 'Connecting with Bluetooth Classic...' : 'Connecting to Bluetooth…');
