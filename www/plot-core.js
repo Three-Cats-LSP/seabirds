@@ -880,7 +880,7 @@ function attachDiveProfileInteraction(canvasId) {
     }
     if (telemetry?.meanDepth != null) {
       const meanDepth = units === 'imperial' ? telemetry.meanDepth * 3.28084 : telemetry.meanDepth;
-      html += `<div>Avr. Depth ${meanDepth.toFixed(1)} ${du}</div>`;
+      html += `<div>Avg. Depth ${meanDepth.toFixed(1)} ${du}</div>`;
     }
     if (telemetry?.ndl != null) html += `<div>NDL ${telemetry.ndl} min</div>`;
     if (telemetry?.tts != null) html += `<div>TTS ${telemetry.tts} min</div>`;
@@ -888,7 +888,7 @@ function attachDiveProfileInteraction(canvasId) {
       const stopDepth = units === 'imperial' ? telemetry.stopDepth * 3.28084 : telemetry.stopDepth;
       html += `<div style="color:var(--red)">Stop ${stopDepth.toFixed(0)} ${du} · ${telemetry.stopTime} min</div>`;
     }
-    if (gas) html += `<div>⛽ ${gas.toUpperCase()}</div>`;
+    if (gas) html += `<div><svg class="tooltip-tank" viewBox="0 0 16 18" aria-hidden="true"><rect x="4" y="4" width="8" height="13" rx="4" fill="currentColor"/><rect x="6" y="1" width="4" height="3" rx="1" fill="currentColor"/><path d="M10 2h3v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>${gas.toUpperCase()}</div>`;
     if (ppo2 != null) {
       const pCol = ppo2 >= 1.6 ? 'var(--red)' : ppo2 >= 1.4 ? 'var(--yellow)' : 'var(--green)';
       html += `<div style="color:${pCol}">ppO₂ ${ppo2.toFixed(2)}</div>`;
