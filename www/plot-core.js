@@ -880,7 +880,7 @@ function attachDiveProfileInteraction(canvasId) {
     }
     if (telemetry?.meanDepth != null) {
       const meanDepth = units === 'imperial' ? telemetry.meanDepth * 3.28084 : telemetry.meanDepth;
-      html += `<div>Avg. Depth ${meanDepth.toFixed(1)} ${du}</div>`;
+      html += `<div>Mean Depth ${meanDepth.toFixed(1)} ${du}</div>`;
     }
     if (telemetry?.ndl != null) html += `<div>NDL ${telemetry.ndl} min</div>`;
     if (telemetry?.tts != null) html += `<div>TTS ${telemetry.tts} min</div>`;
