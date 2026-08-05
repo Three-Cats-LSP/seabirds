@@ -413,8 +413,8 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
 
   // ── Deco ceiling line overlay ──
   if (!simple) {
-  const ceilWps = canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
-               : canvasId === 'plannerProfileCanvas' ? window._plannerCeilingWps : null;
+  const ceilWps = opts?.ceilingWps || (canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
+               : canvasId === 'plannerProfileCanvas' ? window._plannerCeilingWps : null);
   if (ceilWps && ceilWps.length > 1) {
     // Draw only points where ceiling > 0 — no artificial lead point that causes vertical artefacts
     const activeCeil = ceilWps.filter(wp => wp.ceil > 0.5); // 0.5m threshold to avoid noise
@@ -423,16 +423,31 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
       if (visCeil.length > 1) {
         ctx.save();
         clipToPlot();
+        if (opts?.showDecoCeiling) {
+          ctx.beginPath();
+          ctx.moveTo(toX(visCeil[0].t), PAD.top);
+          visCeil.forEach(wp => ctx.lineTo(toX(wp.t), toY(wp.ceil)));
+          ctx.lineTo(toX(visCeil[visCeil.length - 1].t), PAD.top);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(239,68,68,0.10)';
+          ctx.fill();
+        }
         ctx.beginPath();
         ctx.strokeStyle = red;
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 4]);
-        ctx.globalAlpha = 0.85;
+        ctx.lineWidth = opts?.showDecoCeiling ? 2.2 : 1.5;
+        ctx.setLineDash(opts?.showDecoCeiling ? [] : [5, 4]);
+        ctx.globalAlpha = 0.95;
         visCeil.forEach((wp, i) => {
           const x = toX(wp.t), y = toY(wp.ceil);
           i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         });
         ctx.stroke();
+        if (opts?.showDecoCeiling) {
+          ctx.fillStyle = red;
+          ctx.font = '700 9px Inter, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('DECO CEILING', toX(visCeil[0].t) + 5, Math.max(PAD.top + 11, toY(visCeil[0].ceil) - 6));
+        }
         ctx.setLineDash([]);
         ctx.restore();
       }
@@ -841,8 +856,8 @@ function attachDiveProfileInteraction(canvasId) {
 
     // Interpolate ceiling at this time
     let ceiling = null;
-    const ceilWps = canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
-               : canvasId === 'plannerProfileCanvas' ? window._plannerCeilingWps : null;
+    const ceilWps = opts?.ceilingWps || (canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
+               : canvasId === 'plannerProfileCanvas' ? window._plannerCeilingWps : null);
     if (ceilWps && ceilWps.length > 1) {
       for (let i = 0; i < ceilWps.length - 1; i++) {
         const a = ceilWps[i], b = ceilWps[i+1];
