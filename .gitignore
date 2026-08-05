@@ -1,0 +1,10 @@
+node_modules/
+dist-windows/
+android/.gradle/
+android/local.properties
+android/app/build/
+android/build/
+android/app/google-services.json
+*.jks
+*.keystore
+.DS_Store

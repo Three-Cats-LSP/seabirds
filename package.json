@@ -1,0 +1,35 @@
+{
+  "name": "seabirds-dive-log",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SeaBirds native and web dive log",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "sync:www": "node tools/sync-www.cjs",
+    "android:add": "npm run sync:www && npx cap add android",
+    "android:sync": "npm run sync:www && npx cap sync android",
+    "android:debug": "npm run android:sync && cd android && gradlew assembleDebug",
+    "android:release": "npm run android:sync && cd android && gradlew bundleRelease",
+    "windows:run": "npm run sync:www && electron .",
+    "windows:build": "npm run sync:www && electron-builder --win portable nsis"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor-community/bluetooth-le": "^7.0.0",
+    "@capacitor-firebase/authentication": "^7.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "electron": "^43.3.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.threecats.seabirds",
+    "productName": "SeaBirds",
+    "directories": { "output": "dist-windows" },
+    "files": ["electron/**/*", "www/**/*", "package.json"],
+    "win": { "target": ["portable", "nsis"], "artifactName": "SeaBirds-${version}-${arch}.${ext}" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
+  }
+}
