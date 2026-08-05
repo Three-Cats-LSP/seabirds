@@ -58,18 +58,31 @@
       if (result.length < 3 || result[0] !== 0x62 || result[1] !== (id >> 8) || result[2] !== (id & 255)) throw new Error(`Shearwater rejected identity query 0x${id.toString(16)}.`);
       return result.slice(3);
     }
-    async download(address, size) {
-      const init = await this.transfer(new Uint8Array([0x35, 0x00, 0x34, address >>> 24, address >>> 16, address >>> 8, address, size >>> 16, size >>> 8, size]));
+    async download(address, size, compression = false) {
+      const init = await this.transfer(new Uint8Array([0x35, compression ? 0x10 : 0x00, 0x34, address >>> 24, address >>> 16, address >>> 8, address, size >>> 16, size >>> 8, size]));
       if (init[0] !== 0x75) throw new Error('Shearwater rejected the log manifest request.');
       const output = [];
-      for (let block = 1; output.length < size; block = (block + 1) & 255) {
+      let compressed = 0, done = false;
+      for (let block = 1; compressed < size && !done; block = (block + 1) & 255) {
         const response = await this.transfer(new Uint8Array([0x36, block]), 8000);
         if (response[0] !== 0x76 || response[1] !== block) throw new Error('Unexpected Shearwater manifest block.');
-        output.push(...response.slice(2));
+        const payload = response.slice(2);
+        compressed += payload.length;
+        if (compression) {
+          if ((payload.length * 8) % 9) throw new Error('Invalid compressed Shearwater dive block.');
+          for (let bitOffset = 0; bitOffset + 9 <= payload.length * 8; bitOffset += 9) {
+            let value = 0;
+            for (let bit = 0; bit < 9; bit++) value = (value << 1) | ((payload[(bitOffset + bit) >> 3] >> (7 - ((bitOffset + bit) & 7))) & 1);
+            if (value & 0x100) output.push(value & 255);
+            else if (value === 0) { done = true; break; }
+            else for (let i = 0; i < value; i++) output.push(0);
+          }
+        } else output.push(...payload);
       }
       const quit = await this.transfer(new Uint8Array([0x37]));
       if (quit[0] !== 0x77) throw new Error('Shearwater did not close the manifest transfer cleanly.');
-      return new Uint8Array(output.slice(0, size));
+      if (compression) for (let i = 32; i < output.length; i++) output[i] ^= output[i - 32];
+      return new Uint8Array(compression ? output : output.slice(0, size));
     }
   }
 
@@ -154,6 +167,38 @@
 
   const text = data => new TextDecoder().decode(data).replace(/\0/g, '').trim();
   const be32 = (d, o) => ((d[o] * 0x1000000) + (d[o + 1] << 16) + (d[o + 2] << 8) + d[o + 3]) >>> 0;
+  const be16 = (d, o) => (d[o] << 8) | d[o + 1];
+  const be24 = (d, o) => (d[o] << 16) | (d[o + 1] << 8) | d[o + 2];
+  function parseDive(raw, fallbackNumber) {
+    const records = [];
+    for (let offset = 0; offset + 32 <= raw.length; offset += 32) records.push({ type: raw[offset], offset });
+    const opening0 = records.find(x => x.type === 0x10)?.offset;
+    const opening4 = records.find(x => x.type === 0x14)?.offset;
+    const opening5 = records.find(x => x.type === 0x15)?.offset;
+    const closing0 = records.find(x => x.type === 0x20)?.offset;
+    if (opening0 == null || closing0 == null) throw new Error('Downloaded dive has no usable opening/closing records.');
+    const imperial = raw[opening0 + 8] === 1;
+    const logVersion = opening4 == null ? 0 : raw[opening4 + 16];
+    const intervalMs = logVersion >= 9 && opening5 != null ? be16(raw, opening5 + 23) : 10000;
+    const profile = [];
+    let timeMs = 0, lowestTemp = null;
+    for (const record of records) {
+      if (record.type !== 0x01 && record.type !== 0x03) continue;
+      timeMs += intervalMs;
+      let depth = be16(raw, record.offset + 1) / 10;
+      if (imperial) depth *= 0.3048;
+      let temperature = new Int8Array([raw[record.offset + 14]])[0];
+      if (temperature < 0) { temperature += 102; if (temperature > 0) temperature = 0; }
+      if (imperial) temperature = (temperature - 32) * 5 / 9;
+      lowestTemp = lowestTemp == null ? temperature : Math.min(lowestTemp, temperature);
+      profile.push({ time: timeMs / 60000, depth, temp: temperature });
+    }
+    let maxDepth = be16(raw, closing0 + 4) / 10;
+    if (imperial) maxDepth *= 0.3048;
+    const durationSeconds = be24(raw, closing0 + 6);
+    const started = new Date(be32(raw, opening0 + 12) * 1000);
+    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: 'Downloaded from Shearwater', depth: maxDepth, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, notes: 'Downloaded from Perdix', profile };
+  }
   async function connectAndInspect(progress, transport = 'ble') {
     progress(transport === 'serial' ? 'Connecting with Bluetooth Classic...' : 'Connecting to Bluetooth…');
     const plugin = window.Capacitor?.Plugins?.BluetoothLe;
@@ -167,12 +212,22 @@
     const baseAddress = be32(upload, 1);
     progress('Reading dive manifest…');
     const manifest = await connection.stream.download(0xe0000000, 0x600);
-    let logs = 0;
+    const entries = [];
     for (let offset = 0; offset + 0x20 <= manifest.length; offset += 0x20) {
       const header = (manifest[offset] << 8) | manifest[offset + 1];
-      if (header === 0xa5c4) logs++; else if (header !== 0x5a23) break;
+      if (header === 0xa5c4) entries.push({ fingerprint: Array.from(manifest.slice(offset + 4, offset + 8)).map(x => x.toString(16).padStart(2, '0')).join(''), address: be32(manifest, offset + 20) });
+      else if (header !== 0x5a23) break;
     }
-    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs };
+    const downloadAll = async onProgress => {
+      const dives = [];
+      for (let i = 0; i < entries.length; i++) {
+        onProgress?.(i + 1, entries.length);
+        const raw = await connection.stream.download((baseAddress + entries[i].address) >>> 0, 0xffffff, true);
+        dives.push({ id: `shearwater-${serial}-${entries[i].fingerprint}`, ...parseDive(raw, entries.length - i), updatedAt: new Date().toISOString() });
+      }
+      return dives;
+    };
+    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs: entries.length, downloadAll };
   }
 
   window.SeaBirdsShearwater = { connectAndInspect };
