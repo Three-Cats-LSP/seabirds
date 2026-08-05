@@ -58,6 +58,10 @@
       if (result.length < 3 || result[0] !== 0x62 || result[1] !== (id >> 8) || result[2] !== (id & 255)) throw new Error(`Shearwater rejected identity query 0x${id.toString(16)}.`);
       return result.slice(3);
     }
+    async wdbi(id, data) {
+      const result = await this.transfer(new Uint8Array([0x2e, id >> 8, id & 255, ...data]));
+      if (result.length < 3 || result[0] !== 0x6e || result[1] !== (id >> 8) || result[2] !== (id & 255)) throw new Error(`Shearwater rejected time write 0x${id.toString(16)}.`);
+    }
     async download(address, size, compression = false) {
       const init = await this.transfer(new Uint8Array([0x35, compression ? 0x10 : 0x00, 0x34, address >>> 24, address >>> 16, address >>> 8, address, size >>> 16, size >>> 8, size]));
       if (init[0] !== 0x75) throw new Error('Shearwater rejected the log manifest request.');
@@ -219,7 +223,7 @@
     if (imperial) maxDepth *= 0.3048;
     const durationSeconds = be24(raw, closing0 + 6);
     const started = new Date(be32(raw, opening0 + 12) * 1000);
-    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: 'Downloaded from Shearwater', depth: maxDepth, avgDepth: sampleCount ? depthSum / sampleCount : 0, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, gfLow: raw[opening0 + 4], gfHigh: raw[opening0 + 5], notes: 'Downloaded from Perdix', profile };
+    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: 'Downloaded from Shearwater', depth: maxDepth, avgDepth: sampleCount ? depthSum / sampleCount : 0, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, gfLow: raw[opening0 + 4], gfHigh: raw[opening0 + 5], logVersion, notes: 'Downloaded from Perdix', profile };
   }
   async function connectAndInspect(progress, transport = 'ble') {
     progress(transport === 'serial' ? 'Connecting with Bluetooth Classic...' : 'Connecting to Bluetooth…');
@@ -249,7 +253,18 @@
       }
       return dives;
     };
-    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs: entries.length, downloadAll };
+    const syncTime = async () => {
+      const now = new Date(), write32 = value => new Uint8Array([value >>> 24, value >>> 16, value >>> 8, value]);
+      if (modelData[0] === 8) {
+        await connection.stream.wdbi(0x9031, write32(Math.floor(now.getTime() / 1000)));
+        await connection.stream.wdbi(0x9032, write32(-now.getTimezoneOffset()));
+        await connection.stream.wdbi(0x9033, write32(0));
+      } else {
+        const localTicks = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()) / 1000);
+        await connection.stream.wdbi(0x9030, write32(localTicks));
+      }
+    };
+    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs: entries.length, downloadAll, syncTime };
   }
 
   window.SeaBirdsShearwater = { connectAndInspect };
