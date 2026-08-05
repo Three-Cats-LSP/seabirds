@@ -191,7 +191,7 @@
       if (temperature < 0) { temperature += 102; if (temperature > 0) temperature = 0; }
       if (imperial) temperature = (temperature - 32) * 5 / 9;
       lowestTemp = lowestTemp == null ? temperature : Math.min(lowestTemp, temperature);
-      profile.push({ time: timeMs / 60000, depth, temp: temperature });
+      profile.push({ t: timeMs / 60000, depth, temp: temperature });
     }
     let maxDepth = be16(raw, closing0 + 4) / 10;
     if (imperial) maxDepth *= 0.3048;
