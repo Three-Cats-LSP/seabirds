@@ -876,7 +876,9 @@ function attachDiveProfileInteraction(canvasId) {
     }
     if (telemetry?.verticalSpeed != null) {
       const speed = units === 'imperial' ? telemetry.verticalSpeed * 3.28084 : telemetry.verticalSpeed;
-      html += `<div>V ${speed.toFixed(1)} ${du}/min</div>`;
+      const rateClass = speed < 0 ? 'ascent' : 'descent';
+      const rateArrow = speed < 0 ? '↑' : '↓';
+      html += `<div><span class="tooltip-rate ${rateClass}">${rateArrow}</span> ${Math.abs(speed).toFixed(1)} ${du}/min</div>`;
     }
     if (telemetry?.meanDepth != null) {
       const meanDepth = units === 'imperial' ? telemetry.meanDepth * 3.28084 : telemetry.meanDepth;
