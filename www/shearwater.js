@@ -93,10 +93,24 @@
     return { device, stream };
   }
 
-  async function webConnection() {
+  async function webConnection(progress) {
     if (!navigator.bluetooth) throw new Error('Bluetooth is unavailable in this browser.');
     const device = await navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE] }], optionalServices: [SERVICE] });
-    const server = await device.gatt.connect(), service = await server.getPrimaryService(SERVICE);
+    let server, service, lastError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        progress(attempt === 1 ? 'Connecting to Perdix GATT…' : `Perdix disconnected. Reconnecting (${attempt}/3)…`);
+        server = device.gatt.connected ? device.gatt : await device.gatt.connect();
+        if (!server.connected) throw new Error('GATT connection closed immediately.');
+        service = await server.getPrimaryService(SERVICE);
+        break;
+      } catch (error) {
+        lastError = error;
+        if (device.gatt.connected) device.gatt.disconnect();
+        if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    if (!service) throw new Error(`Windows disconnected before Shearwater service discovery after 3 attempts. ${lastError?.message || ''}`.trim());
     const selected = selectCharacteristics(await service.getCharacteristics());
     const stream = new Stream(data => selected.write.properties.writeWithoutResponse ? selected.write.writeValueWithoutResponse(data) : selected.write.writeValueWithResponse(data));
     selected.notify.addEventListener('characteristicvaluechanged', event => stream.push(event.target.value));
@@ -109,7 +123,7 @@
   async function connectAndInspect(progress) {
     progress('Connecting to Bluetooth…');
     const plugin = window.Capacitor?.Plugins?.BluetoothLe;
-    const connection = plugin ? await nativeConnection(plugin) : await webConnection();
+    const connection = plugin ? await nativeConnection(plugin) : await webConnection(progress);
     progress('Bluetooth linked. Starting Shearwater protocol…');
     await new Promise(resolve => setTimeout(resolve, 350));
     const serial = text(await connection.stream.rdbi(0x8010));
