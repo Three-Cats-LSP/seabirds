@@ -245,7 +245,7 @@
       for (let i = 0; i < entries.length; i++) {
         onProgress?.(i + 1, entries.length);
         const raw = await connection.stream.download((baseAddress + entries[i].address) >>> 0, 0xffffff, true);
-        dives.push({ id: `shearwater-${serial}-${entries[i].fingerprint}`, ...parseDive(raw, entries.length - i), updatedAt: new Date().toISOString() });
+        dives.push({ id: `shearwater-${serial}-${entries[i].fingerprint}`, ...parseDive(raw, entries.length - i), computer: connection.device.name || 'Shearwater Perdix', computerSerial: serial, computerFirmware: firmware, updatedAt: new Date().toISOString() });
       }
       return dives;
     };
