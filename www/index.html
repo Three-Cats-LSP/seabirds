@@ -7,8 +7,8 @@
     <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=64" />
-    <link rel="stylesheet" href="seabirds.css?v=64" />
+    <link rel="stylesheet" href="app.css?v=65" />
+    <link rel="stylesheet" href="seabirds.css?v=65" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -229,6 +229,17 @@
                 <option value="f">Fahrenheit (°F)</option>
               </select>
             </label>
+            <section class="master-gear">
+              <header>
+                <span>
+                  <b>Master equipment lists</b>
+                  <small>Create reusable equipment presets for Photo, Tech, Fun and other dives.</small>
+                </span>
+                <button type="button" id="addMasterGearCard">+ Add list</button>
+              </header>
+              <div id="masterGearLibrary" class="master-gear-library"></div>
+              <button type="button" id="saveMasterGear" class="primary compact">Save master lists</button>
+            </section>
             <label class="check">
               <input id="demoToggle" type="checkbox" />
               Load sample dives
@@ -420,9 +431,9 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="plot-core.js?v=64"></script>
-    <script src="sync.js?v=64"></script>
-    <script src="shearwater.js?v=64"></script>
-    <script src="app.js?v=64"></script>
+    <script src="plot-core.js?v=65"></script>
+    <script src="sync.js?v=65"></script>
+    <script src="shearwater.js?v=65"></script>
+    <script src="app.js?v=65"></script>
   </body>
 </html>
