@@ -1,41 +1,30 @@
-name: Deploy SeaBirds Web
+name: Update Official SeaBirds Site
 
 on:
   push:
     branches: [main]
+    paths:
+      - "www/**"
+      - "README.md"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: official-site-sync
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  request-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run sync:www
-      - name: Add signed native downloads
+      - name: Request official site update
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.13 --repo Three-Cats-LSP/seabirds --pattern 'SeaBirds.apk' --pattern 'SeaBirds-Windows-Setup.exe' --dir www
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: www
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          gh api --method POST \
+            repos/Three-Cats-LSP/threecats-lsp.com/dispatches \
+            -f event_type=sync-seabirds
