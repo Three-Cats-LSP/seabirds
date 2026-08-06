@@ -5,6 +5,7 @@ use serde::Serialize;
 use serialport::SerialPort;
 use std::{io::{Read, Write}, sync::{Arc, Mutex}, thread, time::Duration};
 use tauri::{WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_opener::OpenerExt;
 use tiny_http::{Header, Response, Server, StatusCode};
 
 #[derive(RustEmbed)]
@@ -73,9 +74,9 @@ fn serial_close(state: tauri::State<SerialState>) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn begin_google_login(state: tauri::State<AuthState>) -> Result<(), String> {
+fn begin_google_login(app: tauri::AppHandle, state: tauri::State<AuthState>) -> Result<(), String> {
     let url = format!("https://threecats-lsp.com/seabirds/?desktop-auth={}&desktop-state={}", state.port, state.nonce);
-    open::that(url).map_err(|error| format!("Could not open the system browser: {error}"))
+    app.opener().open_url(url, None::<&str>).map_err(|error| format!("Could not open the system browser: {error}"))
 }
 
 #[tauri::command]
@@ -137,6 +138,7 @@ fn main() {
     let nonce = uuid::Uuid::new_v4().to_string();
     let port = start_web_server(auth_token.clone(), nonce.clone()).expect("SeaBirds local web server failed");
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .manage(SerialState(Mutex::new(None)))
         .manage(AuthState { token: auth_token, port, nonce })
         .invoke_handler(tauri::generate_handler![serial_ports, serial_open, serial_write, serial_read, serial_close, begin_google_login, take_google_token, save_json])
