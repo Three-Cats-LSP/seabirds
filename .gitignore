@@ -11,3 +11,4 @@ android/app/google-services.json
 .DS_Store
 test-results/
 playwright-report/
+release-*/
