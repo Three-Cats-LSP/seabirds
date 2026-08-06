@@ -1,14 +1,16 @@
 (function(){
 'use strict';
-let auth,db,ref,divesRef,unsubs=[],timer,pullTimer,user=null,ready=false,writing=false;
+let auth,db,ref,divesRef,unsubs=[],timer,pullTimer,user=null,ready=false,writing=false,syncedDiveVersions={};
 const cfg=window.SEABIRDS_FIREBASE_CONFIG;
 const query=new URLSearchParams(location.search),desktopAuthPort=query.get('desktop-auth')||sessionStorage.getItem('seabirds_desktop_auth_port'),desktopAuthState=query.get('desktop-state')||sessionStorage.getItem('seabirds_desktop_auth_state');
 
 function status(text){window.SeaBirdsApp?.setSyncStatus({text,signedIn:!!user})}
 function clone(value){return JSON.parse(JSON.stringify(value))}
 function stamp(value){const n=Date.parse(value||'');return Number.isFinite(n)?n:0}
-function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
 function safeId(id){return encodeURIComponent(String(id)).replace(/\./g,'%2E')}
+function versionKey(uid){return`seabirds_synced_dives_${uid}`}
+function loadVersions(){try{return JSON.parse(localStorage.getItem(versionKey(user.uid))||'{}')}catch{return{}}}
+function saveVersions(){if(user)localStorage.setItem(versionKey(user.uid),JSON.stringify(syncedDiveVersions))}
 
 function mergeStates(local,remote){
   local=local||{};remote=remote||{};
@@ -37,6 +39,7 @@ async function readRemote(){
   const [metaSnap,diveSnap]=await Promise.all([ref.get(),divesRef.get()]);
   const meta=metaSnap.exists?metaSnap.data():{};
   if(diveSnap.empty&&meta.payload)return clone(meta.payload);
+  syncedDiveVersions={};diveSnap.docs.forEach(doc=>{const dive=doc.data();syncedDiveVersions[dive.id]=dive.updatedAt||''});saveVersions();
   return {
     dives:diveSnap.docs.map(doc=>doc.data()),
     deletedDiveIds:meta.deletedDiveIds||[],gearLibrary:meta.gearLibrary||{},settings:meta.settings||{depth:'m',temp:'c'},
@@ -44,28 +47,34 @@ async function readRemote(){
   };
 }
 
-async function writeRemote(payload){
+async function writeRemote(payload,forceAll=false){
   if(!ref||!user)return;
   writing=true;
   try{
-    await ref.set({schemaVersion:2,settings:payload.settings||{},gearLibrary:payload.gearLibrary||{},deletedDiveIds:payload.deletedDiveIds||[],revision:payload.revision||0,updatedAt:payload.updatedAt||new Date().toISOString(),serverUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     const operations=[];
-    for(const dive of payload.dives||[])operations.push({type:'set',ref:divesRef.doc(safeId(dive.id)),data:clone(dive)});
+    for(const dive of payload.dives||[])if(forceAll||syncedDiveVersions[dive.id]!==String(dive.updatedAt||''))operations.push({type:'set',ref:divesRef.doc(safeId(dive.id)),data:clone(dive),id:dive.id,version:String(dive.updatedAt||'')});
     for(const id of payload.deletedDiveIds||[])operations.push({type:'delete',ref:divesRef.doc(safeId(id))});
     for(let offset=0;offset<operations.length;offset+=400){
       const batch=db.batch();
       for(const operation of operations.slice(offset,offset+400))operation.type==='set'?batch.set(operation.ref,operation.data):batch.delete(operation.ref);
       await batch.commit();
+      for(const operation of operations.slice(offset,offset+400))if(operation.type==='set')syncedDiveVersions[operation.id]=operation.version;else delete syncedDiveVersions[decodeURIComponent(operation.ref.id)];
     }
+    saveVersions();
+    await ref.set({schemaVersion:2,settings:payload.settings||{},gearLibrary:payload.gearLibrary||{},deletedDiveIds:payload.deletedDiveIds||[],revision:payload.revision||0,updatedAt:payload.updatedAt||new Date().toISOString(),serverUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()});
   }finally{writing=false}
 }
 
 async function reconcile(){
   if(!ref||writing)return;
   try{
-    const local=window.SeaBirdsApp.getState(),remote=await readRemote(),merged=mergeStates(local,remote);
-    if(!same(local,merged))window.SeaBirdsApp.applyRemote(merged);
-    if(!same(remote,merged))await writeRemote(merged);
+    const metaSnap=await ref.get(),meta=metaSnap.exists?metaSnap.data():null,localMeta=window.SeaBirdsApp.getSyncMeta();
+    if(meta&&(localMeta.revision||0)===(meta.revision||0)&&stamp(localMeta.updatedAt)===stamp(meta.updatedAt)){status(`Synced · ${user.displayName||user.email}`);return}
+    const local=window.SeaBirdsApp.getState();
+    if(!meta){await writeRemote(local,true);status(`Synced · ${user.displayName||user.email}`);return}
+    const localRevision=local.revision||0,remoteRevision=meta.revision||0,remoteNewer=remoteRevision>localRevision||(remoteRevision===localRevision&&stamp(meta.updatedAt)>stamp(local.updatedAt));
+    if(remoteNewer){const remote=await readRemote(),merged=mergeStates(local,remote);window.SeaBirdsApp.applyRemote(merged);const remoteIds=new Map((remote.dives||[]).map(dive=>[dive.id,dive.updatedAt||''])),hasLocalChanges=(local.dives||[]).some(dive=>remoteIds.get(dive.id)!==(dive.updatedAt||''))||(local.deletedDiveIds||[]).some(id=>!(remote.deletedDiveIds||[]).includes(id));if(hasLocalChanges)await writeRemote(merged)}
+    else await writeRemote(local);
     status(`Synced · ${user.displayName||user.email}`);
   }catch(error){status(`Sync error · ${error.message}`)}
 }
@@ -88,13 +97,13 @@ function init(){
       note.textContent='Google authentication opens in this regular browser tab, then returns securely to the SeaBirds app.';button.hidden=false;
     }).catch(error=>{note.textContent=error.message;button.hidden=false});
   }
-  try{db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch{}
+  try{db.enablePersistence({synchronizeTabs:false}).catch(()=>{})}catch{}
   auth.onAuthStateChanged(async account=>{
     user=account;ready=false;unsubs.forEach(fn=>fn());unsubs=[];
     if(!account){ref=null;divesRef=null;status('Not signed in');return}
-    ref=db.collection('users').doc(account.uid).collection('seabirds').doc('state');divesRef=ref.collection('dives');status('Connecting…');
-    await reconcile();ready=true;
-    unsubs=[ref.onSnapshot(schedulePull,error=>status(`Sync error · ${error.message}`)),divesRef.onSnapshot(schedulePull,error=>status(`Sync error · ${error.message}`))];
+    ref=db.collection('users').doc(account.uid).collection('seabirds').doc('state');divesRef=ref.collection('dives');syncedDiveVersions=loadVersions();status(`Signed in · ${account.displayName||account.email}`);ready=true;
+    setTimeout(()=>reconcile(),0);
+    unsubs=[ref.onSnapshot(snapshot=>{if(writing||!snapshot.exists)return;const remote=snapshot.data()||{},local=window.SeaBirdsApp.getSyncMeta(),remoteRevision=remote.revision||0,localRevision=local.revision||0;if(remoteRevision>localRevision||(remoteRevision===localRevision&&stamp(remote.updatedAt)>stamp(local.updatedAt)))schedulePull()},error=>status(`Sync error · ${error.message}`))];
   });
 }
 
