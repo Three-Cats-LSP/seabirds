@@ -411,6 +411,43 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     }
   }
 
+  // Water temperature overlay, using an independent right-side scale.
+  const temperatureWps = pathWps
+    .map(wp => ({ t: +wp.t, value: +(wp.temperature ?? wp.temp) }))
+    .filter(wp => Number.isFinite(wp.t) && Number.isFinite(wp.value) && wp.t >= tMin && wp.t <= tMax);
+  if (temperatureWps.length > 1) {
+    const useFahrenheit = typeof units !== 'undefined' && units === 'imperial';
+    const displayTemperature = value => useFahrenheit ? value * 9 / 5 + 32 : value;
+    const displayed = temperatureWps.map(wp => ({ t: wp.t, value: displayTemperature(wp.value) }));
+    const rawTempMin = Math.min(...displayed.map(wp => wp.value));
+    const rawTempMax = Math.max(...displayed.map(wp => wp.value));
+    const tempPadding = Math.max(0.5, (rawTempMax - rawTempMin) * 0.12);
+    const tempMin = rawTempMin - tempPadding;
+    const tempMax = rawTempMax + tempPadding;
+    const toTempY = value => PAD.top + ((tempMax - value) / (tempMax - tempMin || 1)) * PH;
+
+    ctx.save();
+    clipToPlot();
+    ctx.beginPath();
+    displayed.forEach((wp, index) => index === 0
+      ? ctx.moveTo(toX(wp.t), toTempY(wp.value))
+      : ctx.lineTo(toX(wp.t), toTempY(wp.value)));
+    ctx.strokeStyle = '#596cff';
+    ctx.lineWidth = isMobile ? 1.5 : 2;
+    ctx.globalAlpha = 0.9;
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = '#596cff';
+    ctx.font = monoFont;
+    ctx.textAlign = 'right';
+    const suffix = `°${useFahrenheit ? 'F' : 'C'}`;
+    ctx.fillText(`${rawTempMax.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + 10);
+    ctx.fillText(`${rawTempMin.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + PH - 5);
+    ctx.textAlign = 'left';
+    ctx.fillText('WATER TEMP', PAD.left + 5, PAD.top + 10);
+  }
+
   // ── Deco ceiling line overlay ──
   if (!simple) {
   const ceilWps = opts?.ceilingWps || (canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
@@ -885,8 +922,9 @@ function attachDiveProfileInteraction(canvasId) {
     let html = `<div style="color:var(--accent);font-size:10px;letter-spacing:1px;margin-bottom:4px;">${phaseLabel[phase] || phase || ''}</div>`;
     html += `<div>⏱ ${Math.round(t * 10) / 10} min</div>`;
     html += `<div>⬇ ${dDisp} ${du}</div>`;
-    if (telemetry?.temperature != null) {
-      const temperature = units === 'imperial' ? telemetry.temperature * 9 / 5 + 32 : telemetry.temperature;
+    const telemetryTemperature = telemetry?.temperature ?? telemetry?.temp;
+    if (telemetryTemperature != null) {
+      const temperature = units === 'imperial' ? telemetryTemperature * 9 / 5 + 32 : telemetryTemperature;
       html += `<div>🌡 ${temperature.toFixed(1)}°${units === 'imperial' ? 'F' : 'C'}</div>`;
     }
     if (telemetry?.verticalSpeed != null) {
