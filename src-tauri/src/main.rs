@@ -1,7 +1,9 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use rust_embed::RustEmbed;
 use serde::Serialize;
 use serialport::SerialPort;
-use std::{io::{Read, Write}, sync::Mutex, thread, time::Duration};
+use std::{io::{Read, Write}, sync::{Arc, Mutex}, thread, time::Duration};
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tiny_http::{Header, Response, Server, StatusCode};
 
@@ -10,6 +12,12 @@ use tiny_http::{Header, Response, Server, StatusCode};
 struct WebAssets;
 
 struct SerialState(Mutex<Option<Box<dyn SerialPort>>>);
+
+struct AuthState {
+    token: Arc<Mutex<Option<String>>>,
+    port: u16,
+    nonce: String,
+}
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -64,6 +72,17 @@ fn serial_close(state: tauri::State<SerialState>) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn begin_google_login(state: tauri::State<AuthState>) -> Result<(), String> {
+    let url = format!("https://threecats-lsp.com/seabirds/?desktop-auth={}&desktop-state={}", state.port, state.nonce);
+    open::that(url).map_err(|error| format!("Could not open the system browser: {error}"))
+}
+
+#[tauri::command]
+fn take_google_token(state: tauri::State<AuthState>) -> Result<Option<String>, String> {
+    Ok(state.token.lock().map_err(|_| "Google login lock failed".to_string())?.take())
+}
+
 #[derive(Serialize)]
 struct SaveResult { canceled: bool, bytes: usize }
 
@@ -76,11 +95,27 @@ fn save_json(filename: String, data: String) -> Result<SaveResult, String> {
     Ok(SaveResult { canceled: false, bytes: data.len() })
 }
 
-fn start_web_server() -> Result<u16, String> {
+fn start_web_server(auth_token: Arc<Mutex<Option<String>>>, nonce: String) -> Result<u16, String> {
     let server = Server::http("127.0.0.1:0").map_err(|error| error.to_string())?;
     let port = server.server_addr().to_ip().ok_or_else(|| "No local server address".to_string())?.port();
     thread::spawn(move || for request in server.incoming_requests() {
-        let requested = request.url().split('?').next().unwrap_or("/").trim_start_matches('/');
+        let raw_url = request.url().to_string();
+        if raw_url.starts_with("/auth-callback") {
+            let parsed = url::Url::parse(&format!("http://localhost{raw_url}"));
+            let values = parsed.ok().map(|url| url.query_pairs().into_owned().collect::<std::collections::HashMap<_, _>>()).unwrap_or_default();
+            if values.get("state") == Some(&nonce) {
+                if let Some(token) = values.get("id_token") {
+                    if let Ok(mut slot) = auth_token.lock() { *slot = Some(token.clone()); }
+                    let response = Response::from_string("<!doctype html><meta charset=utf-8><title>SeaBirds signed in</title><body style='font:18px system-ui;padding:3rem'>Google sign-in completed. You can close this tab and return to SeaBirds.</body>")
+                        .with_header(Header::from_bytes("Content-Type", "text/html; charset=utf-8").unwrap());
+                    let _ = request.respond(response);
+                    continue;
+                }
+            }
+            let _ = request.respond(Response::from_string("Invalid SeaBirds sign-in callback.").with_status_code(StatusCode(400)));
+            continue;
+        }
+        let requested = raw_url.split('?').next().unwrap_or("/").trim_start_matches('/');
         let asset_name = if requested.is_empty() { "index.html" } else { requested };
         if asset_name.contains("..") { let _ = request.respond(Response::empty(StatusCode(403))); continue; }
         match WebAssets::get(asset_name) {
@@ -98,10 +133,13 @@ fn start_web_server() -> Result<u16, String> {
 }
 
 fn main() {
-    let port = start_web_server().expect("SeaBirds local web server failed");
+    let auth_token = Arc::new(Mutex::new(None));
+    let nonce = uuid::Uuid::new_v4().to_string();
+    let port = start_web_server(auth_token.clone(), nonce.clone()).expect("SeaBirds local web server failed");
     tauri::Builder::default()
         .manage(SerialState(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![serial_ports, serial_open, serial_write, serial_read, serial_close, save_json])
+        .manage(AuthState { token: auth_token, port, nonce })
+        .invoke_handler(tauri::generate_handler![serial_ports, serial_open, serial_write, serial_read, serial_close, begin_google_login, take_google_token, save_json])
         .setup(move |app| {
             let url = url::Url::parse(&format!("http://localhost:{port}/index.html"))?;
             WebviewWindowBuilder::new(app, "main", WebviewUrl::External(url))
