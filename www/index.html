@@ -153,6 +153,18 @@
               <button class="connect primary compact" data-transport="auto">Connect to dive computer</button>
             </div>
           </div>
+          <div id="deviceStatus" class="status-card">
+            <i></i>
+            <div>
+              <b>No device connected</b>
+              <p>Select your Shearwater model and connect.</p>
+            </div>
+            <label id="syncTimeOption" class="sync-time" hidden>
+              <input id="syncDeviceTime" type="checkbox" />
+              Sync computer time from this PC/phone
+            </label>
+            <button id="downloadDeviceDives" class="primary compact" hidden>Download dives</button>
+          </div>
           <div class="device-card">
             <div class="shearwater-logo">
               <img src="shearwater-logo-stacked.png" alt="Shearwater Research" />
@@ -172,18 +184,6 @@
                 <li>Tern</li>
               </ul>
             </div>
-          </div>
-          <div id="deviceStatus" class="status-card">
-            <i></i>
-            <div>
-              <b>No device connected</b>
-              <p>Select your Shearwater model and connect.</p>
-            </div>
-            <label id="syncTimeOption" class="sync-time" hidden>
-              <input id="syncDeviceTime" type="checkbox" />
-              Sync computer time from this PC/phone
-            </label>
-            <button id="downloadDeviceDives" class="primary compact" hidden>Download dives</button>
           </div>
         </section>
 
