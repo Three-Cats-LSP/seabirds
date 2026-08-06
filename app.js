@@ -18,6 +18,7 @@ const gearCatalog={
 const defaultGearLibrary=()=>JSON.parse(JSON.stringify(gearCatalog));
 let state=load();
 let activeDiveId=null;
+document.querySelector('[data-dive-panel="equipment"] .panel-help').textContent='List of equipment used on this dive';
 function load(){try{return Object.assign({dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),settings:{depth:'m',temp:'c'},revision:0,updatedAt:''},JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{return {dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),settings:{depth:'m',temp:'c'},revision:0,updatedAt:''}}}
 function storeState(sync=true){state.updatedAt=new Date().toISOString();state.revision=(state.revision||0)+1;localStorage.setItem(KEY,JSON.stringify(state));if(sync&&window.SeaBirdsSync)window.SeaBirdsSync.queue(state)}
 function persist(sync=true){storeState(sync);render()}
