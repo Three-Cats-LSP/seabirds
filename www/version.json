@@ -1,6 +1,6 @@
 {
-  "version": "0.1.4",
-  "versionCode": 104,
+  "version": "0.1.5",
+  "versionCode": 105,
   "android": {
     "url": "https://threecats-lsp.com/seabirds/SeaBirds.apk"
   },
