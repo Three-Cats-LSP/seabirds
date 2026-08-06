@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#071b25" />
-    <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
+    <meta name="description" content="SeaBirds â€” a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=68" />
-    <link rel="stylesheet" href="seabirds.css?v=68" />
+    <link rel="stylesheet" href="app.css?v=69" />
+    <link rel="stylesheet" href="seabirds.css?v=69" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -23,20 +23,20 @@
         </a>
         <nav>
           <button class="nav active" data-view="dashboard">
-            <span>⌁</span>
+            <span>âŒ</span>
             Overview
           </button>
           <button class="nav" data-view="dives">
-            <span>◫</span>
+            <span>â—«</span>
             Dive log
             <em id="diveCount">0</em>
           </button>
           <button class="nav" data-view="devices">
-            <span>⌁</span>
+            <span>âŒ</span>
             Devices
           </button>
           <button class="nav" data-view="settings">
-            <span>⚙</span>
+            <span>âš™</span>
             Settings
           </button>
         </nav>
@@ -51,7 +51,7 @@
 
       <main>
         <header class="topbar">
-          <button class="menu" aria-label="Open menu">☰</button>
+          <button class="menu" aria-label="Open menu">â˜°</button>
           <div class="crumb">
             Dive log
             <span>/</span>
@@ -87,12 +87,12 @@
             </article>
             <article>
               <span>Max depth</span>
-              <strong id="statDepth">—</strong>
+              <strong id="statDepth">â€”</strong>
               <small>personal record</small>
             </article>
             <article>
               <span>Longest dive</span>
-              <strong id="statLongest">—</strong>
+              <strong id="statLongest">â€”</strong>
               <small>personal record</small>
             </article>
           </div>
@@ -101,7 +101,7 @@
               <p class="eyebrow">LOGBOOK</p>
               <h2>Recent dives</h2>
             </div>
-            <button class="text-btn" data-goto="dives">View all →</button>
+            <button class="text-btn" data-goto="dives">View all â†’</button>
           </div>
           <div id="recentDives" class="dive-list"></div>
         </section>
@@ -122,7 +122,7 @@
             </div>
           </div>
           <div class="toolbar">
-            <input id="search" type="search" placeholder="Search site, notes, buddy…" />
+            <input id="search" type="search" placeholder="Search site, notes, buddyâ€¦" />
             <select id="sort">
               <option value="date-desc">Newest first</option>
               <option value="date-asc">Oldest first</option>
@@ -204,21 +204,21 @@
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Android</b>
-                <small>Signed native APK · direct download</small>
+                <small>Signed native APK Â· direct download</small>
               </span>
               <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds.apk" download>Download APK</a>
             </div>
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Windows</b>
-                <small>Version 0.1.3 · lightweight WebView2 installer</small>
+                <small>Version 0.1.4 Â· lightweight WebView2 installer</small>
               </span>
               <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe">Download EXE</a>
             </div>
             <div class="sync-block">
               <span>
                 <b>Application updates</b>
-                <small id="updateStatus">Installed version 0.1.3</small>
+                <small id="updateStatus">Installed version 0.1.4</small>
               </span>
               <button type="button" id="checkForUpdates">Check for new version</button>
             </div>
@@ -232,8 +232,44 @@
             <label>
               Temperature units
               <select id="tempUnit">
-                <option value="c">Celsius (°C)</option>
-                <option value="f">Fahrenheit (°F)</option>
+                <option value="c">Celsius (Â°C)</option>
+                <option value="f">Fahrenheit (Â°F)</option>
+              </select>
+            </label>
+            <label>
+              Volume units
+              <select id="volumeUnit">
+                <option value="l">Metric (litres)</option>
+                <option value="cuft">Imperial (cu ft)</option>
+              </select>
+            </label>
+            <label>
+              Weight units
+              <select id="weightUnit">
+                <option value="kg">Metric (kg)</option>
+                <option value="lb">Imperial (lb)</option>
+              </select>
+            </label>
+            <label>
+              Pressure units
+              <select id="pressureUnit">
+                <option value="bar">Bar</option>
+                <option value="psi">PSI</option>
+              </select>
+            </label>
+            <label>
+              Date format
+              <select id="dateFormat">
+                <option value="ymd">YYYY-MM-DD</option>
+                <option value="dmy">DD-MM-YYYY</option>
+                <option value="mdy">MM-DD-YYYY</option>
+              </select>
+            </label>
+            <label>
+              Time format
+              <select id="timeFormat">
+                <option value="12">12 hour</option>
+                <option value="24">24 hour</option>
               </select>
             </label>
             <section class="master-gear">
@@ -255,7 +291,7 @@
             <div class="other-apps">
               <b>Three Cats links &amp; apps</b>
               <div class="app-icon-row">
-                <a href="https://threecats-lsp.com/" target="_blank" rel="noopener noreferrer" title="Three Cats LSP · Diver's Toolkit"><img src="app-threecats.png" alt="Three Cats LSP" /></a>
+                <a href="https://threecats-lsp.com/" target="_blank" rel="noopener noreferrer" title="Three Cats LSP Â· Diver's Toolkit"><img src="app-threecats.png" alt="Three Cats LSP" /></a>
                 <a href="https://github.com/Three-Cats-LSP/seabirds" target="_blank" rel="noopener noreferrer" title="SeaBirds on GitHub">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.603-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" />
@@ -318,7 +354,7 @@
 
     <dialog id="diveDialog">
       <form method="dialog">
-        <button class="close" value="cancel">×</button>
+        <button class="close" value="cancel">Ã—</button>
         <p class="eyebrow">NEW ENTRY</p>
         <h2>Add a dive</h2>
         <div class="form-grid">
@@ -339,7 +375,7 @@
             <input name="duration" type="number" min="1" required />
           </label>
           <label>
-            Water temperature (°C)
+            Water temperature (Â°C)
             <input name="temp" type="number" step="0.1" />
           </label>
           <label>
@@ -356,7 +392,7 @@
     </dialog>
     <dialog id="profileDialog" class="profile-dialog">
       <form method="dialog">
-        <button class="close" value="cancel">×</button>
+        <button class="close" value="cancel">Ã—</button>
         <p class="eyebrow">DIVE LOG ENTRY</p>
         <h2 id="profileTitle">Dive profile</h2>
         <nav class="dive-tabs" aria-label="Dive details">
@@ -391,7 +427,7 @@
             <div id="seaBirdsProfileCanvas-crosshair-h" class="cross-h"></div>
           </div>
           <canvas id="temperatureProfileCanvas" class="temperature-profile" width="900" height="100"></canvas>
-          <small class="graph-hint">Hover for depth, temperature, NDL/TTS, gas and pressure · scroll to zoom</small>
+          <small class="graph-hint">Hover for depth, temperature, NDL/TTS, gas and pressure Â· scroll to zoom</small>
         </section>
         <section class="dive-panel" data-dive-panel="notes">
           <div class="edit-grid">
@@ -413,7 +449,7 @@
             </label>
             <label class="wide">
               Notes
-              <textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea>
+              <textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observationsâ€¦"></textarea>
             </label>
           </div>
         </section>
@@ -439,11 +475,11 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="app-version.js?v=68"></script>
-    <script src="plot-core.js?v=68"></script>
-    <script src="sync.js?v=68"></script>
-    <script src="shearwater.js?v=68"></script>
-    <script src="app.js?v=68"></script>
-    <script src="update.js?v=68"></script>
+    <script src="app-version.js?v=69"></script>
+    <script src="plot-core.js?v=69"></script>
+    <script src="sync.js?v=69"></script>
+    <script src="shearwater.js?v=69"></script>
+    <script src="app.js?v=69"></script>
+    <script src="update.js?v=69"></script>
   </body>
 </html>
