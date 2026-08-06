@@ -2,7 +2,7 @@
 'use strict';
 let auth,db,ref,divesRef,unsubs=[],timer,pullTimer,user=null,ready=false,writing=false;
 const cfg=window.SEABIRDS_FIREBASE_CONFIG;
-const query=new URLSearchParams(location.search),desktopAuthPort=query.get('desktop-auth'),desktopAuthState=query.get('desktop-state');
+const query=new URLSearchParams(location.search),desktopAuthPort=query.get('desktop-auth')||sessionStorage.getItem('seabirds_desktop_auth_port'),desktopAuthState=query.get('desktop-state')||sessionStorage.getItem('seabirds_desktop_auth_state');
 
 function status(text){window.SeaBirdsApp?.setSyncStatus({text,signedIn:!!user})}
 function clone(value){return JSON.parse(JSON.stringify(value))}
@@ -81,7 +81,12 @@ function init(){
     panel.style.cssText='position:fixed;inset:0;z-index:10000;background:#f4f7f5;display:grid;place-content:center;text-align:center;font:18px system-ui;color:#062c36;padding:24px';
     title.textContent='Continue SeaBirds desktop sign-in';note.textContent='Google authentication opens here in your regular browser, then returns securely to the SeaBirds app.';
     button.textContent='Sign in with Google';button.style.cssText='justify-self:center;padding:14px 22px;border:0;border-radius:10px;background:#ef6b57;color:white;font-weight:700;cursor:pointer';button.onclick=()=>signIn().catch(error=>{note.textContent=error.message});
-    panel.append(title,note,button);document.body.append(panel);
+    panel.append(title,note,button);document.body.append(panel);button.hidden=true;note.textContent='Checking Google sign-inâ€¦';
+    auth.getRedirectResult().then(result=>{
+      const credential=result&&firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      if(credential?.idToken){sessionStorage.removeItem('seabirds_desktop_auth_port');sessionStorage.removeItem('seabirds_desktop_auth_state');location.replace(`http://localhost:${desktopAuthPort}/auth-callback?id_token=${encodeURIComponent(credential.idToken)}&state=${encodeURIComponent(desktopAuthState)}`);return}
+      note.textContent='Google authentication opens in this regular browser tab, then returns securely to the SeaBirds app.';button.hidden=false;
+    }).catch(error=>{note.textContent=error.message;button.hidden=false});
   }
   try{db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch{}
   auth.onAuthStateChanged(async account=>{
@@ -114,9 +119,8 @@ async function signIn(){
     throw new Error('Google sign-in timed out. Please try again.');
   }else if(desktopAuthPort&&desktopAuthState){
     if(!/^\d{2,5}$/.test(desktopAuthPort)||+desktopAuthPort>65535||!/^[0-9a-f-]{36}$/i.test(desktopAuthState))throw new Error('Invalid SeaBirds desktop sign-in request.');
-    const result=await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()),credential=firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-    if(!credential?.idToken)throw new Error('Google did not return an ID token.');
-    location.replace(`http://localhost:${desktopAuthPort}/auth-callback?id_token=${encodeURIComponent(credential.idToken)}&state=${encodeURIComponent(desktopAuthState)}`);
+    sessionStorage.setItem('seabirds_desktop_auth_port',desktopAuthPort);sessionStorage.setItem('seabirds_desktop_auth_state',desktopAuthState);
+    await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
   }else await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
 }
 
