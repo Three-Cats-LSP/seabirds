@@ -1,6 +1,7 @@
 (function(){
 'use strict';
 const KEY='seabirds_state_v1';
+if(window.__TAURI__?.core?.invoke&&!window.SeaBirdsDesktop)window.SeaBirdsDesktop={saveJson:(filename,data)=>window.__TAURI__.core.invoke('save_json',{filename,data})};
 window.units='metric';
 window._lspCssVar=(name,fallback)=>getComputedStyle(document.documentElement).getPropertyValue(name).trim()||fallback;
 const sampleProfile=(depth,duration)=>[{t:0,depth:0,type:'surface'},{t:2,depth,type:'descent'},{t:Math.max(3,duration-5),depth,type:'bottom'},{t:duration-2,depth:5,type:'ascent'},{t:duration,depth:0,type:'surface'}];

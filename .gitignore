@@ -1,5 +1,6 @@
 node_modules/
 dist-windows/
+src-tauri/target/
 android/.gradle/
 android/local.properties
 android/app/build/

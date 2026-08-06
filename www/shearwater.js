@@ -141,6 +141,36 @@
   }
 
   async function serialConnection(progress) {
+    const invoke = window.__TAURI__?.core?.invoke;
+    if (invoke) {
+      progress('Finding paired Perdix serial ports...');
+      const ports = await invoke('serial_ports');
+      if (!ports.length) throw new Error('No Windows serial ports were found. Pair the Perdix in Windows Bluetooth settings first.');
+      let selected = ports[0];
+      if (ports.length > 1) {
+        const answer = prompt(`Choose the paired Perdix port:\n${ports.map((port, index) => `${index + 1}. ${port.label}`).join('\n')}\n\nEnter its number:`, '1');
+        if (answer == null) throw new Error('Perdix connection canceled.');
+        const index = Number.parseInt(answer, 10) - 1;
+        if (!Number.isInteger(index) || !ports[index]) throw new Error('Invalid serial port selection.');
+        selected = ports[index];
+      }
+      progress(`Opening ${selected.label}...`);
+      await invoke('serial_open', { portName: selected.portName });
+      const stream = new Stream(data => invoke('serial_write', { data: Array.from(data) }), 'serial');
+      let reading = true;
+      (async () => {
+        while (reading) {
+          try {
+            const data = await invoke('serial_read');
+            if (data?.length) stream.push(data);
+          } catch (error) {
+            reading = false;
+            console.warn('Perdix native serial read stopped:', error);
+          }
+        }
+      })();
+      return { device: { name: 'Perdix' }, stream, close: async () => { reading = false; await invoke('serial_close'); } };
+    }
     if (!navigator.serial) throw new Error('Bluetooth Classic requires current Chrome or Edge on Windows.');
     progress('Choose the paired Perdix serial port...');
     const port = await navigator.serial.requestPort();
