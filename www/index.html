@@ -7,8 +7,8 @@
     <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=71" />
-    <link rel="stylesheet" href="seabirds.css?v=71" />
+    <link rel="stylesheet" href="app.css?v=72" />
+    <link rel="stylesheet" href="seabirds.css?v=72" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -211,14 +211,14 @@
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Windows</b>
-                <small>Version 0.1.6 · lightweight WebView2 installer</small>
+                <small>Version 0.1.7 · lightweight WebView2 installer</small>
               </span>
               <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe">Download EXE</a>
             </div>
             <div class="sync-block">
               <span>
                 <b>Application updates</b>
-                <small id="updateStatus">Installed version 0.1.6</small>
+                <small id="updateStatus">Installed version 0.1.7</small>
               </span>
               <button type="button" id="checkForUpdates">Check for new version</button>
             </div>
@@ -470,16 +470,34 @@
         </footer>
       </form>
     </dialog>
+    <dialog id="downloadDivesDialog" class="download-dives-dialog">
+      <form method="dialog">
+        <button class="close" value="cancel" aria-label="Close">×</button>
+        <p class="eyebrow">DIVE COMPUTER</p>
+        <h2>Choose dives to download</h2>
+        <p id="downloadDivesSummary" class="download-summary"></p>
+        <div class="download-select-actions">
+          <button type="button" id="selectNewDives">Select new</button>
+          <button type="button" id="selectAllDives">Select all</button>
+          <button type="button" id="selectNoDives">Select none</button>
+        </div>
+        <div id="deviceDiveChoices" class="device-dive-choices"></div>
+        <footer class="download-dialog-actions">
+          <button type="button" id="cancelDiveDownload">Cancel</button>
+          <button type="button" id="confirmDiveDownload" class="primary">Download selected</button>
+        </footer>
+      </form>
+    </dialog>
     <div id="toast" role="status"></div>
     <script src="vendor/firebase/firebase-app-compat.js"></script>
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="app-version.js?v=71"></script>
-    <script src="plot-core.js?v=71"></script>
-    <script src="sync.js?v=71"></script>
-    <script src="shearwater.js?v=71"></script>
-    <script src="app.js?v=71"></script>
-    <script src="update.js?v=71"></script>
+    <script src="app-version.js?v=72"></script>
+    <script src="plot-core.js?v=72"></script>
+    <script src="sync.js?v=72"></script>
+    <script src="shearwater.js?v=72"></script>
+    <script src="app.js?v=72"></script>
+    <script src="update.js?v=72"></script>
   </body>
 </html>

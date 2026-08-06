@@ -275,12 +275,15 @@
       if (header === 0xa5c4) entries.push({ fingerprint: Array.from(manifest.slice(offset + 4, offset + 8)).map(x => x.toString(16).padStart(2, '0')).join(''), address: be32(manifest, offset + 20) });
       else if (header !== 0x5a23) break;
     }
-    const downloadAll = async onProgress => {
+    const diveManifest = entries.map((entry, index) => ({ id: `shearwater-${serial}-${entry.fingerprint}`, fingerprint: entry.fingerprint, number: entries.length - index }));
+    const downloadSelected = async (fingerprints, onProgress) => {
+      const wanted = new Set(fingerprints || []), selectedEntries = entries.map((entry, index) => ({ entry, index })).filter(item => wanted.has(item.entry.fingerprint));
       const dives = [];
-      for (let i = 0; i < entries.length; i++) {
-        onProgress?.(i + 1, entries.length);
-        const raw = await connection.stream.download((baseAddress + entries[i].address) >>> 0, 0xffffff, true);
-        dives.push({ id: `shearwater-${serial}-${entries[i].fingerprint}`, ...parseDive(raw, entries.length - i), computer: connection.device.name || 'Shearwater Perdix', computerSerial: serial, computerFirmware: firmware, updatedAt: new Date().toISOString() });
+      for (let i = 0; i < selectedEntries.length; i++) {
+        const { entry, index } = selectedEntries[i];
+        onProgress?.(i + 1, selectedEntries.length);
+        const raw = await connection.stream.download((baseAddress + entry.address) >>> 0, 0xffffff, true);
+        dives.push({ id: `shearwater-${serial}-${entry.fingerprint}`, ...parseDive(raw, entries.length - index), computer: connection.device.name || 'Shearwater Perdix', computerSerial: serial, computerFirmware: firmware, updatedAt: new Date().toISOString() });
       }
       return dives;
     };
@@ -295,7 +298,7 @@
         await connection.stream.wdbi(0x9030, write32(localTicks));
       }
     };
-    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs: entries.length, downloadAll, syncTime };
+    return { name: connection.device.name || 'Shearwater', serial, firmware, model: modelData[0], baseAddress, logs: entries.length, dives: diveManifest, downloadSelected, syncTime };
   }
 
   window.SeaBirdsShearwater = { connectAndInspect };
