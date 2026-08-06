@@ -171,6 +171,42 @@
       })();
       return { device: { name: 'Perdix' }, stream, close: async () => { reading = false; await invoke('serial_close'); } };
     }
+    const classic = window.Capacitor?.Plugins?.BluetoothClassic;
+    if (classic) {
+      progress('Finding paired Perdix dive computers...');
+      const permission = await classic.requestPermissions();
+      if (permission?.connect && permission.connect !== 'granted') throw new Error('Allow Nearby devices so SeaBirds can connect to the Perdix.');
+      const result = await classic.pairedDevices();
+      const devices = (result.devices || []).filter(device => /perdix|shearwater/i.test(device.name || ''));
+      if (!devices.length) throw new Error('No paired Perdix was found. Open Android Settings > Bluetooth, pair the Perdix while it shows Wait PC, then return to SeaBirds.');
+      let selected = devices[0];
+      if (devices.length > 1) {
+        const answer = prompt(`Choose the paired Perdix:\n${devices.map((device, index) => `${index + 1}. ${device.name}`).join('\n')}\n\nEnter its number:`, '1');
+        if (answer == null) throw new Error('Perdix connection canceled.');
+        const index = Number.parseInt(answer, 10) - 1;
+        if (!Number.isInteger(index) || !devices[index]) throw new Error('Invalid Perdix selection.');
+        selected = devices[index];
+      }
+      progress(`Opening ${selected.name} with Bluetooth Classic...`);
+      await classic.connect({ address: selected.address });
+      const fromBase64 = value => Uint8Array.from(atob(value), character => character.charCodeAt(0));
+      const toBase64 = value => btoa(Array.from(value, byte => String.fromCharCode(byte)).join(''));
+      const stream = new Stream(data => classic.write({ data: toBase64(data) }), 'serial');
+      let reading = true;
+      (async () => {
+        while (reading) {
+          try {
+            const result = await classic.read();
+            if (result?.data) stream.push(fromBase64(result.data));
+          } catch (error) {
+            reading = false;
+            console.warn('Perdix Android Bluetooth Classic read stopped:', error);
+          }
+        }
+      })();
+      return { device: { name: selected.name || 'Perdix' }, stream, close: async () => { reading = false; await classic.disconnect(); } };
+    }
+    if (/Android/i.test(navigator.userAgent)) throw new Error('Android Chrome cannot access the Perdix Bluetooth Classic serial connection. Install the SeaBirds Android APK and pair the Perdix in Android Bluetooth settings.');
     if (!navigator.serial) throw new Error('Bluetooth Classic requires current Chrome or Edge on Windows.');
     progress('Choose the paired Perdix serial port...');
     const port = await navigator.serial.requestPort();

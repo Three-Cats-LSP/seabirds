@@ -1,1 +1,1 @@
-(function(root){'use strict';root.SEABIRDS_APP_VERSION='0.1.7'})(typeof window!=='undefined'?window:self);
+(function(root){'use strict';root.SEABIRDS_APP_VERSION='0.1.8'})(typeof window!=='undefined'?window:self);
