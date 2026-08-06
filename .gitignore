@@ -9,3 +9,5 @@ android/app/google-services.json
 *.jks
 *.keystore
 .DS_Store
+test-results/
+playwright-report/

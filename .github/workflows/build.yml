@@ -10,6 +10,20 @@ permissions:
   contents: read
 
 jobs:
+  smoke:
+    name: Browser smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+
   android:
     name: Android APK
     runs-on: ubuntu-latest
@@ -60,8 +74,8 @@ jobs:
           BADGING="$($AAPT dump badging "$APK" | head -1)"
           echo "$BADGING"
           grep -q "name='com.threecats.seabirds'" <<< "$BADGING"
-          grep -q "versionCode='112'" <<< "$BADGING"
-          grep -q "versionName='0.1.12'" <<< "$BADGING"
+          grep -q "versionCode='113'" <<< "$BADGING"
+          grep -q "versionName='0.1.13'" <<< "$BADGING"
           CERTIFICATE="$($APKSIGNER verify --print-certs "$APK")"
           echo "$CERTIFICATE"
           grep -qi "8a3f8a36bd1b97b18d6af34247d8fe1734b90e1468420c042372fb9801ae92e3" <<< "${CERTIFICATE//:/}"

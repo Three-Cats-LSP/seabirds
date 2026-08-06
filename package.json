@@ -1,10 +1,12 @@
 {
   "name": "seabirds-dive-log",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "private": true,
   "description": "SeaBirds native and web dive log",
   "scripts": {
     "sync:www": "node tools/sync-www.cjs",
+    "test": "npm run test:smoke",
+    "test:smoke": "playwright test",
     "android:add": "npm run sync:www && npx cap add android",
     "android:sync": "npm run sync:www && npx cap sync android",
     "android:debug": "npm run android:sync && cd android && gradlew assembleDebug",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.3",
+    "@playwright/test": "^1.62.1",
     "@tauri-apps/cli": "^2.11.4"
   }
 }
