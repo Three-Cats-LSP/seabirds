@@ -1,6 +1,6 @@
 {
   "name": "seabirds-dive-log",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "description": "SeaBirds native and web dive log",
   "scripts": {
