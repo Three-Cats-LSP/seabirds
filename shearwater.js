@@ -98,7 +98,7 @@
   }
 
   async function nativeConnection(plugin) {
-    await plugin.initialize();
+    await plugin.initialize({ androidNeverForLocation: true });
     const device = await plugin.requestDevice({ services: [SERVICE] });
     await plugin.connect({ deviceId: device.deviceId });
     const found = await plugin.getServices({ deviceId: device.deviceId });
