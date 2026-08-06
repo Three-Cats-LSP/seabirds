@@ -436,60 +436,19 @@
           <small class="graph-hint">Hover for depth, temperature, NDL/TTS, gas and pressure · scroll to zoom</small>
         </section>
         <section class="dive-panel" data-dive-panel="notes">
-          <div class="edit-grid">
-            <label>
-              Dive #
-              <input id="editDiveNumber" type="number" min="1" max="9999" step="1" inputmode="numeric" placeholder="1–9999" />
-            </label>
-            <label>
-              Dive date
-              <input id="editDiveDate" type="date" />
-            </label>
-            <label>
-              Dive time
-              <input id="editDiveTime" type="time" step="60" />
-            </label>
-            <label>
-              Dive title
-              <input id="editDiveTitle" placeholder="Maldives, Dive 1" />
-            </label>
-            <label>
-              Dive spot
-              <input id="editDiveSpot" placeholder="Site or reef" />
-            </label>
-            <label>
-              Buddy
-              <input id="editDiveBuddy" placeholder="Buddy name" />
-            </label>
-            <label>
-              Tags
-              <input id="editDiveTags" placeholder="training, wreck, night" />
-            </label>
-            <label>
-              Dive mode
-              <select id="editDiveMode">
-                <option value="OC">OC</option>
-                <option value="CCR">CCR</option>
-                <option value="pSCR">pSCR</option>
-              </select>
-            </label>
-            <label>
-              Dive style
-              <select id="editDiveStyle">
-                <option value="">Not specified</option>
-                <option value="Single Tank">Single Tank</option>
-                <option value="Double tanks">Double tanks</option>
-                <option value="Sidemount">Sidemount</option>
-              </select>
-            </label>
-            <label>
-              Gas Used
-              <input id="editDiveGas" placeholder="Air, EAN32, Tx 18/45" />
-            </label>
-            <label class="wide">
-              Notes
-              <textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea>
-            </label>
+          <div class="edit-grid notes-edit-grid">
+            <label class="notes-dive-number">Dive #<input id="editDiveNumber" type="number" min="1" max="9999" step="1" inputmode="numeric" placeholder="1–9999" /></label>
+            <label class="notes-dive-title">Dive title<input id="editDiveTitle" placeholder="Maldives, Dive 1" /></label>
+            <label class="notes-dive-date">Dive date<input id="editDiveDate" type="date" /></label>
+            <label class="notes-start-time">Start time<input id="editDiveTime" type="time" step="60" /></label>
+            <label class="notes-end-time">End time<input id="editDiveEndTime" type="time" step="60" /></label>
+            <label class="notes-dive-spot">Dive spot<input id="editDiveSpot" placeholder="Site or reef" /></label>
+            <label class="notes-buddy">Buddy<input id="editDiveBuddy" placeholder="Buddy name" /></label>
+            <label class="notes-dive-mode">Dive mode<select id="editDiveMode"><option value="OC">OC</option><option value="CCR">CCR</option><option value="pSCR">pSCR</option></select></label>
+            <label class="notes-dive-style">Dive style<select id="editDiveStyle"><option value="">Not specified</option><option value="Single Tank">Single Tank</option><option value="Double tanks">Double tanks</option><option value="Sidemount">Sidemount</option></select></label>
+            <label class="notes-gas-used">Gas Used<input id="editDiveGas" placeholder="Air, EAN32, Tx 18/45" /></label>
+            <label class="notes-tags wide">Tags<input id="editDiveTags" placeholder="training, wreck, night" /></label>
+            <label class="wide">Notes<textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea></label>
           </div>
         </section>
         <section class="dive-panel" data-dive-panel="equipment">
