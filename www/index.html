@@ -212,14 +212,14 @@
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Windows</b>
-                <small>Version 0.1.11 · lightweight WebView2 installer</small>
+                <small>Version 0.1.12 · lightweight WebView2 installer</small>
               </span>
               <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe">Download EXE</a>
             </div>
             <div class="sync-block">
               <span>
                 <b>Application updates</b>
-                <small id="updateStatus">Installed version 0.1.11</small>
+                <small id="updateStatus">Installed version 0.1.12</small>
               </span>
               <button type="button" id="checkForUpdates">Check for new version</button>
             </div>
@@ -448,6 +448,23 @@
               Tags
               <input id="editDiveTags" placeholder="training, wreck, night" />
             </label>
+            <label>
+              Dive mode
+              <select id="editDiveMode">
+                <option value="OC">OC</option>
+                <option value="CCR">CCR</option>
+                <option value="pSCR">pSCR</option>
+              </select>
+            </label>
+            <label>
+              Dive style
+              <select id="editDiveStyle">
+                <option value="">Not specified</option>
+                <option value="Single Tank">Single Tank</option>
+                <option value="Double tanks">Double tanks</option>
+                <option value="Sidemount">Sidemount</option>
+              </select>
+            </label>
             <label class="wide">
               Notes
               <textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea>
@@ -505,12 +522,12 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="app-version.js?v=76"></script>
-    <script src="plot-core.js?v=76"></script>
-    <script src="sync.js?v=76"></script>
-    <script src="shearwater.js?v=76"></script>
-    <script src="storage.js?v=76"></script>
-    <script src="app.js?v=76"></script>
-    <script src="update.js?v=76"></script>
+    <script src="app-version.js?v=77"></script>
+    <script src="plot-core.js?v=77"></script>
+    <script src="sync.js?v=77"></script>
+    <script src="shearwater.js?v=77"></script>
+    <script src="storage.js?v=77"></script>
+    <script src="app.js?v=77"></script>
+    <script src="update.js?v=77"></script>
   </body>
 </html>
