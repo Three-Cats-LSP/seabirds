@@ -1,6 +1,5 @@
-(function(){
+(async function(){
 'use strict';
-const KEY='seabirds_state_v1';
 if(window.__TAURI__?.core?.invoke&&!window.SeaBirdsDesktop)window.SeaBirdsDesktop={saveJson:(filename,data)=>window.__TAURI__.core.invoke('save_json',{filename,data})};
 window.units='metric';
 window._lspCssVar=(name,fallback)=>getComputedStyle(document.documentElement).getPropertyValue(name).trim()||fallback;
@@ -18,10 +17,10 @@ const gearCatalog={
 const defaultGearLibrary=()=>JSON.parse(JSON.stringify(gearCatalog));
 const defaultSettings=()=>({depth:'m',temp:'c',volume:'l',weight:'kg',pressure:'bar',dateFormat:'ymd',timeFormat:'12'});
 function normalizeState(value={}){return Object.assign({dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),revision:0,updatedAt:''},value,{settings:Object.assign(defaultSettings(),value.settings||{})})}
-function load(){try{return normalizeState(JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{return normalizeState()}}
-let state=load();
+let state=normalizeState(await window.SeaBirdsStorage.load());
+localStorage.removeItem('seabirds_state_v1');
 let activeDiveId=null;
-function storeState(sync=true){state.updatedAt=new Date().toISOString();state.revision=(state.revision||0)+1;localStorage.setItem(KEY,JSON.stringify(state));if(sync&&window.SeaBirdsSync)window.SeaBirdsSync.queue(state)}
+function storeState(sync=true){state.updatedAt=new Date().toISOString();state.revision=(state.revision||0)+1;window.SeaBirdsStorage.save(state).catch(error=>window.SeaBirdsShowError?.(error.message||String(error),'Database error'));if(sync&&window.SeaBirdsSync)window.SeaBirdsSync.queue(state)}
 function persist(sync=true){storeState(sync);render()}
 function esc(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML}
 function converted(d){return state.settings.depth==='ft'?(d*3.28084):d}
@@ -122,6 +121,6 @@ document.getElementById('saveMasterGear').onclick=()=>{persist();toast('Master e
 document.getElementById('exportBtn').onclick=async()=>{const data=JSON.stringify(state,null,2),filename='seabirds-dive-log.json',bytes=new TextEncoder().encode(data).byteLength;if(window.SeaBirdsDesktop?.saveJson){try{const result=await window.SeaBirdsDesktop.saveJson(filename,data);if(!result.canceled)toast(`Exported ${(result.bytes/1048576).toFixed(2)} MB`)}catch(error){toast(`Export failed · ${error.message}`)}return}if(window.showSaveFilePicker){try{const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'JSON file',accept:{'application/json':['.json']}}]}),writable=await handle.createWritable();await writable.write(new Blob([data],{type:'application/json'}));await writable.close();toast(`Exported ${(bytes/1048576).toFixed(2)} MB`);return}catch(error){if(error.name==='AbortError')return;console.warn('Native browser save failed; using download fallback.',error)}}const a=document.createElement('a'),url=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)};
 document.getElementById('importFile').onchange=async e=>{const text=await e.target.files[0].text(),xml=new DOMParser().parseFromString(text,'application/xml'),nodes=[...xml.querySelectorAll('dive')];let n=0;for(const x of nodes){const get=(q)=>x.querySelector(q)?.textContent?.trim();const date=get('datetime')?.slice(0,10)||get('date')||new Date().toISOString().slice(0,10),depth=parseFloat(get('greatestdepth')||get('maxdepth')||0),duration=Math.round(parseFloat(get('divetime')||get('duration')||0)/60)||1;state.dives.push({id:crypto.randomUUID(),date,site:get('name')||get('divesite')||'Imported dive',depth,duration,temp:parseFloat(get('lowesttemperature'))||null,notes:'Imported from UDDF',profile:sampleProfile(depth,duration),updatedAt:new Date().toISOString()});n++}persist();toast(`Imported ${n} dives`)};
 document.getElementById('googleSignIn').onclick=()=>window.SeaBirdsSync?.signIn().catch(e=>toast(e?.message||String(e)||'Google sign-in failed'));
-window.SeaBirdsApp={getState:()=>JSON.parse(JSON.stringify(state)),getSyncMeta:()=>({revision:state.revision||0,updatedAt:state.updatedAt||''}),applyRemote:s=>{state=normalizeState(s);localStorage.setItem(KEY,JSON.stringify(state));render()},setSyncStatus:s=>{document.getElementById('syncStatus').textContent=s.text;document.getElementById('googleSignIn').textContent=s.signedIn?'Sign out':'Sign in with Google';document.getElementById('storageMode').textContent=s.signedIn?'Cloud sync':'Local-first';document.getElementById('storageDetail').textContent=s.signedIn?s.text:'Sign in to sync across devices'}};
+window.SeaBirdsApp={getState:()=>JSON.parse(JSON.stringify(state)),getSyncMeta:()=>({revision:state.revision||0,updatedAt:state.updatedAt||''}),applyRemote:s=>{state=normalizeState(s);window.SeaBirdsStorage.save(state).catch(error=>window.SeaBirdsShowError?.(error.message||String(error),'Database error'));render()},setSyncStatus:s=>{document.getElementById('syncStatus').textContent=s.text;document.getElementById('googleSignIn').textContent=s.signedIn?'Sign out':'Sign in with Google';document.getElementById('storageMode').textContent=s.signedIn?'Cloud sync':'Local-first';document.getElementById('storageDetail').textContent=s.signedIn?s.text:'Sign in to sync across devices'}};
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});render();window.SeaBirdsSync?.init();
 })();
