@@ -76,7 +76,7 @@ async function reconcile(){
     if(remoteNewer){const remote=await readRemote(),merged=mergeStates(local,remote);window.SeaBirdsApp.applyRemote(merged);const remoteIds=new Map((remote.dives||[]).map(dive=>[dive.id,dive.updatedAt||''])),hasLocalChanges=(local.dives||[]).some(dive=>remoteIds.get(dive.id)!==(dive.updatedAt||''))||(local.deletedDiveIds||[]).some(id=>!(remote.deletedDiveIds||[]).includes(id));if(hasLocalChanges)await writeRemote(merged)}
     else await writeRemote(local);
     status(`Synced · ${user.displayName||user.email}`);
-  }catch(error){status(`Sync error · ${error.message}`)}
+  }catch(error){status(`Sync error · ${error.message}`);window.SeaBirdsShowError?.(error.message||String(error),'Cloud sync error')}
 }
 
 function schedulePull(){clearTimeout(pullTimer);pullTimer=setTimeout(()=>{if(ready&&!writing)reconcile()},500)}
@@ -89,13 +89,13 @@ function init(){
     const panel=document.createElement('div'),button=document.createElement('button'),title=document.createElement('b'),note=document.createElement('p');
     panel.style.cssText='position:fixed;inset:0;z-index:10000;background:#f4f7f5;display:grid;place-content:center;text-align:center;font:18px system-ui;color:#062c36;padding:24px';
     title.textContent='Continue SeaBirds desktop sign-in';note.textContent='Google authentication opens here in your regular browser, then returns securely to the SeaBirds app.';
-    button.textContent='Sign in with Google';button.style.cssText='justify-self:center;padding:14px 22px;border:0;border-radius:10px;background:#ef6b57;color:white;font-weight:700;cursor:pointer';button.onclick=()=>signIn().catch(error=>{note.textContent=error.message});
+    button.textContent='Sign in with Google';button.style.cssText='justify-self:center;padding:14px 22px;border:0;border-radius:10px;background:#ef6b57;color:white;font-weight:700;cursor:pointer';button.onclick=()=>signIn().catch(error=>{note.textContent=error.message;window.SeaBirdsShowError?.(error.message||String(error),'Google sign-in failed')});
     panel.append(title,note,button);document.body.append(panel);button.hidden=true;note.textContent='Checking Google sign-inâ€¦';
     auth.getRedirectResult().then(result=>{
       const credential=result&&firebase.auth.GoogleAuthProvider.credentialFromResult(result);
       if(credential?.idToken){sessionStorage.removeItem('seabirds_desktop_auth_port');sessionStorage.removeItem('seabirds_desktop_auth_state');location.replace(`http://localhost:${desktopAuthPort}/auth-callback?id_token=${encodeURIComponent(credential.idToken)}&state=${encodeURIComponent(desktopAuthState)}`);return}
       note.textContent='Google authentication opens in this regular browser tab, then returns securely to the SeaBirds app.';button.hidden=false;
-    }).catch(error=>{note.textContent=error.message;button.hidden=false});
+    }).catch(error=>{note.textContent=error.message;button.hidden=false;window.SeaBirdsShowError?.(error.message||String(error),'Google sign-in failed')});
   }
   try{db.enablePersistence({synchronizeTabs:false}).catch(()=>{})}catch{}
   auth.onAuthStateChanged(async account=>{
@@ -135,7 +135,7 @@ async function signIn(){
 
 function queue(payload,now=false){
   if(!ref||!ready)return;
-  clearTimeout(timer);timer=setTimeout(async()=>{status('Syncing…');try{await writeRemote(payload);status(`Synced · ${user.displayName||user.email}`)}catch(error){status(`Sync error · ${error.message}`)}},now?0:1200);
+  clearTimeout(timer);timer=setTimeout(async()=>{status('Syncing…');try{await writeRemote(payload);status(`Synced · ${user.displayName||user.email}`)}catch(error){status(`Sync error · ${error.message}`);window.SeaBirdsShowError?.(error.message||String(error),'Cloud sync error')}},now?0:1200);
 }
 window.SeaBirdsSync={init,signIn,queue};
 })();

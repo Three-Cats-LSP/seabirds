@@ -7,8 +7,8 @@
     <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=73" />
-    <link rel="stylesheet" href="seabirds.css?v=73" />
+    <link rel="stylesheet" href="app.css?v=74" />
+    <link rel="stylesheet" href="seabirds.css?v=74" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -211,14 +211,14 @@
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Windows</b>
-                <small>Version 0.1.8 · lightweight WebView2 installer</small>
+                <small>Version 0.1.9 · lightweight WebView2 installer</small>
               </span>
               <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe">Download EXE</a>
             </div>
             <div class="sync-block">
               <span>
                 <b>Application updates</b>
-                <small id="updateStatus">Installed version 0.1.8</small>
+                <small id="updateStatus">Installed version 0.1.9</small>
               </span>
               <button type="button" id="checkForUpdates">Check for new version</button>
             </div>
@@ -488,16 +488,27 @@
         </footer>
       </form>
     </dialog>
+    <dialog id="errorDialog" class="error-dialog" aria-labelledby="errorDialogTitle">
+      <form method="dialog">
+        <button class="close" value="cancel" aria-label="Close error message">×</button>
+        <p class="eyebrow">SEABIRDS</p>
+        <h2 id="errorDialogTitle">Something went wrong</h2>
+        <p id="errorDialogMessage" class="error-dialog-message"></p>
+        <footer class="error-dialog-actions">
+          <button type="submit" value="cancel" class="primary" autofocus>OK</button>
+        </footer>
+      </form>
+    </dialog>
     <div id="toast" role="status"></div>
     <script src="vendor/firebase/firebase-app-compat.js"></script>
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="app-version.js?v=73"></script>
-    <script src="plot-core.js?v=73"></script>
-    <script src="sync.js?v=73"></script>
-    <script src="shearwater.js?v=73"></script>
-    <script src="app.js?v=73"></script>
-    <script src="update.js?v=73"></script>
+    <script src="app-version.js?v=74"></script>
+    <script src="plot-core.js?v=74"></script>
+    <script src="sync.js?v=74"></script>
+    <script src="shearwater.js?v=74"></script>
+    <script src="app.js?v=74"></script>
+    <script src="update.js?v=74"></script>
   </body>
 </html>
