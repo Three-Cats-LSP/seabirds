@@ -1,4 +1,4 @@
-const {app,BrowserWindow,shell}=require('electron');
+const {app,BrowserWindow,shell,dialog,ipcMain}=require('electron');
 const http=require('http');
 const fs=require('fs');
 const path=require('path');
@@ -19,7 +19,7 @@ function startLocalServer(){
         }
         fs.readFile(filePath,(error,data)=>{
           if(error){response.writeHead(error.code==='ENOENT'?404:500);response.end('Not found');return}
-          response.writeHead(200,{'Content-Type':mimeTypes[path.extname(filePath).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
+          response.writeHead(200,{'Content-Type':mimeTypes[path.extname(filePath).toLowerCase()]||'application/octet-stream','Content-Length':data.length,'Cache-Control':'no-store'});
           response.end(data);
         });
       }catch{response.writeHead(400);response.end('Bad request')}
@@ -30,7 +30,7 @@ function startLocalServer(){
 }
 
 function createWindow(port){
-  const win=new BrowserWindow({width:1440,height:920,minWidth:900,minHeight:640,backgroundColor:'#f4f7f5',title:'SeaBirds',webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true}});
+  const win=new BrowserWindow({width:1440,height:920,minWidth:900,minHeight:640,backgroundColor:'#f4f7f5',title:'SeaBirds',webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
   win.removeMenu();
   win.loadURL(`http://localhost:${port}/index.html`);
   win.webContents.setWindowOpenHandler(({url})=>{
@@ -40,6 +40,14 @@ function createWindow(port){
     return{action:'deny'};
   });
 }
+ipcMain.handle('seabirds:save-json',async(event,{filename,data})=>{
+  if(typeof data!=='string'||data.length>250*1024*1024)throw new Error('Invalid export data');
+  const owner=BrowserWindow.fromWebContents(event.sender);
+  const result=await dialog.showSaveDialog(owner,{title:'Export SeaBirds dive log',defaultPath:filename||'seabirds-dive-log.json',filters:[{name:'JSON files',extensions:['json']}]});
+  if(result.canceled||!result.filePath)return{canceled:true};
+  await fs.promises.writeFile(result.filePath,data,'utf8');
+  return{canceled:false,filePath:result.filePath,bytes:Buffer.byteLength(data,'utf8')};
+});
 app.whenReady().then(async()=>{const port=await startLocalServer();createWindow(port);app.on('activate',()=>{if(BrowserWindow.getAllWindows().length===0)createWindow(port)})});
 app.on('before-quit',()=>localServer?.close());
 app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit()});

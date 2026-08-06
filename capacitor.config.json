@@ -1,1 +1,1 @@
-{"appId":"com.threecats.seabirds","appName":"SeaBirds","webDir":"www","android":{"buildOptions":{"releaseType":"AAB"}},"server":{"androidScheme":"https"}}
+{"appId":"com.threecats.seabirds","appName":"SeaBirds","webDir":"www","android":{"buildOptions":{"releaseType":"AAB"}},"server":{"androidScheme":"https"},"plugins":{"FirebaseAuthentication":{"skipNativeAuth":true,"providers":["google.com"]}}}
