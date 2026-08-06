@@ -7,8 +7,8 @@
     <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=67" />
-    <link rel="stylesheet" href="seabirds.css?v=67" />
+    <link rel="stylesheet" href="app.css?v=68" />
+    <link rel="stylesheet" href="seabirds.css?v=68" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -211,9 +211,16 @@
             <div class="sync-block">
               <span>
                 <b>SeaBirds for Windows</b>
-                <small>Version 0.1.2 · lightweight WebView2 installer</small>
+                <small>Version 0.1.3 · lightweight WebView2 installer</small>
               </span>
-              <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup-0.1.2.exe">Download EXE</a>
+              <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe">Download EXE</a>
+            </div>
+            <div class="sync-block">
+              <span>
+                <b>Application updates</b>
+                <small id="updateStatus">Installed version 0.1.3</small>
+              </span>
+              <button type="button" id="checkForUpdates">Check for new version</button>
             </div>
             <label>
               Depth units
@@ -432,9 +439,11 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="plot-core.js?v=67"></script>
-    <script src="sync.js?v=67"></script>
-    <script src="shearwater.js?v=67"></script>
-    <script src="app.js?v=67"></script>
+    <script src="app-version.js?v=68"></script>
+    <script src="plot-core.js?v=68"></script>
+    <script src="sync.js?v=68"></script>
+    <script src="shearwater.js?v=68"></script>
+    <script src="app.js?v=68"></script>
+    <script src="update.js?v=68"></script>
   </body>
 </html>

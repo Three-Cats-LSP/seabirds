@@ -1,0 +1,16 @@
+(function(){
+'use strict';
+const VERSION_URLS=['https://threecats-lsp.com/seabirds/version.json','https://three-cats-lsp.github.io/seabirds/version.json'];
+let checking=false,lastAutomaticCheck=0;
+const current=window.SEABIRDS_APP_VERSION||'0.0.0';
+function platform(){if(window.Capacitor?.isNativePlatform?.())return'android';if(window.__TAURI__?.core?.invoke)return'windows';return'web'}
+function code(version){const parts=String(version).split('.').map(value=>parseInt(value,10)||0);return(parts[0]||0)*10000+(parts[1]||0)*100+(parts[2]||0)}
+function setStatus(message){const target=document.getElementById('updateStatus');if(target)target.textContent=message}
+async function manifest(){let failure;for(const url of VERSION_URLS)try{const response=await fetch(`${url}?t=${Date.now()}`,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);return await response.json()}catch(error){failure=error}throw failure||new Error('Version information unavailable')}
+async function openUrl(url){if(!/^https:\/\//i.test(url||''))throw new Error('Invalid update URL');if(platform()==='android'&&window.Capacitor?.Plugins?.Browser?.open){await window.Capacitor.Plugins.Browser.open({url});return}if(platform()==='windows'){await window.__TAURI__.core.invoke('open_update_url',{url});return}window.open(url,'_blank','noopener')}
+function showOffer(version,url){let banner=document.getElementById('updateBanner');if(!banner){banner=document.createElement('aside');banner.id='updateBanner';banner.innerHTML='<span></span><button type="button" class="download-update">Download update</button><button type="button" class="dismiss-update" aria-label="Dismiss update">&times;</button>';document.body.appendChild(banner);banner.querySelector('.dismiss-update').onclick=()=>banner.remove()}banner.querySelector('span').innerHTML=`SeaBirds <b>${version}</b> is available.`;banner.querySelector('.download-update').onclick=()=>openUrl(url).catch(error=>setStatus(`Update error - ${error.message}`))}
+async function check(manual=false){const nativePlatform=platform();if(nativePlatform==='web'){if(manual)setStatus('Web version updates automatically');return}if(checking)return;checking=true;if(manual)setStatus('Checking for updates...');try{const data=await manifest(),remoteCode=Number(data.versionCode)||code(data.version),localCode=code(current),url=data[nativePlatform]?.url;if(remoteCode>localCode&&url){setStatus(`Version ${data.version} is available`);showOffer(data.version,url)}else setStatus(`SeaBirds ${current} is up to date`)}catch(error){setStatus(`Could not check - ${error.message}`)}finally{checking=false}}
+function automatic(){if(Date.now()-lastAutomaticCheck<21600000)return;lastAutomaticCheck=Date.now();check(false)}
+document.addEventListener('DOMContentLoaded',()=>{const button=document.getElementById('checkForUpdates');if(button)button.onclick=()=>check(true);setStatus(`Installed version ${current}`);setTimeout(automatic,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')automatic()});try{window.Capacitor?.Plugins?.App?.addListener?.('appStateChange',state=>{if(state?.isActive)automatic()})}catch{}});
+window.SeaBirdsUpdate={check};
+})();

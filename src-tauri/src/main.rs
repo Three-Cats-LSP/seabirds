@@ -84,6 +84,14 @@ fn take_google_token(state: tauri::State<AuthState>) -> Result<Option<String>, S
     Ok(state.token.lock().map_err(|_| "Google login lock failed".to_string())?.take())
 }
 
+#[tauri::command]
+fn open_update_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    if !url.starts_with("https://threecats-lsp.com/") {
+        return Err("Untrusted update URL".into());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|error| format!("Could not open the update download: {error}"))
+}
+
 #[derive(Serialize)]
 struct SaveResult { canceled: bool, bytes: usize }
 
@@ -141,7 +149,7 @@ fn main() {
         .plugin(tauri_plugin_opener::init())
         .manage(SerialState(Mutex::new(None)))
         .manage(AuthState { token: auth_token, port, nonce })
-        .invoke_handler(tauri::generate_handler![serial_ports, serial_open, serial_write, serial_read, serial_close, begin_google_login, take_google_token, save_json])
+        .invoke_handler(tauri::generate_handler![serial_ports, serial_open, serial_write, serial_read, serial_close, begin_google_login, take_google_token, open_update_url, save_json])
         .setup(move |app| {
             let url = url::Url::parse(&format!("http://localhost:{port}/index.html"))?;
             WebviewWindowBuilder::new(app, "main", WebviewUrl::External(url))

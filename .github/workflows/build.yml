@@ -51,6 +51,20 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew assembleRelease bundleRelease --stacktrace
+      - name: Verify Android upgrade identity
+        shell: bash
+        run: |
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
+          BADGING="$($AAPT dump badging "$APK" | head -1)"
+          echo "$BADGING"
+          grep -q "name='com.threecats.seabirds'" <<< "$BADGING"
+          grep -q "versionCode='103'" <<< "$BADGING"
+          grep -q "versionName='0.1.3'" <<< "$BADGING"
+          CERTIFICATE="$($APKSIGNER verify --print-certs "$APK")"
+          echo "$CERTIFICATE"
+          grep -qi "8a3f8a36bd1b97b18d6af34247d8fe1734b90e1468420c042372fb9801ae92e3" <<< "${CERTIFICATE//:/}"
       - uses: actions/upload-artifact@v4
         with:
           name: SeaBirds-Android-Signed-Release

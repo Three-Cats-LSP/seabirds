@@ -1,0 +1,10 @@
+{
+  "version": "0.1.3",
+  "versionCode": 103,
+  "android": {
+    "url": "https://threecats-lsp.com/seabirds/SeaBirds.apk"
+  },
+  "windows": {
+    "url": "https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup.exe"
+  }
+}
