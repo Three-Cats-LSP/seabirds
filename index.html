@@ -7,8 +7,8 @@
     <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" type="image/png" />
-    <link rel="stylesheet" href="app.css?v=66" />
-    <link rel="stylesheet" href="seabirds.css?v=66" />
+    <link rel="stylesheet" href="app.css?v=67" />
+    <link rel="stylesheet" href="seabirds.css?v=67" />
     <title>SeaBirds Dive Log</title>
   </head>
   <body>
@@ -413,6 +413,7 @@
         <section class="dive-panel" data-dive-panel="equipment">
           <div class="equipment-heading">
             <p class="panel-help">List of equipment used on this dive</p>
+            <select id="gearCardSelect" aria-label="Choose master equipment list" hidden></select>
             <button type="button" id="addGearCategory">+ Add card</button>
           </div>
           <div id="diveEquipment" class="equipment-grid"></div>
@@ -431,9 +432,9 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="plot-core.js?v=66"></script>
-    <script src="sync.js?v=66"></script>
-    <script src="shearwater.js?v=66"></script>
-    <script src="app.js?v=66"></script>
+    <script src="plot-core.js?v=67"></script>
+    <script src="sync.js?v=67"></script>
+    <script src="shearwater.js?v=67"></script>
+    <script src="app.js?v=67"></script>
   </body>
 </html>
