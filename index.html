@@ -1,95 +1,428 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#071b25">
-  <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers.">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon-192.png" type="image/png">
-  <link rel="stylesheet" href="app.css?v=62">
-  <link rel="stylesheet" href="seabirds.css?v=62">
-  <title>SeaBirds Dive Log</title>
-</head>
-<body>
-  <div class="shell">
-    <aside class="sidebar">
-      <a class="brand" href="#" aria-label="SeaBirds Dive Log home">
-        <span class="brand-mark"><img src="icon-192.png" alt=""></span><span><b>SeaBirds</b><small>by Three Cats LSP</small></span>
-      </a>
-      <nav>
-        <button class="nav active" data-view="dashboard"><span>⌁</span>Overview</button>
-        <button class="nav" data-view="dives"><span>◫</span>Dive log <em id="diveCount">0</em></button>
-        <button class="nav" data-view="devices"><span>⌁</span>Devices</button>
-        <button class="nav" data-view="settings"><span>⚙</span>Settings</button>
-      </nav>
-      <div class="offline"><i></i><span><b id="storageMode">Local-first</b><small id="storageDetail">Sign in to sync across devices</small></span></div>
-    </aside>
-
-    <main>
-      <header class="topbar">
-        <button class="menu" aria-label="Open menu">☰</button>
-        <div class="crumb">Dive log <span>/</span> <b id="viewName">Overview</b></div>
-      </header>
-
-      <section class="view active" id="dashboard">
-        <div class="hero">
-          <div><p class="eyebrow">WELCOME BACK</p><h1>Your underwater story,<br><i>beautifully recorded.</i></h1><p>Download dives from your Shearwater, review every profile, and keep the memories that matter.</p></div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#071b25" />
+    <meta name="description" content="SeaBirds — a private, offline-first logbook for Shearwater dive computers." />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon-192.png" type="image/png" />
+    <link rel="stylesheet" href="app.css?v=64" />
+    <link rel="stylesheet" href="seabirds.css?v=64" />
+    <title>SeaBirds Dive Log</title>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="SeaBirds Dive Log home">
+          <span class="brand-mark"><img src="icon-192.png" alt="" /></span>
+          <span>
+            <b>SeaBirds</b>
+            <small>by Three Cats LSP</small>
+          </span>
+        </a>
+        <nav>
+          <button class="nav active" data-view="dashboard">
+            <span>⌁</span>
+            Overview
+          </button>
+          <button class="nav" data-view="dives">
+            <span>◫</span>
+            Dive log
+            <em id="diveCount">0</em>
+          </button>
+          <button class="nav" data-view="devices">
+            <span>⌁</span>
+            Devices
+          </button>
+          <button class="nav" data-view="settings">
+            <span>⚙</span>
+            Settings
+          </button>
+        </nav>
+        <div class="offline">
+          <i></i>
+          <span>
+            <b id="storageMode">Local-first</b>
+            <small id="storageDetail">Sign in to sync across devices</small>
+          </span>
         </div>
-        <div class="stats">
-          <article><span>Total dives</span><strong id="statDives">0</strong><small>in this logbook</small></article>
-          <article><span>Bottom time</span><strong id="statTime">0<sup>h</sup></strong><small>across all dives</small></article>
-          <article><span>Max depth</span><strong id="statDepth">—</strong><small>personal record</small></article>
-          <article><span>Longest dive</span><strong id="statLongest">—</strong><small>personal record</small></article>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <button class="menu" aria-label="Open menu">☰</button>
+          <div class="crumb">
+            Dive log
+            <span>/</span>
+            <b id="viewName">Overview</b>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboard">
+          <div class="hero">
+            <div>
+              <p class="eyebrow">WELCOME BACK</p>
+              <h1>
+                Your underwater story,
+                <br />
+                <i>beautifully recorded.</i>
+              </h1>
+              <p>Download dives from your Shearwater, review every profile, and keep the memories that matter.</p>
+            </div>
+          </div>
+          <div class="stats">
+            <article>
+              <span>Total dives</span>
+              <strong id="statDives">0</strong>
+              <small>in this logbook</small>
+            </article>
+            <article>
+              <span>Bottom time</span>
+              <strong id="statTime">
+                0
+                <sup>h</sup>
+              </strong>
+              <small>across all dives</small>
+            </article>
+            <article>
+              <span>Max depth</span>
+              <strong id="statDepth">—</strong>
+              <small>personal record</small>
+            </article>
+            <article>
+              <span>Longest dive</span>
+              <strong id="statLongest">—</strong>
+              <small>personal record</small>
+            </article>
+          </div>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">LOGBOOK</p>
+              <h2>Recent dives</h2>
+            </div>
+            <button class="text-btn" data-goto="dives">View all →</button>
+          </div>
+          <div id="recentDives" class="dive-list"></div>
+        </section>
+
+        <section class="view" id="dives">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">LOGBOOK</p>
+              <h1>All dives</h1>
+            </div>
+            <div class="actions">
+              <label class="import">
+                Import UDDF
+                <input id="importFile" type="file" accept=".uddf,.xml,application/xml" />
+              </label>
+              <button id="exportBtn">Export JSON</button>
+              <button id="addDive" class="primary compact">+ Add dive</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <input id="search" type="search" placeholder="Search site, notes, buddy…" />
+            <select id="sort">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="depth-desc">Deepest first</option>
+            </select>
+          </div>
+          <div id="allDives" class="dive-list"></div>
+        </section>
+
+        <section class="view" id="devices">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">BLUETOOTH</p>
+              <h1>Dive computers</h1>
+              <p>Put your Shearwater into Bluetooth mode, select its model, then connect.</p>
+            </div>
+            <div class="device-connect">
+              <select id="deviceModel" aria-label="Dive computer model">
+                <option value="perdix">Shearwater Perdix</option>
+                <option value="ble">Perdix AI</option>
+                <option value="ble">Perdix 2</option>
+                <option value="ble">Teric</option>
+                <option value="ble">Petrel 2 / Petrel 3</option>
+                <option value="ble">NERD 2</option>
+                <option value="ble">Peregrine / Tern</option>
+              </select>
+              <button class="connect primary compact" data-transport="auto">Connect to dive computer</button>
+            </div>
+          </div>
+          <div class="device-card">
+            <div class="shearwater-logo">
+              <img src="shearwater-logo.png" alt="Shearwater Research" />
+            </div>
+            <div>
+              <span class="badge">SUPPORTED</span>
+              <h2>Shearwater Computers</h2>
+              <ul>
+                <li>Perdix</li>
+                <li>Perdix AI</li>
+                <li>Perdix 2</li>
+                <li>Teric</li>
+                <li>Petrel 2</li>
+                <li>Petrel 3</li>
+                <li>NERD 2</li>
+                <li>Peregrine</li>
+                <li>Tern</li>
+              </ul>
+            </div>
+          </div>
+          <div id="deviceStatus" class="status-card">
+            <i></i>
+            <div>
+              <b>No device connected</b>
+              <p>Select your Shearwater model and connect.</p>
+            </div>
+            <label id="syncTimeOption" class="sync-time" hidden>
+              <input id="syncDeviceTime" type="checkbox" />
+              Sync computer time from this PC/phone
+            </label>
+            <button id="downloadDeviceDives" class="primary compact" hidden>Download dives</button>
+          </div>
+        </section>
+
+        <section class="view" id="settings">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">PREFERENCES</p>
+              <h1>Settings</h1>
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="sync-block">
+              <span>
+                <b>Google cloud sync</b>
+                <small id="syncStatus">Not signed in</small>
+              </span>
+              <button id="googleSignIn">Sign in with Google</button>
+            </div>
+            <div class="sync-block">
+              <span>
+                <b>SeaBirds for Android</b>
+                <small>Signed native APK · direct download</small>
+              </span>
+              <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds.apk" download>Download APK</a>
+            </div>
+            <div class="sync-block">
+              <span>
+                <b>SeaBirds for Windows</b>
+                <small>Version 0.1.2 · lightweight WebView2 installer</small>
+              </span>
+              <a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup-0.1.2.exe">Download EXE</a>
+            </div>
+            <label>
+              Depth units
+              <select id="depthUnit">
+                <option value="m">Metres (m)</option>
+                <option value="ft">Feet (ft)</option>
+              </select>
+            </label>
+            <label>
+              Temperature units
+              <select id="tempUnit">
+                <option value="c">Celsius (°C)</option>
+                <option value="f">Fahrenheit (°F)</option>
+              </select>
+            </label>
+            <label class="check">
+              <input id="demoToggle" type="checkbox" />
+              Load sample dives
+            </label>
+            <button id="clearData" class="danger">Clear local data</button>
+            <div class="other-apps">
+              <b>Three Cats links &amp; apps</b>
+              <div class="app-icon-row">
+                <a href="https://threecats-lsp.com/" target="_blank" rel="noopener noreferrer" title="Three Cats LSP · Diver's Toolkit"><img src="app-threecats.png" alt="Three Cats LSP" /></a>
+                <a href="https://github.com/Three-Cats-LSP/seabirds" target="_blank" rel="noopener noreferrer" title="SeaBirds on GitHub">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.603-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" />
+                  </svg>
+                </a>
+                <a href="https://github.com/Three-Cats-LSP/seabirds/releases/latest" target="_blank" rel="noopener noreferrer" title="SeaBirds downloads">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </a>
+                <a href="https://www.instagram.com/threecats_lsp" target="_blank" rel="noopener noreferrer" title="Follow @threecats_lsp on Instagram">
+                  <svg viewBox="0 0 50 50" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="seaBirdsInstagram" x1="0%" x2="100%" y1="100%" y2="0%">
+                        <stop offset="0%" stop-color="#feda75" />
+                        <stop offset="10%" stop-color="#fa7e1e" />
+                        <stop offset="45%" stop-color="#d92e7f" />
+                        <stop offset="65%" stop-color="#9b36b7" />
+                        <stop offset="100%" stop-color="#515bd4" />
+                      </linearGradient>
+                    </defs>
+                    <rect x="5" y="5" width="40" height="40" rx="10" fill="none" stroke="url(#seaBirdsInstagram)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="8" fill="none" stroke="url(#seaBirdsInstagram)" stroke-width="2" />
+                    <circle cx="36" cy="14" r="2" fill="url(#seaBirdsInstagram)" />
+                  </svg>
+                </a>
+                <a href="https://www.thingiverse.com/Roman_Markovtsev/designs" target="_blank" rel="noopener noreferrer" title="Three Cats designs on Thingiverse">
+                  <svg class="thingiverse-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m12 2 8 4.5v9L12 20l-8-4.5v-9L12 2Zm0 0v9m8-4.5-8 4.5m-8-4.5 8 4.5m0 9v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                  </svg>
+                </a>
+                <a href="https://threecats-lsp.com/d-planner-plus/" target="_blank" rel="noopener noreferrer" title="LSP D-Planner+"><img src="app-dplanner.png" alt="LSP D-Planner+" /></a>
+                <a href="https://threecats-lsp.com/t-viewer/" target="_blank" rel="noopener noreferrer" title="T-Viewer"><img src="app-tviewer.png" alt="T-Viewer" /></a>
+                <a href="https://threecats-lsp.com/get-in-water/" target="_blank" rel="noopener noreferrer" title="Get In Water"><img src="app-getinwater.png" alt="Get In Water" /></a>
+              </div>
+              <a class="donate-link" href="https://paypal.me/ThreeCatsLSP" target="_blank" rel="noopener noreferrer">
+                <b>PayPal</b>
+                Donations
+              </a>
+            </div>
+            <p class="legal-notice">
+              Shearwater, the Shearwater logo, and Shearwater product names are trademarks or registered trademarks of Shearwater Research Inc. All other trademarks, logos, product names, and copyrighted materials are the property of their respective owners. SeaBirds is an independent application and is not affiliated with, endorsed by, or sponsored by Shearwater Research Inc.
+              <br />
+              Icons from Flaticon:
+              <a href="https://www.flaticon.com/free-icon/sky_14067736" target="_blank" rel="noopener">SeaBirds app icon</a>
+              ,
+              <a href="https://www.flaticon.com/free-icon/scuba-diving_18769626" target="_blank" rel="noopener">Profile icon</a>
+              ,
+              <a href="https://www.flaticon.com/free-icon/notes_8521543" target="_blank" rel="noopener">Notes by Muhammad_Usman</a>
+              ,
+              <a href="https://www.flaticon.com/free-icon/diving_4268062" target="_blank" rel="noopener">Equipment icon</a>
+              , and
+              <a href="https://www.flaticon.com/free-icon/dive-computer_1923040" target="_blank" rel="noopener">Dive computer information</a>
+              .
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="diveDialog">
+      <form method="dialog">
+        <button class="close" value="cancel">×</button>
+        <p class="eyebrow">NEW ENTRY</p>
+        <h2>Add a dive</h2>
+        <div class="form-grid">
+          <label>
+            Date
+            <input name="date" type="date" required />
+          </label>
+          <label>
+            Site
+            <input name="site" required placeholder="Blue Corner" />
+          </label>
+          <label>
+            Maximum depth (m)
+            <input name="depth" type="number" min="0" step="0.1" required />
+          </label>
+          <label>
+            Duration (minutes)
+            <input name="duration" type="number" min="1" required />
+          </label>
+          <label>
+            Water temperature (°C)
+            <input name="temp" type="number" step="0.1" />
+          </label>
+          <label>
+            Buddy
+            <input name="buddy" placeholder="Dive buddy" />
+          </label>
+          <label class="wide">
+            Notes
+            <textarea name="notes" rows="3"></textarea>
+          </label>
         </div>
-        <div class="section-head"><div><p class="eyebrow">LOGBOOK</p><h2>Recent dives</h2></div><button class="text-btn" data-goto="dives">View all →</button></div>
-        <div id="recentDives" class="dive-list"></div>
-      </section>
-
-      <section class="view" id="dives">
-        <div class="page-head"><div><p class="eyebrow">LOGBOOK</p><h1>All dives</h1></div><div class="actions"><label class="import">Import UDDF<input id="importFile" type="file" accept=".uddf,.xml,application/xml"></label><button id="exportBtn">Export JSON</button><button id="addDive" class="primary compact">+ Add dive</button></div></div>
-        <div class="toolbar"><input id="search" type="search" placeholder="Search site, notes, buddy…"><select id="sort"><option value="date-desc">Newest first</option><option value="date-asc">Oldest first</option><option value="depth-desc">Deepest first</option></select></div>
-        <div id="allDives" class="dive-list"></div>
-      </section>
-
-      <section class="view" id="devices">
-        <div class="page-head"><div><p class="eyebrow">BLUETOOTH</p><h1>Dive computers</h1><p>Put your Shearwater into Bluetooth mode, select its model, then connect.</p></div><div class="device-connect"><select id="deviceModel" aria-label="Dive computer model"><option value="perdix">Shearwater Perdix</option><option value="ble">Perdix AI</option><option value="ble">Perdix 2</option><option value="ble">Teric</option><option value="ble">Petrel 2 / Petrel 3</option><option value="ble">NERD 2</option><option value="ble">Peregrine / Tern</option></select><button class="connect primary compact" data-transport="auto">Connect to dive computer</button></div></div>
-        <div class="device-card">
-          <div class="shearwater-logo"><img src="shearwater-logo.png" alt="Shearwater Research"></div>
-          <div><span class="badge">SUPPORTED</span><h2>Shearwater Computers</h2><ul><li>Perdix</li><li>Perdix AI</li><li>Perdix 2</li><li>Teric</li><li>Petrel 2</li><li>Petrel 3</li><li>NERD 2</li><li>Peregrine</li><li>Tern</li></ul></div>
-        </div>
-        <div id="deviceStatus" class="status-card"><i></i><div><b>No device connected</b><p>Select your Shearwater model and connect.</p></div><label id="syncTimeOption" class="sync-time" hidden><input id="syncDeviceTime" type="checkbox"> Sync computer time from this PC/phone</label><button id="downloadDeviceDives" class="primary compact" hidden>Download dives</button></div>
-      </section>
-
-      <section class="view" id="settings">
-        <div class="page-head"><div><p class="eyebrow">PREFERENCES</p><h1>Settings</h1></div></div>
-        <div class="settings-card">
-          <div class="sync-block"><span><b>Google cloud sync</b><small id="syncStatus">Not signed in</small></span><button id="googleSignIn">Sign in with Google</button></div>
-          <div class="sync-block"><span><b>SeaBirds for Android</b><small>Signed native APK · direct download</small></span><a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds.apk" download>Download APK</a></div>
-          <div class="sync-block"><span><b>SeaBirds for Windows</b><small>Version 0.1.2 · lightweight WebView2 installer</small></span><a class="download" href="https://threecats-lsp.com/seabirds/SeaBirds-Windows-Setup-0.1.2.exe">Download EXE</a></div>
-          <label>Depth units<select id="depthUnit"><option value="m">Metres (m)</option><option value="ft">Feet (ft)</option></select></label>
-          <label>Temperature units<select id="tempUnit"><option value="c">Celsius (°C)</option><option value="f">Fahrenheit (°F)</option></select></label>
-          <label class="check"><input id="demoToggle" type="checkbox"> Load sample dives</label>
-          <button id="clearData" class="danger">Clear local data</button>
-          <div class="other-apps"><b>Three Cats links &amp; apps</b><div class="app-icon-row">
-            <a href="https://threecats-lsp.com/" target="_blank" rel="noopener noreferrer" title="Three Cats LSP · Diver's Toolkit"><img src="app-threecats.png" alt="Three Cats LSP"></a>
-            <a href="https://github.com/Three-Cats-LSP/seabirds" target="_blank" rel="noopener noreferrer" title="SeaBirds on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.603-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg></a>
-            <a href="https://github.com/Three-Cats-LSP/seabirds/releases/latest" target="_blank" rel="noopener noreferrer" title="SeaBirds downloads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-            <a href="https://www.instagram.com/threecats_lsp" target="_blank" rel="noopener noreferrer" title="Follow @threecats_lsp on Instagram"><svg viewBox="0 0 50 50" aria-hidden="true"><defs><linearGradient id="seaBirdsInstagram" x1="0%" x2="100%" y1="100%" y2="0%"><stop offset="0%" stop-color="#feda75"/><stop offset="10%" stop-color="#fa7e1e"/><stop offset="45%" stop-color="#d92e7f"/><stop offset="65%" stop-color="#9b36b7"/><stop offset="100%" stop-color="#515bd4"/></linearGradient></defs><rect x="5" y="5" width="40" height="40" rx="10" fill="none" stroke="url(#seaBirdsInstagram)" stroke-width="2"/><circle cx="25" cy="25" r="8" fill="none" stroke="url(#seaBirdsInstagram)" stroke-width="2"/><circle cx="36" cy="14" r="2" fill="url(#seaBirdsInstagram)"/></svg></a>
-            <a href="https://www.thingiverse.com/Roman_Markovtsev/designs" target="_blank" rel="noopener noreferrer" title="Three Cats designs on Thingiverse"><svg class="thingiverse-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 8 4.5v9L12 20l-8-4.5v-9L12 2Zm0 0v9m8-4.5-8 4.5m-8-4.5 8 4.5m0 9v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></a>
-            <a href="https://threecats-lsp.com/d-planner-plus/" target="_blank" rel="noopener noreferrer" title="LSP D-Planner+"><img src="app-dplanner.png" alt="LSP D-Planner+"></a>
-            <a href="https://threecats-lsp.com/t-viewer/" target="_blank" rel="noopener noreferrer" title="T-Viewer"><img src="app-tviewer.png" alt="T-Viewer"></a>
-            <a href="https://threecats-lsp.com/get-in-water/" target="_blank" rel="noopener noreferrer" title="Get In Water"><img src="app-getinwater.png" alt="Get In Water"></a>
-          </div><a class="donate-link" href="https://paypal.me/ThreeCatsLSP" target="_blank" rel="noopener noreferrer"><b>PayPal</b> Donations</a></div>
-          <p class="legal-notice">Shearwater, the Shearwater logo, and Shearwater product names are trademarks or registered trademarks of Shearwater Research Inc. All other trademarks, logos, product names, and copyrighted materials are the property of their respective owners. SeaBirds is an independent application and is not affiliated with, endorsed by, or sponsored by Shearwater Research Inc.<br>Icons from Flaticon: <a href="https://www.flaticon.com/free-icon/sky_14067736" target="_blank" rel="noopener">SeaBirds app icon</a>, <a href="https://www.flaticon.com/free-icon/scuba-diving_18769626" target="_blank" rel="noopener">Profile icon</a>, <a href="https://www.flaticon.com/free-icon/notes_8521543" target="_blank" rel="noopener">Notes by Muhammad_Usman</a>, <a href="https://www.flaticon.com/free-icon/diving_4268062" target="_blank" rel="noopener">Equipment icon</a>, and <a href="https://www.flaticon.com/free-icon/dive-computer_1923040" target="_blank" rel="noopener">Dive computer information</a>.</p>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <dialog id="diveDialog"><form method="dialog"><button class="close" value="cancel">×</button><p class="eyebrow">NEW ENTRY</p><h2>Add a dive</h2><div class="form-grid"><label>Date<input name="date" type="date" required></label><label>Site<input name="site" required placeholder="Blue Corner"></label><label>Maximum depth (m)<input name="depth" type="number" min="0" step="0.1" required></label><label>Duration (minutes)<input name="duration" type="number" min="1" required></label><label>Water temperature (°C)<input name="temp" type="number" step="0.1"></label><label>Buddy<input name="buddy" placeholder="Dive buddy"></label><label class="wide">Notes<textarea name="notes" rows="3"></textarea></label></div><button class="primary compact" value="default">Save dive</button></form></dialog>
-  <dialog id="profileDialog" class="profile-dialog"><form method="dialog"><button class="close" value="cancel">×</button><p class="eyebrow">DIVE LOG ENTRY</p><h2 id="profileTitle">Dive profile</h2><nav class="dive-tabs" aria-label="Dive details"><button type="button" data-dive-tab="profile" class="active" aria-label="Profile" data-tooltip="Profile"><img src="tab-profile.png" alt=""><span class="sr-only">Profile</span></button><button type="button" data-dive-tab="notes" aria-label="Notes" data-tooltip="Notes"><img src="tab-notes.png" alt=""><span class="sr-only">Notes</span></button><button type="button" data-dive-tab="equipment" aria-label="Equipment" data-tooltip="Equipment"><img src="tab-equipment.png" alt=""><span class="sr-only">Equipment</span></button><button type="button" data-dive-tab="information" aria-label="Information and dive computer" data-tooltip="Information"><img src="tab-information.png" alt=""><span class="sr-only">Information and dive computer</span></button></nav><section class="dive-panel active" data-dive-panel="profile"><div id="telemetryNotice" class="telemetry-notice" hidden><b>Full telemetry not stored for this dive yet.</b> Reconnect the Perdix and choose Download dives once more. SeaBirds will update this dive without creating a duplicate.</div><div id="profileStats" class="profile-stats"></div><div id="seaBirdsProfileCanvas-wrap" class="profile-wrap"><canvas id="seaBirdsProfileCanvas" width="900" height="420"></canvas><div id="seaBirdsProfileCanvas-overlay" class="profile-overlay"></div><div id="seaBirdsProfileCanvas-tooltip" class="profile-tooltip"></div><div id="seaBirdsProfileCanvas-crosshair-v" class="cross-v"></div><div id="seaBirdsProfileCanvas-crosshair-h" class="cross-h"></div></div><canvas id="temperatureProfileCanvas" class="temperature-profile" width="900" height="100"></canvas><small class="graph-hint">Hover for depth, temperature, NDL/TTS, gas and pressure · scroll to zoom</small></section><section class="dive-panel" data-dive-panel="notes"><div class="edit-grid"><label>Dive title<input id="editDiveTitle" placeholder="Maldives, Dive 1"></label><label>Dive spot<input id="editDiveSpot" placeholder="Site or reef"></label><label>Buddy<input id="editDiveBuddy" placeholder="Buddy name"></label><label>Tags<input id="editDiveTags" placeholder="training, wreck, night"></label><label class="wide">Notes<textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea></label></div></section><section class="dive-panel" data-dive-panel="equipment"><p class="panel-help">Select equipment used on this dive. This uses the Get In Water master-gear categories.</p><div id="diveEquipment" class="equipment-grid"></div></section><section class="dive-panel" data-dive-panel="information"><div id="diveInformation" class="information-grid"></div></section><footer class="dive-actions"><button type="button" id="deleteDive" class="danger">Delete dive</button><button type="button" id="saveDiveDetails" class="primary">Save changes</button></footer></form></dialog>
-  <div id="toast" role="status"></div>
-  <script src="vendor/firebase/firebase-app-compat.js"></script><script src="vendor/firebase/firebase-auth-compat.js"></script><script src="vendor/firebase/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script><script src="plot-core.js?v=62"></script><script src="sync.js?v=62"></script><script src="shearwater.js?v=62"></script><script src="app.js?v=62"></script>
-</body>
+        <button class="primary compact" value="default">Save dive</button>
+      </form>
+    </dialog>
+    <dialog id="profileDialog" class="profile-dialog">
+      <form method="dialog">
+        <button class="close" value="cancel">×</button>
+        <p class="eyebrow">DIVE LOG ENTRY</p>
+        <h2 id="profileTitle">Dive profile</h2>
+        <nav class="dive-tabs" aria-label="Dive details">
+          <button type="button" data-dive-tab="profile" class="active" aria-label="Profile" data-tooltip="Profile">
+            <img src="tab-profile.png" alt="" />
+            <span class="sr-only">Profile</span>
+          </button>
+          <button type="button" data-dive-tab="notes" aria-label="Notes" data-tooltip="Notes">
+            <img src="tab-notes.png" alt="" />
+            <span class="sr-only">Notes</span>
+          </button>
+          <button type="button" data-dive-tab="equipment" aria-label="Equipment" data-tooltip="Equipment">
+            <img src="tab-equipment.png" alt="" />
+            <span class="sr-only">Equipment</span>
+          </button>
+          <button type="button" data-dive-tab="information" aria-label="Information and dive computer" data-tooltip="Information">
+            <img src="tab-information.png" alt="" />
+            <span class="sr-only">Information and dive computer</span>
+          </button>
+        </nav>
+        <section class="dive-panel active" data-dive-panel="profile">
+          <div id="telemetryNotice" class="telemetry-notice" hidden>
+            <b>Full telemetry not stored for this dive yet.</b>
+            Reconnect the Perdix and choose Download dives once more. SeaBirds will update this dive without creating a duplicate.
+          </div>
+          <div id="profileStats" class="profile-stats"></div>
+          <div id="seaBirdsProfileCanvas-wrap" class="profile-wrap">
+            <canvas id="seaBirdsProfileCanvas" width="900" height="420"></canvas>
+            <div id="seaBirdsProfileCanvas-overlay" class="profile-overlay"></div>
+            <div id="seaBirdsProfileCanvas-tooltip" class="profile-tooltip"></div>
+            <div id="seaBirdsProfileCanvas-crosshair-v" class="cross-v"></div>
+            <div id="seaBirdsProfileCanvas-crosshair-h" class="cross-h"></div>
+          </div>
+          <canvas id="temperatureProfileCanvas" class="temperature-profile" width="900" height="100"></canvas>
+          <small class="graph-hint">Hover for depth, temperature, NDL/TTS, gas and pressure · scroll to zoom</small>
+        </section>
+        <section class="dive-panel" data-dive-panel="notes">
+          <div class="edit-grid">
+            <label>
+              Dive title
+              <input id="editDiveTitle" placeholder="Maldives, Dive 1" />
+            </label>
+            <label>
+              Dive spot
+              <input id="editDiveSpot" placeholder="Site or reef" />
+            </label>
+            <label>
+              Buddy
+              <input id="editDiveBuddy" placeholder="Buddy name" />
+            </label>
+            <label>
+              Tags
+              <input id="editDiveTags" placeholder="training, wreck, night" />
+            </label>
+            <label class="wide">
+              Notes
+              <textarea id="editDiveNotes" rows="8" placeholder="Conditions, sightings, observations…"></textarea>
+            </label>
+          </div>
+        </section>
+        <section class="dive-panel" data-dive-panel="equipment">
+          <div class="equipment-heading">
+            <p class="panel-help">List of equipment used on this dive</p>
+            <button type="button" id="addGearCategory">+ Add card</button>
+          </div>
+          <div id="diveEquipment" class="equipment-grid"></div>
+        </section>
+        <section class="dive-panel" data-dive-panel="information">
+          <div id="diveInformation" class="information-grid"></div>
+        </section>
+        <footer class="dive-actions">
+          <button type="button" id="deleteDive" class="danger">Delete dive</button>
+          <button type="button" id="saveDiveDetails" class="primary">Save changes</button>
+        </footer>
+      </form>
+    </dialog>
+    <div id="toast" role="status"></div>
+    <script src="vendor/firebase/firebase-app-compat.js"></script>
+    <script src="vendor/firebase/firebase-auth-compat.js"></script>
+    <script src="vendor/firebase/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="plot-core.js?v=64"></script>
+    <script src="sync.js?v=64"></script>
+    <script src="shearwater.js?v=64"></script>
+    <script src="app.js?v=64"></script>
+  </body>
 </html>
