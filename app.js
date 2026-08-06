@@ -16,11 +16,11 @@ const gearCatalog={
  'Camera & Photo':['Camera housing','Camera body','Strobes','Video lights']
 };
 const defaultGearLibrary=()=>JSON.parse(JSON.stringify(gearCatalog));
-let state=load();
-let activeDiveId=null;
 const defaultSettings=()=>({depth:'m',temp:'c',volume:'l',weight:'kg',pressure:'bar',dateFormat:'ymd',timeFormat:'12'});
 function normalizeState(value={}){return Object.assign({dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),revision:0,updatedAt:''},value,{settings:Object.assign(defaultSettings(),value.settings||{})})}
 function load(){try{return normalizeState(JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{return normalizeState()}}
+let state=load();
+let activeDiveId=null;
 function storeState(sync=true){state.updatedAt=new Date().toISOString();state.revision=(state.revision||0)+1;localStorage.setItem(KEY,JSON.stringify(state));if(sync&&window.SeaBirdsSync)window.SeaBirdsSync.queue(state)}
 function persist(sync=true){storeState(sync);render()}
 function esc(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML}
