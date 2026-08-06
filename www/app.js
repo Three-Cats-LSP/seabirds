@@ -31,6 +31,7 @@ function render(){
  document.getElementById('diveCount').textContent=dives.length;document.getElementById('statDives').textContent=dives.length;
  const mins=dives.reduce((n,d)=>n+(+d.duration||0),0);document.getElementById('statTime').innerHTML=(mins/60).toFixed(mins>=600?0:1)+'<sup>h</sup>';
  const md=Math.max(0,...dives.map(d=>+d.depth||0));document.getElementById('statDepth').textContent=dives.length?converted(md).toFixed(1)+' '+state.settings.depth:'—';
+ const longest=Math.max(0,...dives.map(d=>+d.duration||0));document.getElementById('statLongest').textContent=dives.length?Math.round(longest)+' min':'—';
  rows(document.getElementById('recentDives'),dives.slice(0,4));filterRows();
  document.getElementById('depthUnit').value=state.settings.depth;document.getElementById('tempUnit').value=state.settings.temp;
 }
