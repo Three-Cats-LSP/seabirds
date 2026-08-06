@@ -290,7 +290,7 @@
     const durationSeconds = be24(raw, closing0 + 6);
     const started = new Date(be32(raw, opening0 + 12) * 1000);
     const gases = [...new Set(profile.map(p => p.gas).filter(Boolean))];
-    return { date: started.toISOString().slice(0, 10), site: `Perdix dive ${fallbackNumber}`, location: '', depth: maxDepth, avgDepth: sampleCount ? depthSum / sampleCount : 0, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, gases, gfLow: raw[opening0 + 4], gfHigh: raw[opening0 + 5], logVersion, notes: '', profile };
+    return { date: started.toISOString().slice(0, 10), time: started.toISOString().slice(11, 16), site: `Perdix dive ${fallbackNumber}`, location: '', depth: maxDepth, avgDepth: sampleCount ? depthSum / sampleCount : 0, duration: Math.max(1, Math.round(durationSeconds / 60)), temp: lowestTemp, gases, gfLow: raw[opening0 + 4], gfHigh: raw[opening0 + 5], logVersion, notes: '', profile };
   }
   async function connectAndInspect(progress, transport = 'ble') {
     progress(transport === 'serial' ? 'Connecting with Bluetooth Classic...' : 'Connecting to Bluetooth…');
