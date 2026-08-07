@@ -11,13 +11,14 @@ test("starts all modules and navigates", async ({ page }) => {
     [
       "diveList",
       "diveEditor",
+      "diveExport",
       "equipment",
       "devices",
       "settings",
       "importExport",
     ].map((name) => Boolean(window.SeaBirds.Core.feature(name))),
   );
-  expect(modules).toEqual([true, true, true, true, true, true]);
+  expect(modules).toEqual([true, true, true, true, true, true, true]);
   await page.locator('.nav[data-view="settings"]').click();
   await expect(page.locator("#settings")).toHaveClass(/active/);
   await expect(page.locator(".settings-collapse")).not.toHaveAttribute("open", "");
@@ -95,6 +96,25 @@ test("allows a user gas mix to override automatic gas detection", async ({
   ).toBe(true);
   await page.locator("#allDives .dive-row").first().click();
   await expect(page.locator("#profileStats")).toContainText("EAN32");
+});
+test("exports one dive as text, PDF and UDDF", async ({ page }) => {
+  await page.locator('.nav[data-view="settings"]').click();
+  await page.getByLabel("Load sample dives").check();
+  await page.locator('.nav[data-view="dives"]').click();
+  await page.locator("#allDives .dive-row").first().click();
+  const formats = [
+    ["Save as Text", ".txt"],
+    ["Save as PDF", ".pdf"],
+    ["Save as UDDF", ".uddf"],
+  ];
+  for (const [label, extension] of formats) {
+    await page.getByRole("button", { name: "Export dive" }).click();
+    await expect(page.locator("#diveExportDialog")).toBeVisible();
+    const pending = page.waitForEvent("download");
+    await page.getByRole("button", { name: new RegExp(label) }).click();
+    const download = await pending;
+    expect(download.suggestedFilename()).toContain(extension);
+  }
 });
 test("creates, imports, backs up, restores and deletes dives", async ({
   page,

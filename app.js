@@ -2,7 +2,7 @@
 'use strict';
 const Core=window.SeaBirds.Core;
 await Core.init();
-['equipment','diveEditor','diveList','devices','settings','importExport'].forEach(name=>Core.feature(name)?.init());
+['equipment','diveEditor','diveExport','diveList','devices','settings','importExport'].forEach(name=>Core.feature(name)?.init());
 document.documentElement.dataset.seabirdsReady='true';
 document.addEventListener('click',event=>{const nav=event.target.closest('[data-view]');if(nav)Core.navigate(nav.dataset.view);const target=event.target.closest('[data-goto]');if(target)Core.navigate(target.dataset.goto);if(event.target.closest('.menu'))document.querySelector('.sidebar')?.classList.toggle('open')});
 Core.renderAll();

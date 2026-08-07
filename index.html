@@ -354,8 +354,10 @@
               <a href="https://www.flaticon.com/free-icon/notes_8521543" target="_blank" rel="noopener">Notes by Muhammad_Usman</a>
               ,
               <a href="https://www.flaticon.com/free-icon/diving_4268062" target="_blank" rel="noopener">Equipment icon</a>
-              , and
+              ,
               <a href="https://www.flaticon.com/free-icon/dive-computer_1923040" target="_blank" rel="noopener">Dive computer information</a>
+              , and
+              <a href="https://www.flaticon.com/free-icon/save_4371187" target="_blank" rel="noopener">Export icon</a>
               .
             </p>
           </div>
@@ -463,6 +465,10 @@
             <img src="tab-information.png" alt="" />
             <span class="sr-only">Information and dive computer</span>
           </button>
+          <button type="button" id="openDiveExport" class="dive-export-trigger" aria-label="Export dive" data-tooltip="Export dive">
+            <img src="tab-export.png" alt="" />
+            <span class="sr-only">Export dive</span>
+          </button>
         </nav>
         <section class="dive-panel active" data-dive-panel="profile">
           <div id="telemetryNotice" class="telemetry-notice" hidden>
@@ -513,6 +519,18 @@
         </footer>
       </form>
     </dialog>
+    <dialog id="diveExportDialog" class="choice-dialog dive-export-dialog">
+      <form method="dialog">
+        <button class="close" value="cancel" aria-label="Close">&times;</button>
+        <p class="eyebrow">DIVE LOG ENTRY</p>
+        <h2>Export dive</h2>
+        <div class="dive-export-options">
+          <button type="button" data-dive-export="text"><b>Save as Text</b><small>Readable dive details and profile samples</small></button>
+          <button type="button" data-dive-export="pdf"><b>Save as PDF</b><small>Formatted dive report with profile graph</small></button>
+          <button type="button" data-dive-export="uddf"><b>Save as UDDF</b><small>Portable XML dive-log exchange format</small></button>
+        </div>
+      </form>
+    </dialog>
     <dialog id="downloadDivesDialog" class="download-dives-dialog">
       <form method="dialog">
         <button class="close" value="cancel" aria-label="Close">×</button>
@@ -547,6 +565,7 @@
     <script src="vendor/firebase/firebase-auth-compat.js"></script>
     <script src="vendor/firebase/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="vendor/jspdf.umd.min.js"></script>
     <script src="app-version.js?v=82"></script>
     <script src="plot-core.js?v=82"></script>
     <script src="storage.js?v=82"></script>
@@ -555,6 +574,11 @@
     <script src="app-core.js?v=82"></script>
     <script src="dive-list.js?v=82"></script>
     <script src="dive-editor.js?v=90"></script>
+    <script src="dive-export-utils.js?v=92"></script>
+    <script src="dive-export-text.js?v=92"></script>
+    <script src="dive-export-pdf.js?v=92"></script>
+    <script src="dive-export-uddf.js?v=92"></script>
+    <script src="dive-export-ui.js?v=92"></script>
     <script src="equipment.js?v=82"></script>
     <script src="devices-ui.js?v=82"></script>
     <script src="settings-ui.js?v=84"></script>

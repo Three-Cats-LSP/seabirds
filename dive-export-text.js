@@ -1,0 +1,8 @@
+(function(){
+'use strict';
+const NS=window.SeaBirds=window.SeaBirds||{};
+function value(item,fallback='—'){return item===null||item===undefined||item===''?fallback:item}
+function build(dive){const p=NS.DiveExportUtils.profile(dive),equipment=dive.equipment||[],lines=['SEABIRDS DIVE LOG','=================',`Dive #: ${value(dive.diveNumber)}`,`Title: ${value(dive.site)}`,`Date: ${value(dive.date)}`,`Start time: ${value(dive.time)}`,`End time: ${value(dive.endTime)}`,`Dive spot: ${value(dive.location)}`,`Buddy: ${value(dive.buddy)}`,`Mode: ${value(dive.diveMode)}`,`Style: ${value(dive.diveStyle)}`,`Gas used: ${value(dive.gasUsed)}`,`Maximum depth: ${value(dive.depth)} m`,`Duration: ${value(dive.duration)} min`,`Water temperature: ${dive.temp==null?'—':dive.temp+' °C'}`,`Tags: ${(dive.tags||[]).join(', ')||'—'}`,'',`Notes: ${value(dive.notes)}`,'','EQUIPMENT','---------',...(equipment.length?equipment:['—']),'','DIVE COMPUTER','-------------',`Model: ${value(dive.computer)}`,`Serial: ${value(dive.computerSerial)}`,`Firmware: ${value(dive.computerFirmware)}`,`Gradient factors: ${dive.gfLow==null?'—':dive.gfLow+'/'+dive.gfHigh}`];if(p.length){lines.push('','PROFILE','-------','Time (min)\tDepth (m)\tTemp (°C)\tNDL (min)\tTTS (min)\tGas');p.forEach(point=>lines.push([point.t.toFixed(1),point.depth.toFixed(1),value(point.temperature??point.temp,''),value(point.ndl,''),value(point.tts,''),value(point.gas,'')].join('\t')))}return lines.join('\r\n')+'\r\n'}
+async function save(dive){const text=build(dive);await NS.DiveExportUtils.saveBlob(new Blob([text],{type:'text/plain;charset=utf-8'}),NS.DiveExportUtils.safeName(dive,'txt'))}
+NS.DiveTextExport={build,save};
+})();
