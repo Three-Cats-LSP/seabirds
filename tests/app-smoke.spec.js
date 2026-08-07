@@ -101,6 +101,25 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await page.locator("#search").click();
   await expect(page.locator("#monthFilter")).not.toHaveAttribute("open", "");
 });
+test("shows readable placeholders for missing dive times", async ({ page }) => {
+  await page.evaluate(() =>
+    window.SeaBirds.Core.commit((state) => {
+      state.dives = [
+        {
+          id: "missing-times",
+          site: "Untimed dive",
+          date: "2026-08-01",
+          duration: 42,
+          depth: 18,
+          temp: 26,
+        },
+      ];
+    }),
+  );
+  await expect(page.locator("#allDives .dive-row")).toContainText(
+    "Start --:-- – End --:--",
+  );
+});
 test("draft edits persist, remain searchable and filter by mode and style", async ({
   page,
 }) => {
