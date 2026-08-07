@@ -1011,11 +1011,11 @@ function attachDiveProfileInteraction(canvasId) {
     const phaseLabel = { descent:'Descent', bottom:'Bottom', ascent:'Ascent', deco:'Deco Stop', safety:'Safety Stop', surface:'Surface' };
     let html = `<div style="color:var(--accent);font-size:10px;letter-spacing:1px;margin-bottom:4px;">${phaseLabel[phase] || phase || ''}</div>`;
     html += `<div>⏱ ${Math.round(t * 10) / 10} min</div>`;
-    html += `<div>⬇ ${dDisp} ${du}</div>`;
+    html += `<div class="tooltip-depth">⬇ ${dDisp} ${du}</div>`;
     const telemetryTemperature = telemetry?.temperature ?? telemetry?.temp;
     if (telemetryTemperature != null) {
       const temperature = units === 'imperial' ? telemetryTemperature * 9 / 5 + 32 : telemetryTemperature;
-      html += `<div>🌡 ${temperature.toFixed(1)}°${units === 'imperial' ? 'F' : 'C'}</div>`;
+      html += `<div class="tooltip-temperature">🌡 ${temperature.toFixed(1)}°${units === 'imperial' ? 'F' : 'C'}</div>`;
     }
     if (telemetry?.verticalSpeed != null) {
       const speed = units === 'imperial' ? telemetry.verticalSpeed * 3.28084 : telemetry.verticalSpeed;
@@ -1027,8 +1027,10 @@ function attachDiveProfileInteraction(canvasId) {
       const meanDepth = units === 'imperial' ? telemetry.meanDepth * 3.28084 : telemetry.meanDepth;
       html += `<div>Mean Depth ${meanDepth.toFixed(1)} ${du}</div>`;
     }
-    if (telemetry?.ndl != null) html += `<div>NDL ${telemetry.ndl} min</div>`;
+    if (telemetry?.ndl != null) html += `<div class="tooltip-ndl">NDL ${telemetry.ndl} min</div>`;
     if (telemetry?.tts != null) html += `<div>TTS ${telemetry.tts} min</div>`;
+    const gf99 = telemetry?.gf99 ?? telemetry?.gf ?? telemetry?.gradientFactor;
+    if (gf99 != null && Number.isFinite(+gf99)) html += `<div class="tooltip-gf99">GF99 ${Math.round(+gf99)}%</div>`;
     if (telemetry?.stopDepth > 0) {
       const stopDepth = units === 'imperial' ? telemetry.stopDepth * 3.28084 : telemetry.stopDepth;
       html += `<div style="color:var(--red)">Stop ${stopDepth.toFixed(0)} ${du} · ${telemetry.stopTime} min</div>`;
