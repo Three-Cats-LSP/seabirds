@@ -530,6 +530,55 @@
     height: 28px;
   }
 }
+
+/* Eight welcome statistics retain the original compact banner footprint. */
+.stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+.stats article {
+  min-width: 0;
+  padding: 8px 26px;
+}
+.stats article:nth-child(4n) {
+  border-right: 0;
+}
+.stats article:nth-child(-n + 4) {
+  border-bottom: 1px solid var(--line);
+}
+.stats strong {
+  font-size: 25px;
+}
+.stats .stat-computers strong {
+  overflow: hidden;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+@media (max-width: 850px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .stats article:nth-child(2n) {
+    border-right: 0;
+  }
+  .stats article:nth-child(-n + 6) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+@media (max-width: 600px) {
+  .stats article {
+    padding: 9px 12px;
+  }
+  .stats strong {
+    font-size: 21px;
+  }
+  .stats .stat-computers strong {
+    font-size: 12px;
+  }
+}
 .sync-time {
   display: flex;
   align-items: center;
@@ -2574,5 +2623,54 @@ body {
   .notes-edit-grid > .notes-tags,
   .notes-edit-grid > .wide {
     grid-column: 1/-1;
+  }
+}
+
+/* Final overrides for the two-row welcome statistics. */
+.stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+.stats article {
+  min-width: 0;
+  padding: 8px 26px;
+}
+.stats article:nth-child(4n) {
+  border-right: 0;
+}
+.stats article:nth-child(-n + 4) {
+  border-bottom: 1px solid var(--line);
+}
+.stats strong {
+  font-size: 25px;
+}
+.stats .stat-computers strong {
+  overflow: hidden;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+@media (max-width: 850px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .stats article:nth-child(2n) {
+    border-right: 0;
+  }
+  .stats article:nth-child(-n + 6) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+@media (max-width: 600px) {
+  .stats article {
+    padding: 9px 12px;
+  }
+  .stats strong {
+    font-size: 21px;
+  }
+  .stats .stat-computers strong {
+    font-size: 12px;
   }
 }

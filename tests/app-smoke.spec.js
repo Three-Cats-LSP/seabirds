@@ -11,6 +11,11 @@ test("starts all modules and navigates", async ({ page }) => {
   await expect(page.locator("#dashboard")).toHaveCount(0);
   await expect(page.locator("#dives")).toHaveClass(/active/);
   await expect(page.locator("#dives .stats")).toBeVisible();
+  await expect(page.locator("#dives .stats article")).toHaveCount(8);
+  await expect(page.locator("#statComputers")).toBeVisible();
+  await expect(page.locator("#statMode")).toBeVisible();
+  await expect(page.locator("#statStyle")).toBeVisible();
+  await expect(page.locator("#statType")).toBeVisible();
   const modules = await page.evaluate(() =>
     [
       "diveList",
@@ -171,6 +176,19 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.getByRole("searchbox").fill("");
   await page.locator(".logbook-filter-collapse summary").click();
+  await expect(page.locator("#styleFilters label")).toHaveText([
+    "All",
+    "Single Tank",
+    "Double tanks",
+    "Sidemount",
+    "N/A",
+  ]);
+  await expect(page.locator("#typeFilters label")).toHaveText([
+    "All",
+    "Shore/Beach",
+    "Boat",
+    "N/A",
+  ]);
   await page.locator("#modeFilters").getByLabel("CC/BO").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.locator("#styleFilters").getByLabel("Sidemount").check();

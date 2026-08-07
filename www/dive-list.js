@@ -40,9 +40,19 @@
       ? "CC/BO"
       : "Air");
   const style = (d) => d.diveStyle || "N/A";
-  const diveType = (d) => d.diveType || "";
+  const diveType = (d) => d.diveType || "N/A";
   const MODE_OPTIONS = ["Air", "Nitrox", "3 GasNx", "OC Tec", "Gauge", "CC/BO"];
-  const STYLE_OPTIONS = ["N/A", "Single Tank", "Double tanks", "Sidemount"];
+  const STYLE_OPTIONS = ["Single Tank", "Double tanks", "Sidemount", "N/A"];
+  function mostUsed(values, fallback = "—") {
+    const counts = new Map();
+    values.filter(Boolean).forEach((value) =>
+      counts.set(value, (counts.get(value) || 0) + 1),
+    );
+    return [...counts.entries()].sort(
+      ([left, leftCount], [right, rightCount]) =>
+        rightCount - leftCount || left.localeCompare(right),
+    )[0]?.[0] || fallback;
+  }
   const stamp = (d) => `${d.date || ""}T${d.time || "00:00"}`;
   const year = (d) => String(d.date || "").slice(0, 4);
   const month = (d) => String(d.date || "").slice(5, 7);
@@ -165,7 +175,7 @@
       "typeFilters",
       "Type",
       "type-filter",
-      ["Shore/Beach", "Boat"],
+      ["Shore/Beach", "Boat", "N/A"],
       typeFilters,
     );
   }
@@ -231,6 +241,22 @@
         ? `${hours}h ${remainder}min`
         : `${remainder}min`
       : "—";
+    const computers = [
+      ...new Set(dives.map(source).filter((computer) => computer !== "Manual")),
+    ];
+    document.getElementById("statComputers").textContent = computers.length
+      ? computers.join(" · ")
+      : "—";
+    document.getElementById("statMode").textContent = mostUsed(
+      dives.map(mode),
+    );
+    document.getElementById("statStyle").textContent = mostUsed(
+      dives.map(style),
+    );
+    document.getElementById("statType").textContent = mostUsed(
+      dives.map(diveType),
+      "N/A",
+    );
     renderFilters();
     filterRows();
   }
