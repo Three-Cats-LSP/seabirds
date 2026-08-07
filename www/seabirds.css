@@ -2480,3 +2480,99 @@ body {
     display: none;
   }
 }
+
+/* Dive-entry header and Notes field order. */
+.profile-dialog form {
+  padding-top: 28px;
+}
+.dive-entry-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.dive-entry-header #profileTitle {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.dive-entry-header #deleteDive {
+  position: static;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+#profileTitle .dive-entry-primary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+#profileTitle .dive-entry-number {
+  flex: 0 0 auto;
+  color: var(--blue);
+  font-size: 0.6em;
+}
+#profileTitle .dive-entry-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.notes-dive-number {
+  grid-column: span 2;
+  max-width: 150px;
+}
+.notes-dive-title {
+  grid-column: span 10;
+}
+.notes-dive-date,
+.notes-start-time,
+.notes-end-time,
+.notes-dive-type {
+  grid-column: span 3;
+}
+.notes-location,
+.notes-dive-spot,
+.notes-buddy {
+  grid-column: span 4;
+}
+.notes-dive-mode,
+.notes-dive-style,
+.notes-gas-used,
+.notes-salinity {
+  grid-column: span 3;
+}
+@media (max-width: 760px) {
+  .dive-entry-header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .dive-entry-header #deleteDive {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  #profileTitle .dive-entry-primary {
+    gap: 7px;
+  }
+  #profileTitle .dive-entry-number {
+    font-size: 0.56em;
+  }
+  .notes-edit-grid > .notes-dive-number,
+  .notes-edit-grid > .notes-dive-title,
+  .notes-edit-grid > .notes-start-time,
+  .notes-edit-grid > .notes-end-time,
+  .notes-edit-grid > .notes-dive-mode,
+  .notes-edit-grid > .notes-dive-style,
+  .notes-edit-grid > .notes-gas-used,
+  .notes-edit-grid > .notes-salinity {
+    grid-column: span 1;
+  }
+  .notes-edit-grid > .notes-dive-date,
+  .notes-edit-grid > .notes-dive-type,
+  .notes-edit-grid > .notes-location,
+  .notes-edit-grid > .notes-dive-spot,
+  .notes-edit-grid > .notes-buddy,
+  .notes-edit-grid > .notes-tags,
+  .notes-edit-grid > .wide {
+    grid-column: 1/-1;
+  }
+}

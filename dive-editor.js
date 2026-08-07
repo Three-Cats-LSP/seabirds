@@ -33,7 +33,7 @@
     const date = Core.formatDate(d.date).ymd || d.date || "—",
       number = d.diveNumber ?? "—";
     document.getElementById("profileTitle").innerHTML =
-      `<span class="dive-entry-title">${Core.esc(d.site || "Untitled dive")}</span><span class="dive-entry-meta">#${Core.esc(number)}, ${Core.esc(date)}</span>`;
+      `<span class="dive-entry-primary"><span class="dive-entry-number">#${Core.esc(number)}</span><span class="dive-entry-title">${Core.esc(d.site || "Untitled dive")}</span></span><span class="dive-entry-meta">${Core.esc(date)}</span>`;
   }
   function fill(d) {
     const state = Core.getState(),

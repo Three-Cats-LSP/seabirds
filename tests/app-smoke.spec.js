@@ -124,7 +124,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("Location").fill("Okinawa");
   await page.getByRole("dialog").getByLabel("Site").fill("Blue Cave");
   await page.getByRole("dialog").getByLabel("Type").selectOption("Boat");
-  await page.getByLabel("Dive mode").selectOption("CC/BO");
+  await page.getByLabel("DC mode").selectOption("CC/BO");
   await page.getByLabel("Dive style").selectOption("Sidemount");
   await page.getByLabel("Salinity").selectOption("Fresh");
   await page.getByRole("button", { name: "Save changes" }).click();

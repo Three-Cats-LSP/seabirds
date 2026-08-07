@@ -683,7 +683,12 @@
       <form method="dialog">
         <button class="close" value="cancel">×</button>
         <p class="eyebrow">DIVE LOG ENTRY</p>
-        <h2 id="profileTitle">Dive profile</h2>
+        <div class="dive-entry-header">
+          <h2 id="profileTitle">Dive profile</h2>
+          <button type="button" id="deleteDive" class="danger">
+            Delete dive
+          </button>
+        </div>
         <nav class="dive-tabs" aria-label="Dive details">
           <button
             type="button"
@@ -794,6 +799,13 @@
             <label class="notes-end-time"
               >End time<input id="editDiveEndTime" type="time" step="60"
             /></label>
+            <label class="notes-dive-type"
+              >Type<select id="editDiveType">
+                <option value="">Not specified</option>
+                <option value="Shore/Beach">Shore/Beach</option>
+                <option value="Boat">Boat</option>
+              </select></label
+            >
             <label class="notes-location"
               >Location<input
                 id="editDiveLocation"
@@ -807,15 +819,8 @@
             <label class="notes-buddy"
               >Buddy<input id="editDiveBuddy" placeholder="Buddy name"
             /></label>
-            <label class="notes-dive-type"
-              >Type<select id="editDiveType">
-                <option value="">Not specified</option>
-                <option value="Shore/Beach">Shore/Beach</option>
-                <option value="Boat">Boat</option>
-              </select></label
-            >
             <label class="notes-dive-mode"
-              >Dive mode<select id="editDiveMode">
+              >DC mode<select id="editDiveMode">
                 <option value="Air">Air</option>
                 <option value="Nitrox">Nitrox</option>
                 <option value="3 GasNx">3 GasNx</option>
@@ -875,9 +880,6 @@
           <div id="diveInformation" class="information-grid"></div>
         </section>
         <footer class="dive-actions">
-          <button type="button" id="deleteDive" class="danger">
-            Delete dive
-          </button>
           <button type="button" id="saveDiveDetails" class="primary">
             Save changes
           </button>
