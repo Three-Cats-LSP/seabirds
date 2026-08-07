@@ -495,6 +495,46 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
   }
 
   // ── Deco ceiling line overlay ──
+  // Telemetry overlays use independent scales and therefore do not affect the
+  // depth profile. NDL comes directly from the dive computer. GF99 is drawn
+  // only when a profile contains calculated gradient-factor samples.
+  function drawTelemetryOverlay(fields, color, label, maximum) {
+    const values = pathWps.map(point => ({
+      t: +point.t,
+      value: fields.map(field => +point[field]).find(Number.isFinite),
+    })).filter(point => Number.isFinite(point.t));
+    if (!values.some(point => Number.isFinite(point.value))) return;
+    const finite = values.filter(point => Number.isFinite(point.value));
+    const maxValue = Math.max(maximum || 0, ...finite.map(point => point.value), 1);
+    const toMetricY = value => PAD.top + ((maxValue - value) / maxValue) * PH;
+    ctx.save();
+    clipToPlot();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isMobile ? 1.4 : 1.8;
+    ctx.globalAlpha = 0.92;
+    let started = false;
+    values.forEach(point => {
+      if (point.t < tMin || point.t > tMax || !Number.isFinite(point.value)) {
+        if (started) ctx.stroke();
+        started = false;
+        return;
+      }
+      const x = toX(point.t), y = toMetricY(point.value);
+      if (!started) { ctx.beginPath(); ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    });
+    if (started) ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = `700 ${isMobile ? 6 : 8}px "JetBrains Mono",monospace`;
+    ctx.textAlign = 'right';
+    ctx.fillText(label, PAD.left + PW - 5, PAD.top + (label === 'NDL' ? 22 : 34));
+    ctx.restore();
+  }
+  drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
+  drawTelemetryOverlay(['gf99', 'gf', 'gradientFactor'], '#df8d2e', 'GF99', 100);
+
   if (!simple) {
   const ceilWps = opts?.ceilingWps || (canvasId === 'decoProfileCanvas' ? window._decoCeilingWps
                : canvasId === 'plannerProfileCanvas' ? window._plannerCeilingWps : null);
