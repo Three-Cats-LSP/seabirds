@@ -48,7 +48,8 @@
     y += 10;
     row("Date", dive.date);
     row("Time", `${clean(dive.time)} – ${clean(dive.endTime)}`);
-    row("Dive spot", dive.location);
+    row("Location", dive.location);
+    row("Site", dive.diveSite);
     row("Buddy", dive.buddy);
     row(
       "Mode / style",

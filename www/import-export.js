@@ -167,6 +167,7 @@
           text(node, "name") ||
           "Imported dive",
         location: text(seaBirds, "location"),
+        diveSite: text(seaBirds, "divesite"),
         buddy: text(seaBirds, "buddy"),
         depth,
         duration,
@@ -182,6 +183,7 @@
         diveStyle: text(seaBirds, "style"),
         gasUsed: text(seaBirds, "gas"),
         salinity: text(seaBirds, "salinity"),
+        endTime: text(seaBirds, "endtime"),
         tags: text(seaBirds, "tags")
           .split(",")
           .map((tag) => tag.trim())

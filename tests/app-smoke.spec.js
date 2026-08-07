@@ -161,6 +161,68 @@ test("allows a user gas mix to override automatic gas detection", async ({
   await page.locator("#allDives .dive-row").first().click();
   await expect(page.locator("#profileStats")).toContainText("EAN32");
 });
+
+test("exports every current dive-entry field", async ({ page }) => {
+  await page.goto("/");
+  const exported = await page.evaluate(() => {
+    const dive = {
+      id: "export-fixture",
+      diveNumber: 501,
+      site: "Okinawa Blue Cave",
+      location: "Okinawa, Japan",
+      diveSite: "Blue Cave",
+      date: "2026-08-07",
+      time: "09:15",
+      endTime: "10:02",
+      buddy: "Marika",
+      diveMode: "3 GasNx",
+      diveStyle: "Double tanks",
+      gasUsed: "EAN32 · EAN50 · O₂",
+      salinity: "EN13319",
+      tags: ["training", "wreck"],
+      notes: "Export verification notes",
+      depth: 31.2,
+      duration: 47,
+      temp: 26.4,
+      equipment: ["Regulator"],
+      profile: [{ t: 1, depth: 8, temperature: 26 }],
+    };
+    return {
+      text: window.SeaBirds.DiveTextExport.build(dive),
+      uddf: window.SeaBirds.DiveUddfExport.build(dive),
+    };
+  });
+  for (const value of [
+    "501",
+    "Okinawa Blue Cave",
+    "Okinawa, Japan",
+    "Blue Cave",
+    "09:15",
+    "10:02",
+    "Marika",
+    "3 GasNx",
+    "Double tanks",
+    "EAN32",
+    "EN13319",
+    "training, wreck",
+    "Export verification notes",
+  ])
+    expect(exported.text).toContain(value);
+  for (const value of [
+    "<divenumber>501</divenumber>",
+    "<title>Okinawa Blue Cave</title>",
+    "<location>Okinawa, Japan</location>",
+    "<divesite>Blue Cave</divesite>",
+    "<endtime>10:02</endtime>",
+    "<divemode>3 GasNx</divemode>",
+    "<style>Double tanks</style>",
+    "<gas>EAN32",
+    "<salinity>EN13319</salinity>",
+    "<tags>training, wreck</tags>",
+    "<notes>Export verification notes</notes>",
+  ])
+    expect(exported.uddf).toContain(value);
+});
 test("exports one dive as text, PDF and UDDF", async ({ page }) => {
   await page.locator('.nav[data-view="settings"]').click();
   await page.getByLabel("Load sample dives").check();
