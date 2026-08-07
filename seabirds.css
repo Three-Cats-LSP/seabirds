@@ -1848,7 +1848,7 @@ body {
   background: #f9fdfc;
   border-color: #a8cccf;
 }
-.toolbar input,
+.toolbar > input,
 .toolbar select,
 .settings-card select,
 .device-connect select,
@@ -1859,7 +1859,7 @@ body {
   border-color: #c8dcdf;
   background: #fdffff;
 }
-.toolbar input:focus,
+.toolbar > input:focus,
 .toolbar select:focus,
 .settings-card select:focus,
 .device-connect select:focus,
@@ -2117,7 +2117,7 @@ body {
     gap: 8px;
     margin-bottom: 12px;
   }
-  .toolbar input,
+  .toolbar > input,
   .toolbar select {
     min-height: 44px;
     padding: 11px;
@@ -2227,7 +2227,7 @@ body {
   .toolbar {
     grid-template-columns: 1fr 1fr;
   }
-  .toolbar input {
+  .toolbar > input {
     grid-column: 1/-1;
   }
 }
@@ -2297,7 +2297,21 @@ body {
   display: none;
 }
 .dropdown-filter-options label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   margin: 0;
+  white-space: nowrap;
+}
+.dropdown-filter-options input[type="checkbox"] {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 14px;
+  min-width: 14px;
+  height: 14px;
+  min-height: 14px;
+  margin: 0;
+  padding: 0;
 }
 .sort-filters {
   margin-bottom: 10px;
@@ -2306,7 +2320,7 @@ body {
   .toolbar {
     grid-template-columns: 1fr 1fr;
   }
-  .toolbar input {
+  .toolbar > input {
     grid-column: 1/-1;
   }
   .filter-dropdown summary {
