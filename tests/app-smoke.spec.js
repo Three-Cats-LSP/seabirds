@@ -45,6 +45,16 @@ test("starts all modules and navigates", async ({ page }) => {
   await expect(page.locator("#settingsMain")).toBeVisible();
 });
 
+test("collapses the welcome summary on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const summary = page.locator(".mobile-stats-collapse");
+  await expect(summary).not.toHaveAttribute("open", "");
+  await expect(summary.locator(".stats")).toBeHidden();
+  await summary.locator("summary").click();
+  await expect(summary).toHaveAttribute("open", "");
+  await expect(summary.locator(".stats")).toBeVisible();
+});
+
 test("calculates GF99 samples with the ZHL profile engine", async ({
   page,
 }) => {

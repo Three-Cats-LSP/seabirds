@@ -579,6 +579,65 @@
     font-size: 12px;
   }
 }
+
+/* The welcome summary is compactly disclosed on phones. */
+.mobile-stats-collapse {
+  display: contents;
+}
+.mobile-stats-collapse > summary {
+  display: none;
+}
+@media (min-width: 601px) {
+  /* Keep the summary expanded on larger screens without exposing a control. */
+  .mobile-stats-collapse:not([open]) > .stats {
+    display: grid !important;
+  }
+}
+@media (max-width: 600px) {
+  .mobile-stats-collapse {
+    display: block;
+    margin: 0 0 22px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fdffff;
+  }
+  .mobile-stats-collapse > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 0 13px;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    list-style: none;
+  }
+  .mobile-stats-collapse > summary::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-stats-collapse > summary::after {
+    content: "+";
+    color: var(--blue);
+    font-size: 18px;
+    font-weight: 400;
+  }
+  .mobile-stats-collapse[open] > summary {
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-stats-collapse[open] > summary::after {
+    content: "−";
+  }
+  .mobile-stats-collapse > .stats {
+    margin: 0;
+    border: 0;
+    border-radius: 0 0 12px 12px;
+    box-shadow: none;
+  }
+  .mobile-stats-collapse:not([open]) > .stats {
+    display: none;
+  }
+}
 .sync-time {
   display: flex;
   align-items: center;
