@@ -129,9 +129,13 @@ jobs:
       - name: Prepare public release files
         shell: bash
         run: |
-          mv release/android/app-release.apk release/SeaBirds.apk
-          mv release/android/app-release.aab release/SeaBirds.aab
-          mv release/windows/*.exe release/SeaBirds-Windows-Setup.exe
+          APK="$(find release/android -type f -name app-release.apk -print -quit)"
+          AAB="$(find release/android -type f -name app-release.aab -print -quit)"
+          EXE="$(find release/windows -type f -name '*.exe' -print -quit)"
+          test -n "$APK" && test -n "$AAB" && test -n "$EXE"
+          mv "$APK" release/SeaBirds.apk
+          mv "$AAB" release/SeaBirds.aab
+          mv "$EXE" release/SeaBirds-Windows-Setup.exe
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
