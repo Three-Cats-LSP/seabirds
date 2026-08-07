@@ -134,7 +134,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await expect(savedRow).toContainText("2026-08-02");
   await expect(savedRow).toContainText("2:35 PM");
   await expect(savedRow.locator(".dive-number-cell")).toContainText("321");
-  await expect(savedRow).toContainText("Okinawa");
+  await expect(savedRow).toContainText("Saved smoke dive");
   await expect
     .poll(() =>
       page.evaluate(() => window.SeaBirds.Core.getState().dives[0]?.salinity),

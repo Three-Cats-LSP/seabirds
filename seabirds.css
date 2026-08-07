@@ -255,6 +255,68 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Compact logbook cards: one dive-number cell and one two-line summary. */
+.dive-row {
+  grid-template-columns: 70px minmax(0, 1fr) 30px;
+  align-items: center;
+}
+.dive-summary {
+  min-width: 0;
+  padding: 0 22px;
+}
+.dive-summary .dive-title-line b {
+  display: block;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dive-summary .dive-card-details {
+  display: flex;
+  align-items: center;
+  gap: 6px 14px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.dive-card-date {
+  color: var(--muted);
+}
+.dive-card-divider {
+  color: var(--line);
+  font-weight: 700;
+}
+.dive-summary .dive-card-details em {
+  color: var(--blue);
+  font-style: normal;
+}
+@media (max-width: 600px) {
+  .dive-row {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .dive-summary {
+    padding: 0 0 0 10px;
+  }
+  .dive-summary .dive-card-details {
+    flex-wrap: wrap;
+    gap: 4px 9px;
+    margin-top: 4px;
+    font-size: 10px;
+    white-space: normal;
+  }
+  .dive-card-date {
+    flex-basis: 100%;
+    white-space: nowrap;
+  }
+  .dive-card-divider {
+    display: none;
+  }
+  .dive-row-arrow {
+    display: none;
+  }
+}
 .temperature-profile {
   display: none;
 }
