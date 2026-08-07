@@ -36,6 +36,33 @@ test("starts all modules and navigates", async ({ page }) => {
   await page.getByRole("button", { name: /Back to Settings/ }).click();
   await expect(page.locator("#settingsMain")).toBeVisible();
 });
+test("paginates dives and filters by year and month", async ({ page }) => {
+  await page.evaluate(() =>
+    window.SeaBirds.Core.commit((state) => {
+      state.dives = Array.from({ length: 12 }, (_, index) => ({
+        id: `page-${index}`,
+        site: `Pagination dive ${index + 1}`,
+        date: index < 6 ? `2026-08-${String(index + 1).padStart(2, "0")}` : `2025-07-${String(index - 5).padStart(2, "0")}`,
+        time: "10:00",
+        depth: 18,
+        duration: 40,
+        temp: 25,
+        profile: [],
+      }));
+    }),
+  );
+  await page.locator('.nav[data-view="settings"]').click();
+  await page.getByLabel("Dives per page").selectOption("10");
+  await page.locator('.nav[data-view="dives"]').click();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(10);
+  await expect(page.locator("#divePagination")).toContainText("Page 1 of 2");
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(2);
+  await page.locator("#yearFilters").getByLabel("2025").check();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
+  await page.locator("#monthFilters").getByLabel("07 July").check();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
+});
 test("draft edits persist, remain searchable and filter by mode and style", async ({
   page,
 }) => {

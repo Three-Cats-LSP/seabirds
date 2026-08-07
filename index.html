@@ -101,12 +101,18 @@
             </select>
           </div>
           <div id="deviceFilters" class="device-filters" aria-label="Filter dives by dive computer"></div>
+          <div class="date-filter-row">
+            <div id="yearFilters" class="device-filters classification-filters" aria-label="Year filters"></div>
+            <span class="classification-divider" aria-hidden="true">|</span>
+            <div id="monthFilters" class="device-filters classification-filters" aria-label="Month filters"></div>
+          </div>
           <div class="classification-filter-row">
             <div id="modeFilters" class="device-filters classification-filters" aria-label="Mode filters"></div>
             <span class="classification-divider" aria-hidden="true">|</span>
             <div id="styleFilters" class="device-filters classification-filters" aria-label="Style filters"></div>
           </div>
           <div id="allDives" class="dive-list"></div>
+          <nav id="divePagination" class="dive-pagination" aria-label="Dive log pages"></nav>
         </section>
 
         <section class="view" id="devices">
@@ -212,6 +218,21 @@
                   <input id="restoreJson" type="file" accept=".json,application/json" />
                 </label>
               </div>
+            </div>
+            <div class="sync-block logbook-page-size">
+              <span>
+                <b>Logbook display</b>
+                <small>Choose how many dives are shown on each page.</small>
+              </span>
+              <label>
+                Dives per page
+                <select id="divesPerPage" aria-label="Dives per page">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
             </div>
             <details class="settings-collapse">
               <summary>Units &amp; formats</summary>
