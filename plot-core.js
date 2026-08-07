@@ -421,14 +421,14 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     const label = `Max depth ${depthValue.toFixed(1)} ${depthUnit}`;
     ctx.save();
     clipToPlot();
-    ctx.strokeStyle = isLight ? 'rgba(201,151,24,0.9)' : 'rgba(255,216,94,0.92)';
+    ctx.strokeStyle = isLight ? 'rgba(255,198,0,0.98)' : 'rgba(255,216,94,0.92)';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 3]);
     ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, y); ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
     ctx.save();
-    ctx.fillStyle = isLight ? '#a97708' : '#ffd85e';
+    ctx.fillStyle = isLight ? '#f0bd00' : '#ffd85e';
     ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
     ctx.textAlign = 'left';
     ctx.translate(Math.min(x + 10, PAD.left + PW - 5), PAD.top + 12);
