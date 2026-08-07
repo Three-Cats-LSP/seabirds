@@ -39,7 +39,7 @@
     ((d.profile || []).some((point) => point.setpoint != null)
       ? "CC/BO"
       : "Air");
-  const style = (d) => d.diveStyle || "Not specified";
+  const style = (d) => d.diveStyle || "N/A";
   const diveType = (d) => d.diveType || "";
   const stamp = (d) => `${d.date || ""}T${d.time || "00:00"}`;
   const year = (d) => String(d.date || "").slice(0, 4);
@@ -75,7 +75,7 @@
               diveMode = mode(d),
               diveStyle = style(d),
               classification =
-                diveStyle === "Not specified"
+                diveStyle === "N/A"
                   ? diveMode
                   : `${diveMode} / ${diveStyle}`,
               startTime = displayTime(d.time),
@@ -157,9 +157,9 @@
       "Style",
       "style-filter",
       [...new Set(dives.map(style))].sort((a, b) =>
-        a === "Not specified"
+        a === "N/A"
           ? 1
-          : b === "Not specified"
+          : b === "N/A"
             ? -1
             : a.localeCompare(b),
       ),
