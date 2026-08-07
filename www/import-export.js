@@ -116,12 +116,20 @@
         saveJson: (filename, data) =>
           window.__TAURI__.core.invoke("save_json", { filename, data }),
       };
-    const dialog = document.getElementById("diveDialog");
-    document.getElementById("addDive").onclick = () => {
+    const dialog = document.getElementById("diveDialog"),
+      choiceDialog = document.getElementById("addDiveDialog"),
+      importFile = document.getElementById("importFile");
+    document.getElementById("addDive").onclick = () => choiceDialog.showModal();
+    document.getElementById("chooseManualDive").onclick = () => {
+      choiceDialog.close();
       dialog.querySelector("[name=date]").value = new Date()
         .toISOString()
         .slice(0, 10);
       dialog.showModal();
+    };
+    document.getElementById("chooseImportDive").onclick = () => {
+      choiceDialog.close();
+      importFile.click();
     };
     dialog.addEventListener("close", () => {
       if (dialog.returnValue !== "default") return;

@@ -108,10 +108,6 @@
               <p class="story-tagline">Your underwater story, <i>beautifully recorded.</i></p>
             </div>
             <div class="actions">
-              <label class="import">
-                Import UDDF
-                <input id="importFile" type="file" accept=".uddf,.xml,application/xml" />
-              </label>
               <button id="addDive" class="primary compact">+ Add dive</button>
             </div>
           </div>
@@ -389,6 +385,24 @@
       </main>
     </div>
 
+    <dialog id="addDiveDialog" class="choice-dialog">
+      <form method="dialog">
+        <button class="close" value="cancel">Ã—</button>
+        <p class="eyebrow">LOGBOOK</p>
+        <h2>Add dive</h2>
+        <div class="add-dive-options">
+          <button type="button" id="chooseImportDive">
+            <b>Import dive</b>
+            <small>Import an existing UDDF dive-log file</small>
+          </button>
+          <button type="button" id="chooseManualDive">
+            <b>Manual Input</b>
+            <small>Create a new dive-log entry manually</small>
+          </button>
+        </div>
+        <input id="importFile" type="file" accept=".uddf,.xml,application/xml" hidden />
+      </form>
+    </dialog>
     <dialog id="diveDialog">
       <form method="dialog">
         <button class="close" value="cancel">×</button>
@@ -544,7 +558,7 @@
     <script src="equipment.js?v=82"></script>
     <script src="devices-ui.js?v=82"></script>
     <script src="settings-ui.js?v=84"></script>
-    <script src="import-export.js?v=83"></script>
+    <script src="import-export.js?v=88"></script>
     <script src="app.js?v=82"></script>
     <script src="update.js?v=82"></script>
   </body>

@@ -101,6 +101,8 @@ test("creates, imports, backs up, restores and deletes dives", async ({
 }) => {
   await page.locator('.nav[data-view="dives"]').click();
   await page.getByRole("button", { name: "+ Add dive" }).click();
+  await expect(page.locator("#addDiveDialog")).toBeVisible();
+  await page.getByRole("button", { name: /Manual input/ }).click();
   const dialog = page.locator("#diveDialog");
   await dialog.getByLabel("Site").fill("Manual Reef");
   await dialog.getByLabel("Maximum depth (m)").fill("12.5");
