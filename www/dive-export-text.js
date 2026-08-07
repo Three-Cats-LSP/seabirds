@@ -24,6 +24,7 @@
         `Location: ${value(dive.location)}`,
         `Site: ${value(dive.diveSite)}`,
         `Buddy: ${value(dive.buddy)}`,
+        `Type: ${value(dive.diveType)}`,
         `Mode: ${value(dive.diveMode)}`,
         `Style: ${value(dive.diveStyle)}`,
         `Gas used: ${value(dive.gasUsed)}`,

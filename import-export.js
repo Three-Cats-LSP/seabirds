@@ -169,6 +169,7 @@
         location: text(seaBirds, "location"),
         diveSite: text(seaBirds, "divesite"),
         buddy: text(seaBirds, "buddy"),
+        diveType: text(seaBirds, "type"),
         depth,
         duration,
         temp:

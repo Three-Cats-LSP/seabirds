@@ -51,6 +51,7 @@
     row("Location", dive.location);
     row("Site", dive.diveSite);
     row("Buddy", dive.buddy);
+    row("Type", dive.diveType);
     row(
       "Mode / style",
       [dive.diveMode, dive.diveStyle].filter(Boolean).join(" / "),

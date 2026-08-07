@@ -129,6 +129,7 @@
       d.location === "Downloaded from Shearwater" ? "" : d.location || "";
     document.getElementById("editDiveSpot").value = d.diveSite || "";
     document.getElementById("editDiveBuddy").value = d.buddy || "";
+    document.getElementById("editDiveType").value = d.diveType || "";
     document.getElementById("editDiveTags").value = (d.tags || []).join(", ");
     document.getElementById("editDiveMode").value = mode;
     document.getElementById("editDiveStyle").value = d.diveStyle || "";
@@ -212,6 +213,7 @@
         site: "Untitled dive",
         location: "",
         buddy: "",
+        diveType: "",
         tags: [],
         notes: "",
         diveMode: "Air",
@@ -270,6 +272,7 @@
     draft.location = document.getElementById("editDiveLocation").value.trim();
     draft.diveSite = document.getElementById("editDiveSpot").value.trim();
     draft.buddy = document.getElementById("editDiveBuddy").value.trim();
+    draft.diveType = document.getElementById("editDiveType").value;
     draft.tags = document
       .getElementById("editDiveTags")
       .value.split(",")

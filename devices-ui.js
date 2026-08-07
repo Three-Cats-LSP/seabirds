@@ -133,6 +133,7 @@
                     location: old.location,
                     diveSite: old.diveSite,
                     buddy: old.buddy,
+                    diveType: old.diveType,
                     tags: old.tags,
                     notes: old.notes,
                     diveMode: old.diveMode,

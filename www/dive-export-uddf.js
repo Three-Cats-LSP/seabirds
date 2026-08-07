@@ -22,7 +22,7 @@
 ${waypoints}
       </samples>
       <informationafterdive><greatestdepth>${x(dive.depth || 0)}</greatestdepth><diveduration>${x((Number(dive.duration) || 0) * 60)}</diveduration><lowesttemperature>${x(dive.temp ?? "")}</lowesttemperature><notes>${x(dive.notes || "")}</notes></informationafterdive>
-      <applicationdata><seabirds><profiletimeunit>seconds</profiletimeunit><title>${x(dive.site || "")}</title><location>${x(dive.location || "")}</location><divesite>${x(dive.diveSite || "")}</divesite><buddy>${x(dive.buddy || "")}</buddy><endtime>${x(dive.endTime || "")}</endtime><style>${x(dive.diveStyle || "")}</style><gas>${x(dive.gasUsed || "")}</gas><salinity>${x(dive.salinity || "")}</salinity><tags>${x((dive.tags || []).join(", "))}</tags><equipment>${x((dive.equipment || []).join(", "))}</equipment></seabirds></applicationdata>
+      <applicationdata><seabirds><profiletimeunit>seconds</profiletimeunit><title>${x(dive.site || "")}</title><location>${x(dive.location || "")}</location><divesite>${x(dive.diveSite || "")}</divesite><buddy>${x(dive.buddy || "")}</buddy><type>${x(dive.diveType || "")}</type><endtime>${x(dive.endTime || "")}</endtime><style>${x(dive.diveStyle || "")}</style><gas>${x(dive.gasUsed || "")}</gas><salinity>${x(dive.salinity || "")}</salinity><tags>${x((dive.tags || []).join(", "))}</tags><equipment>${x((dive.equipment || []).join(", "))}</equipment></seabirds></applicationdata>
     </dive>
   </dives>
 </uddf>

@@ -86,6 +86,20 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await page.locator("#monthFilter summary").click();
   await page.locator("#monthFilters").getByLabel("July").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
+  await expect(page.locator("#monthFilter")).toHaveAttribute("open", "");
+  const panelWidths = await page.evaluate(() =>
+    ["yearFilter", "monthFilter"].map((id) => {
+      const dropdown = document.getElementById(id);
+      return {
+        trigger: dropdown.getBoundingClientRect().width,
+        panel: dropdown.querySelector(".dropdown-filter-options").getBoundingClientRect()
+          .width,
+      };
+    }),
+  );
+  panelWidths.forEach(({ trigger, panel }) => expect(panel).toBeCloseTo(trigger, 0));
+  await page.locator("#search").click();
+  await expect(page.locator("#monthFilter")).not.toHaveAttribute("open", "");
 });
 test("draft edits persist, remain searchable and filter by mode and style", async ({
   page,
@@ -109,6 +123,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("Dive title").fill("Saved smoke dive");
   await page.getByLabel("Location").fill("Okinawa");
   await page.getByRole("dialog").getByLabel("Site").fill("Blue Cave");
+  await page.getByLabel("Type").selectOption("Boat");
   await page.getByLabel("Dive mode").selectOption("CC/BO");
   await page.getByLabel("Dive style").selectOption("Sidemount");
   await page.getByLabel("Salinity").selectOption("Fresh");
@@ -125,6 +140,11 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
       page.evaluate(() => window.SeaBirds.Core.getState().dives[0]?.salinity),
     )
     .toBe("Fresh");
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.SeaBirds.Core.getState().dives[0]?.diveType),
+    )
+    .toBe("Boat");
   await page.waitForTimeout(300);
   await page.reload();
   await page.locator('.nav[data-view="dives"]').click();
@@ -171,6 +191,7 @@ test("exports every current dive-entry field", async ({ page }) => {
       site: "Okinawa Blue Cave",
       location: "Okinawa, Japan",
       diveSite: "Blue Cave",
+      diveType: "Boat",
       date: "2026-08-07",
       time: "09:15",
       endTime: "10:02",
@@ -197,6 +218,7 @@ test("exports every current dive-entry field", async ({ page }) => {
     "Okinawa Blue Cave",
     "Okinawa, Japan",
     "Blue Cave",
+    "Boat",
     "09:15",
     "10:02",
     "Marika",
@@ -213,6 +235,7 @@ test("exports every current dive-entry field", async ({ page }) => {
     "<title>Okinawa Blue Cave</title>",
     "<location>Okinawa, Japan</location>",
     "<divesite>Blue Cave</divesite>",
+    "<type>Boat</type>",
     "<endtime>10:02</endtime>",
     "<divemode>3 GasNx</divemode>",
     "<style>Double tanks</style>",

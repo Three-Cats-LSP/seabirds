@@ -289,6 +289,24 @@
       () => styleFilters,
       (value) => (styleFilters = value),
     );
+    const dropdowns = Array.from(
+      document.querySelectorAll(".filter-dropdown"),
+    );
+    dropdowns.forEach((dropdown) => {
+      dropdown.addEventListener("toggle", () => {
+        if (!dropdown.open) return;
+        dropdowns.forEach((other) => {
+          if (other !== dropdown) other.removeAttribute("open");
+        });
+      });
+    });
+    document.addEventListener("pointerdown", (event) => {
+      const clickedDropdown = event
+        .composedPath()
+        .some((node) => node?.classList?.contains("filter-dropdown"));
+      if (clickedDropdown) return;
+      dropdowns.forEach((dropdown) => dropdown.removeAttribute("open"));
+    });
     document.getElementById("divePagination").onclick = (event) => {
       const direction = event.target.closest("[data-page]")?.dataset.page;
       if (!direction) return;
