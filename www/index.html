@@ -187,6 +187,7 @@
         </section>
 
         <section class="view" id="settings">
+          <div id="settingsMain">
           <div class="page-head">
             <div>
               <p class="eyebrow">PREFERENCES</p>
@@ -285,17 +286,13 @@
                 <option value="24">24 hour</option>
               </select>
             </label>
-            <section class="master-gear">
-              <header>
-                <span>
-                  <b>Master equipment lists</b>
-                  <small>Create reusable equipment presets for Photo, Tech, Fun and other dives.</small>
-                </span>
-                <button type="button" id="addMasterGearCard">+ Add list</button>
-              </header>
-              <div id="masterGearLibrary" class="master-gear-library"></div>
-              <button type="button" id="saveMasterGear" class="primary compact">Save master lists</button>
-            </section>
+            <div class="sync-block">
+              <span>
+                <b>Master equipment lists</b>
+                <small>Create reusable equipment presets for Photo, Tech, Fun and other dives.</small>
+              </span>
+              <button type="button" id="openMasterGear">Manage lists</button>
+            </div>
             <label class="check">
               <input id="demoToggle" type="checkbox" />
               Load sample dives
@@ -360,6 +357,28 @@
               <a href="https://www.flaticon.com/free-icon/dive-computer_1923040" target="_blank" rel="noopener">Dive computer information</a>
               .
             </p>
+          </div>
+          </div>
+          <div id="masterGearPage" class="settings-subpage" hidden>
+            <div class="page-head settings-subpage-head">
+              <div>
+                <p class="eyebrow">EQUIPMENT</p>
+                <h1>Master equipment lists</h1>
+                <p>Create reusable equipment presets for Photo, Tech, Fun and other dives.</p>
+              </div>
+              <button type="button" id="closeMasterGear" class="subpage-back">&larr; Back to Settings</button>
+            </div>
+            <section class="settings-card master-gear">
+              <header>
+                <span>
+                  <b>Your equipment lists</b>
+                  <small>Add, rename or remove reusable lists and their equipment.</small>
+                </span>
+                <button type="button" id="addMasterGearCard">+ Add list</button>
+              </header>
+              <div id="masterGearLibrary" class="master-gear-library"></div>
+              <button type="button" id="saveMasterGear" class="primary compact">Save master lists</button>
+            </section>
           </div>
         </section>
       </main>
@@ -519,7 +538,7 @@
     <script src="dive-editor.js?v=82"></script>
     <script src="equipment.js?v=82"></script>
     <script src="devices-ui.js?v=82"></script>
-    <script src="settings-ui.js?v=82"></script>
+    <script src="settings-ui.js?v=84"></script>
     <script src="import-export.js?v=83"></script>
     <script src="app.js?v=82"></script>
     <script src="update.js?v=82"></script>

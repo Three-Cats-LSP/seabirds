@@ -20,6 +20,13 @@ test("starts all modules and navigates", async ({ page }) => {
   expect(modules).toEqual([true, true, true, true, true, true]);
   await page.locator('.nav[data-view="settings"]').click();
   await expect(page.locator("#settings")).toHaveClass(/active/);
+  await expect(page.locator("#masterGearLibrary")).toBeHidden();
+  await page.getByRole("button", { name: "Manage lists" }).click();
+  await expect(page.locator("#settingsMain")).toBeHidden();
+  await expect(page.locator("#masterGearPage")).toBeVisible();
+  await expect(page.locator("#masterGearPage .master-gear")).toBeVisible();
+  await page.getByRole("button", { name: /Back to Settings/ }).click();
+  await expect(page.locator("#settingsMain")).toBeVisible();
 });
 test("draft edits persist, remain searchable and filter by mode and style", async ({
   page,
