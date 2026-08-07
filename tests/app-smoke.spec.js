@@ -58,9 +58,11 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await expect(page.locator("#divePagination")).toContainText("Page 1 of 2");
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(2);
-  await page.locator("#yearFilter").selectOption("2025");
+  await page.locator("#yearFilter summary").click();
+  await page.locator("#yearFilters").getByLabel("2025").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
-  await page.locator("#monthFilter").selectOption("07");
+  await page.locator("#monthFilter summary").click();
+  await page.locator("#monthFilters").getByLabel("07 July").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
 });
 test("draft edits persist, remain searchable and filter by mode and style", async ({

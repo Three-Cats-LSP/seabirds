@@ -94,14 +94,16 @@
           </div>
           <div class="toolbar">
             <input id="search" name="seabirds-dive-filter" type="search" placeholder="Search site, notes, buddy…" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" data-form-type="other" data-1p-ignore data-lpignore="true" />
-            <select id="sort">
-              <option value="date-desc">Newest first</option>
-              <option value="date-asc">Oldest first</option>
-              <option value="depth-desc">Deepest first</option>
-            </select>
-            <select id="yearFilter" aria-label="Filter dives by year"></select>
-            <select id="monthFilter" aria-label="Filter dives by month"></select>
+            <details class="filter-dropdown" id="yearFilter">
+              <summary><span>Year</span><small id="yearFilterSummary">All years</small></summary>
+              <div id="yearFilters" class="dropdown-filter-options" aria-label="Year filters"></div>
+            </details>
+            <details class="filter-dropdown" id="monthFilter">
+              <summary><span>Month</span><small id="monthFilterSummary">All months</small></summary>
+              <div id="monthFilters" class="dropdown-filter-options" aria-label="Month filters"></div>
+            </details>
           </div>
+          <div id="sortFilters" class="device-filters sort-filters" aria-label="Sort dives"></div>
           <div id="deviceFilters" class="device-filters" aria-label="Filter dives by dive computer"></div>
           <div class="classification-filter-row">
             <div id="modeFilters" class="device-filters classification-filters" aria-label="Mode filters"></div>
