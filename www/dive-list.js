@@ -5,6 +5,7 @@
   let deviceFilters = new Set(),
     modeFilters = new Set(),
     styleFilters = new Set(),
+    typeFilters = new Set(),
     yearFilters = new Set(),
     monthFilters = new Set(),
     sort = "date-desc",
@@ -39,6 +40,7 @@
       ? "CC/BO"
       : "Air");
   const style = (d) => d.diveStyle || "Not specified";
+  const diveType = (d) => d.diveType || "";
   const stamp = (d) => `${d.date || ""}T${d.time || "00:00"}`;
   const year = (d) => String(d.date || "").slice(0, 4);
   const month = (d) => String(d.date || "").slice(5, 7);
@@ -163,6 +165,13 @@
       ),
       styleFilters,
     );
+    typeFilters = renderGroup(
+      "typeFilters",
+      "Type",
+      "type-filter",
+      ["Shore/Beach", "Boat"],
+      typeFilters,
+    );
   }
   function renderPagination(total, totalPages) {
     const target = document.getElementById("divePagination");
@@ -186,6 +195,8 @@
     if (modeFilters.size) dives = dives.filter((d) => modeFilters.has(mode(d)));
     if (styleFilters.size)
       dives = dives.filter((d) => styleFilters.has(style(d)));
+    if (typeFilters.size)
+      dives = dives.filter((d) => typeFilters.has(diveType(d)));
     dives.sort(
       sort === "date-asc"
         ? (a, b) => stamp(a).localeCompare(stamp(b))
@@ -287,6 +298,12 @@
       "style-filter",
       () => styleFilters,
       (value) => (styleFilters = value),
+    );
+    bindFilter(
+      "typeFilters",
+      "type-filter",
+      () => typeFilters,
+      (value) => (typeFilters = value),
     );
     const dropdowns = Array.from(
       document.querySelectorAll(".filter-dropdown"),

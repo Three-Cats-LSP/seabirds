@@ -123,7 +123,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("Dive title").fill("Saved smoke dive");
   await page.getByLabel("Location").fill("Okinawa");
   await page.getByRole("dialog").getByLabel("Site").fill("Blue Cave");
-  await page.getByLabel("Type").selectOption("Boat");
+  await page.getByRole("dialog").getByLabel("Type").selectOption("Boat");
   await page.getByLabel("Dive mode").selectOption("CC/BO");
   await page.getByLabel("Dive style").selectOption("Sidemount");
   await page.getByLabel("Salinity").selectOption("Fresh");
@@ -151,9 +151,12 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByRole("searchbox").fill("321");
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.getByRole("searchbox").fill("");
+  await page.locator(".logbook-filter-collapse summary").click();
   await page.locator("#modeFilters").getByLabel("CC/BO").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.locator("#styleFilters").getByLabel("Sidemount").check();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
+  await page.locator("#typeFilters").getByLabel("Boat").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await expect(page.locator("#allDives .dive-row")).toContainText(
     "Saved smoke dive",

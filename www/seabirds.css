@@ -2392,3 +2392,91 @@ body {
     margin-bottom: 9px;
   }
 }
+
+/* Optional logbook filters stay available without permanently taking page space. */
+.logbook-filter-collapse {
+  margin: 0 2px 18px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fdffff;
+}
+.logbook-filter-collapse summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 13px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  list-style: none;
+}
+.logbook-filter-collapse summary::-webkit-details-marker {
+  display: none;
+}
+.logbook-filter-collapse summary::after {
+  content: "+";
+  color: var(--blue);
+  font-size: 18px;
+  font-weight: 400;
+}
+.logbook-filter-collapse[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+.logbook-filter-collapse[open] summary::after {
+  content: "−";
+}
+.logbook-filter-options {
+  padding: 12px 13px 2px;
+}
+.logbook-filter-options .device-filters {
+  margin: 0 0 12px;
+}
+.logbook-filter-options .classification-filter-row {
+  margin-top: 0;
+}
+/* Override the earlier card-grid rules after all legacy selectors. */
+.dive-row {
+  grid-template-columns: 70px minmax(0, 1fr) 30px;
+}
+.dive-summary {
+  min-width: 0;
+  padding: 0 22px;
+}
+.dive-summary .dive-card-details {
+  display: flex;
+  align-items: center;
+  gap: 6px 14px;
+  margin-top: 5px;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .logbook-filter-collapse {
+    margin-bottom: 12px;
+  }
+  .logbook-filter-options {
+    padding: 11px 12px 1px;
+  }
+  .dive-row {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .dive-summary {
+    padding: 0 0 0 10px;
+  }
+  .dive-summary .dive-card-details {
+    flex-wrap: wrap;
+    gap: 4px 9px;
+    margin-top: 4px;
+    font-size: 10px;
+    white-space: normal;
+  }
+  .dive-card-date {
+    flex-basis: 100%;
+    white-space: nowrap;
+  }
+  .dive-card-divider,
+  .dive-row-arrow {
+    display: none;
+  }
+}
