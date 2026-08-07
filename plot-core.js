@@ -532,8 +532,9 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.save();
     ctx.fillStyle = color;
     ctx.font = `700 ${isMobile ? 6 : 8}px "JetBrains Mono",monospace`;
+    const firstVisible = finite.find((point, index) => index > 0 && point.t >= tMin && point.t <= tMax && (label !== 'GF99' || point.value > 0));
     ctx.textAlign = 'left';
-    ctx.fillText(label, PAD.left + 5, PAD.top + 11);
+    if (firstVisible) ctx.fillText(label, PAD.left + 5, Math.max(PAD.top + 11, Math.min(PAD.top + PH - 5, toMetricY(firstVisible.value) - 5)));
     ctx.restore();
   }
   drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
@@ -912,8 +913,11 @@ const _graphOpts = {};
 // Wrapper stores opts for hover interaction then calls core renderer
 // AUDIT-UNIT:UI-TOOLS-PROFILE
 function drawDiveProfile(canvasId, waypoints, opts) {
-  _drawDiveProfileCore(canvasId, waypoints, opts);
-  _graphOpts[canvasId] = { waypoints, opts };
+  const plottedWaypoints = canvasId === 'seaBirdsProfileCanvas' && globalThis.SeaBirdsZhlProfile
+    ? globalThis.SeaBirdsZhlProfile.annotate(waypoints)
+    : waypoints;
+  _drawDiveProfileCore(canvasId, plottedWaypoints, opts);
+  _graphOpts[canvasId] = { waypoints: plottedWaypoints, opts };
   attachDiveProfileInteraction(canvasId);
 }
 
