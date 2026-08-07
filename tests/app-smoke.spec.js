@@ -36,6 +36,18 @@ test("starts all modules and navigates", async ({ page }) => {
   await page.getByRole("button", { name: /Back to Settings/ }).click();
   await expect(page.locator("#settingsMain")).toBeVisible();
 });
+
+test("calculates GF99 samples with the ZHL profile engine", async ({ page }) => {
+  const result = await page.evaluate(() => window.SeaBirdsZhlProfile.annotate([
+    { t: 0, depth: 0, gas: "21/0" },
+    { t: 2, depth: 20, gas: "21/0" },
+    { t: 22, depth: 20, gas: "21/0" },
+    { t: 25, depth: 0, gas: "21/0" },
+  ]));
+  expect(result).toHaveLength(4);
+  expect(result.every(point => Number.isFinite(point.gf99))).toBeTruthy();
+  expect(Math.max(...result.map(point => point.gf99))).toBeGreaterThan(0);
+});
 test("paginates dives and filters by year and month", async ({ page }) => {
   await page.evaluate(() =>
     window.SeaBirds.Core.commit((state) => {
@@ -62,7 +74,7 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await page.locator("#yearFilters").getByLabel("2025").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
   await page.locator("#monthFilter summary").click();
-  await page.locator("#monthFilters").getByLabel("07 July").check();
+  await page.locator("#monthFilters").getByLabel("July").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
 });
 test("draft edits persist, remain searchable and filter by mode and style", async ({
