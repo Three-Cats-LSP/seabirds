@@ -429,7 +429,7 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.restore();
     ctx.save();
     ctx.fillStyle = isLight ? '#000000' : '#ffd85e';
-    ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
+    ctx.font = `400 ${isMobile ? 7 : 9}px Arial, sans-serif`;
     ctx.textAlign = 'left';
     ctx.translate(Math.min(x + 10, PAD.left + PW - 5), PAD.top + 12);
     ctx.rotate(Math.PI / 2);
