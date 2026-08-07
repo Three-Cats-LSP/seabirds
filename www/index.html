@@ -112,7 +112,6 @@
                 Import UDDF
                 <input id="importFile" type="file" accept=".uddf,.xml,application/xml" />
               </label>
-              <button id="exportBtn">Export JSON</button>
               <button id="addDive" class="primary compact">+ Add dive</button>
             </div>
           </div>
@@ -222,6 +221,19 @@
                 <small id="updateStatus">Installed version 0.1.13</small>
               </span>
               <button type="button" id="checkForUpdates">Check for new version</button>
+            </div>
+            <div class="sync-block backup-block">
+              <span>
+                <b>Logbook backup</b>
+                <small>Back up or restore dives, profiles, equipment and settings.</small>
+              </span>
+              <div class="backup-actions">
+                <button type="button" id="backupJson">Backup JSON</button>
+                <label class="restore-json">
+                  Restore JSON
+                  <input id="restoreJson" type="file" accept=".json,application/json" />
+                </label>
+              </div>
             </div>
             <label>
               Depth units
@@ -508,7 +520,7 @@
     <script src="equipment.js?v=82"></script>
     <script src="devices-ui.js?v=82"></script>
     <script src="settings-ui.js?v=82"></script>
-    <script src="import-export.js?v=82"></script>
+    <script src="import-export.js?v=83"></script>
     <script src="app.js?v=82"></script>
     <script src="update.js?v=82"></script>
   </body>

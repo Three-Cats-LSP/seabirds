@@ -86,7 +86,9 @@ test("allows a user gas mix to override automatic gas detection", async ({
   await page.locator("#allDives .dive-row").first().click();
   await expect(page.locator("#profileStats")).toContainText("EAN32");
 });
-test("creates, imports, exports and deletes dives", async ({ page }) => {
+test("creates, imports, backs up, restores and deletes dives", async ({
+  page,
+}) => {
   await page.locator('.nav[data-view="dives"]').click();
   await page.getByRole("button", { name: "+ Add dive" }).click();
   const dialog = page.locator("#diveDialog");
@@ -104,9 +106,13 @@ test("creates, imports, exports and deletes dives", async ({ page }) => {
   await page.evaluate(() => {
     window.showSaveFilePicker = undefined;
   });
+  await page.locator('.nav[data-view="settings"]').click();
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export JSON" }).click();
-  expect((await download).suggestedFilename()).toBe("seabirds-dive-log.json");
+  await page.getByRole("button", { name: "Backup JSON" }).click();
+  const backup = await download;
+  expect(backup.suggestedFilename()).toBe("seabirds-dive-log.json");
+  const backupPath = await backup.path();
+  await page.locator('.nav[data-view="dives"]').click();
   await page
     .locator("#allDives .dive-row")
     .filter({ hasText: "Manual Reef" })
@@ -114,4 +120,14 @@ test("creates, imports, exports and deletes dives", async ({ page }) => {
   page.once("dialog", (prompt) => prompt.accept());
   await page.getByRole("button", { name: "Delete dive" }).click();
   await expect(page.locator("#allDives")).not.toContainText("Manual Reef");
+  await page.locator('.nav[data-view="settings"]').click();
+  page.once("dialog", (prompt) => prompt.accept());
+  await page.locator("#restoreJson").setInputFiles(backupPath);
+  await page.waitForFunction(() =>
+    window.SeaBirds.Core.getState().dives.some(
+      (dive) => dive.site === "Manual Reef",
+    ),
+  );
+  await page.locator('.nav[data-view="dives"]').click();
+  await expect(page.locator("#allDives")).toContainText("Manual Reef");
 });
