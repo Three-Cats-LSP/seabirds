@@ -41,6 +41,8 @@
       : "Air");
   const style = (d) => d.diveStyle || "N/A";
   const diveType = (d) => d.diveType || "";
+  const MODE_OPTIONS = ["Air", "Nitrox", "3 GasNx", "OC Tec", "Gauge", "CC/BO"];
+  const STYLE_OPTIONS = ["N/A", "Single Tank", "Double tanks", "Sidemount"];
   const stamp = (d) => `${d.date || ""}T${d.time || "00:00"}`;
   const year = (d) => String(d.date || "").slice(0, 4);
   const month = (d) => String(d.date || "").slice(5, 7);
@@ -149,20 +151,14 @@
       "modeFilters",
       "Mode",
       "mode-filter",
-      [...new Set(dives.map(mode))].sort(),
+      MODE_OPTIONS,
       modeFilters,
     );
     styleFilters = renderGroup(
       "styleFilters",
       "Style",
       "style-filter",
-      [...new Set(dives.map(style))].sort((a, b) =>
-        a === "N/A"
-          ? 1
-          : b === "N/A"
-            ? -1
-            : a.localeCompare(b),
-      ),
+      STYLE_OPTIONS,
       styleFilters,
     );
     typeFilters = renderGroup(
