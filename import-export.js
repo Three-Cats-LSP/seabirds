@@ -74,38 +74,56 @@
   }
 
   async function importUddf(file) {
-    const xml = new DOMParser().parseFromString(
-        await file.text(),
-        "application/xml",
-      ),
-      nodes = [...xml.querySelectorAll("dive")],
-      dives = nodes.map((node) => {
-        const get = (query) => node.querySelector(query)?.textContent?.trim(),
-          datetime = get("datetime") || "",
-          date =
-            datetime.slice(0, 10) ||
-            get("date") ||
-            new Date().toISOString().slice(0, 10),
-          time = (datetime.match(/T?(\d{2}:\d{2})/) || [])[1] || "",
-          depth = parseFloat(get("greatestdepth") || get("maxdepth") || 0),
-          duration =
-            Math.round(parseFloat(get("divetime") || get("duration") || 0) / 60) ||
-            1;
+    const xml = new DOMParser().parseFromString(await file.text(), "application/xml");
+    if (xml.querySelector("parsererror")) throw new Error("The selected file is not valid UDDF XML.");
+    const text = (parent, tag) => [...(parent?.children || [])].find((child) => child.localName === tag)?.textContent?.trim() || "";
+    const number = (item) => { const parsed = Number.parseFloat(item); return Number.isFinite(parsed) ? parsed : null; };
+    const generatedBySeaBirds = xml.querySelector("generator > name")?.textContent?.trim() === "SeaBirds";
+    const dives = [...xml.querySelectorAll("dive")].map((node) => {
+      const before = [...node.children].find((child) => child.localName === "informationbeforedive");
+      const after = [...node.children].find((child) => child.localName === "informationafterdive");
+      const application = [...node.children].find((child) => child.localName === "applicationdata");
+      const seaBirds = [...(application?.children || [])].find((child) => child.localName === "seabirds");
+      const legacySeaBirdsTime = generatedBySeaBirds && text(seaBirds, "profiletimeunit") !== "seconds";
+      const rawProfile = [...node.querySelectorAll("samples waypoint")].map((waypoint) => {
+        const rawTime = number(text(waypoint, "divetime"));
+        const depth = number(text(waypoint, "depth"));
+        if (rawTime === null || depth === null) return null;
+        const rawTemperature = number(text(waypoint, "temperature"));
         return {
-          id: crypto.randomUUID(),
-          date,
-          time,
-          site: get("name") || get("divesite") || "Imported dive",
+          t: legacySeaBirdsTime ? rawTime : rawTime / 60,
           depth,
-          duration,
-          temp: parseFloat(get("lowesttemperature")) || null,
-          notes: "Imported from UDDF",
-          diveMode: "OC",
-          diveStyle: "",
-          profile: Core.sampleProfile(depth, duration),
-          updatedAt: new Date().toISOString(),
+          ...(rawTemperature === null ? {} : { temperature: rawTemperature > 150 ? rawTemperature - 273.15 : rawTemperature }),
+          ...(number(text(waypoint, "ndl")) === null ? {} : { ndl: number(text(waypoint, "ndl")) }),
+          ...(number(text(waypoint, "tts")) === null ? {} : { tts: number(text(waypoint, "tts")) }),
         };
-      });
+      }).filter(Boolean).sort((left, right) => left.t - right.t);
+      const datetime = text(before, "datetime") || text(node, "datetime");
+      const rawDuration = number(text(after, "diveduration") || text(after, "divetime") || text(node, "divetime"));
+      const duration = rawDuration === null ? Math.max(1, Math.round(rawProfile.at(-1)?.t || 0)) : Math.max(1, Math.round(legacySeaBirdsTime ? rawDuration : rawDuration / 60));
+      const rawTemperature = number(text(after, "lowesttemperature") || text(node, "lowesttemperature"));
+      const depth = number(text(after, "greatestdepth") || text(after, "maxdepth") || text(node, "greatestdepth") || text(node, "maxdepth")) ?? Math.max(0, ...rawProfile.map((point) => point.depth));
+      return {
+        id: crypto.randomUUID(),
+        date: datetime.slice(0, 10) || text(before, "date") || new Date().toISOString().slice(0, 10),
+        time: (datetime.match(/T?(\d{2}:\d{2})/) || [])[1] || "",
+        diveNumber: text(before, "divenumber"),
+        site: text(seaBirds, "title") || text(node, "divesite") || text(node, "name") || "Imported dive",
+        location: text(seaBirds, "location"),
+        buddy: text(seaBirds, "buddy"),
+        depth,
+        duration,
+        temp: rawTemperature === null ? rawProfile.find((point) => point.temperature != null)?.temperature ?? null : rawTemperature > 150 ? rawTemperature - 273.15 : rawTemperature,
+        notes: text(after, "notes") || "Imported from UDDF",
+        diveMode: text(before, "divemode") || "OC",
+        diveStyle: text(seaBirds, "style"),
+        gasUsed: text(seaBirds, "gas"),
+        tags: text(seaBirds, "tags").split(",").map((tag) => tag.trim()).filter(Boolean),
+        equipment: text(seaBirds, "equipment").split(",").map((item) => item.trim()).filter(Boolean),
+        profile: rawProfile.length ? rawProfile : Core.sampleProfile(depth, duration),
+        updatedAt: new Date().toISOString(),
+      };
+    });
     await Core.commit((state) => state.dives.push(...dives));
     Core.notify(`Imported ${dives.length} dives`);
   }

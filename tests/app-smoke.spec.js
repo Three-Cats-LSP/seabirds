@@ -106,6 +106,24 @@ test("exports one dive as text, PDF and UDDF", async ({ page }) => {
   expect(textExport).toContain("PROFILE SAMPLES");
   expect(textExport).toMatch(/min\s+\d+\.\d m\s+\S+ \u00b0C\s+NDL/);
   expect(textExport).not.toContain("\t");
+  const uddfExport = await page.evaluate(() => {
+    const dive = window.SeaBirds.Core.getState().dives[0];
+    return { source: dive, xml: window.SeaBirds.DiveUddfExport.build(dive) };
+  });
+  expect(uddfExport.xml).toContain("<profiletimeunit>seconds</profiletimeunit>");
+  await page.locator("#importFile").setInputFiles({
+    name: "round-trip.uddf",
+    mimeType: "application/xml",
+    buffer: Buffer.from(uddfExport.xml),
+  });
+  await expect.poll(() => page.evaluate(() => window.SeaBirds.Core.getState().dives.length)).toBe(4);
+  const restoredProfile = await page.evaluate(() => {
+    const state = window.SeaBirds.Core.getState();
+    const normalise = (profile) => profile.map((point) => [point.t, point.depth, point.temperature ?? point.temp ?? null, point.ndl ?? null, point.tts ?? null]);
+    return { duration: state.dives.at(-1).duration, source: normalise(state.dives[0].profile), restored: normalise(state.dives.at(-1).profile) };
+  });
+  expect(restoredProfile.duration).toBe(uddfExport.source.duration);
+  expect(restoredProfile.restored).toEqual(restoredProfile.source);
   await page.locator('.nav[data-view="dives"]').click();
   await page.locator("#allDives .dive-row").first().click();
   const formats = [
