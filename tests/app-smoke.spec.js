@@ -97,6 +97,8 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("Dive date").fill("2026-08-02");
   await page.getByLabel("Start time").fill("14:35");
   await page.getByLabel("Dive title").fill("Saved smoke dive");
+  await page.getByLabel("Location").fill("Okinawa");
+  await page.getByRole("dialog").getByLabel("Site").fill("Blue Cave");
   await page.getByLabel("Dive mode").selectOption("CCR");
   await page.getByLabel("Dive style").selectOption("Sidemount");
   await page.getByRole("button", { name: "Save changes" }).click();
@@ -106,6 +108,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await expect(savedRow).toContainText("2026-08-02");
   await expect(savedRow).toContainText("2:35 PM");
   await expect(savedRow.locator(".dive-number-cell")).toContainText("321");
+  await expect(savedRow).toContainText("Okinawa");
   await page.waitForTimeout(300);
   await page.reload();
   await page.locator('.nav[data-view="dives"]').click();
