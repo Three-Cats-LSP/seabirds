@@ -411,6 +411,32 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     }
   }
 
+  // Mark the deepest point with a vertical reference line. The profile canvas is
+  // also used by the PDF exporter, so this annotation is carried into exports.
+  const deepestPoint = pathWps.reduce((deepest, point) => !deepest || +point.depth > +deepest.depth ? point : deepest, null);
+  if (deepestPoint && deepestPoint.t >= tMin && deepestPoint.t <= tMax) {
+    const x = toX(deepestPoint.t), y = toY(deepestPoint.depth);
+    const depthUnit = typeof units !== 'undefined' && units === 'imperial' ? 'ft' : 'm';
+    const depthValue = depthUnit === 'ft' ? +deepestPoint.depth * 3.28084 : +deepestPoint.depth;
+    const label = `Max depth ${depthValue.toFixed(1)} ${depthUnit}`;
+    ctx.save();
+    clipToPlot();
+    ctx.strokeStyle = isLight ? 'rgba(5,91,108,0.65)' : 'rgba(151,224,229,0.8)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.save();
+    ctx.fillStyle = isLight ? '#075d70' : '#c7f6f4';
+    ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
+    ctx.textAlign = 'left';
+    ctx.translate(Math.min(x + 10, PAD.left + PW - 5), Math.max(PAD.top + 36, y - 5));
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(label, 0, 0);
+    ctx.restore();
+  }
+
   // Water temperature overlay, using an independent right-side scale.
   const temperatureWps = pathWps
     .map(wp => ({ t: +wp.t, value: +(wp.temperature ?? wp.temp) }))
@@ -436,6 +462,26 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.lineWidth = isMobile ? 1.5 : 2;
     ctx.globalAlpha = 0.9;
     ctx.stroke();
+    ctx.restore();
+
+    // Temperature samples are often recorded as a stepped line. Label each
+    // meaningful change at its corner while avoiding unreadable clusters.
+    let lastLabelX = -Infinity, lastLabelValue = null;
+    ctx.save();
+    ctx.fillStyle = '#596cff';
+    ctx.font = `600 ${isMobile ? 6 : 8}px "JetBrains Mono",monospace`;
+    ctx.textAlign = 'left';
+    displayed.forEach((wp, index) => {
+      const previous = displayed[index - 1];
+      const changed = !previous || Math.abs(wp.value - previous.value) >= 0.05;
+      const x = toX(wp.t), y = toTempY(wp.value);
+      if (!changed || x - lastLabelX < (isMobile ? 28 : 42) || wp.value === lastLabelValue) return;
+      const label = `${wp.value.toFixed(0)}°`;
+      const labelY = y < PAD.top + 14 ? y + 11 : y - 4;
+      ctx.fillText(label, Math.min(x + 3, PAD.left + PW - ctx.measureText(label).width - 2), labelY);
+      lastLabelX = x;
+      lastLabelValue = wp.value;
+    });
     ctx.restore();
 
     ctx.fillStyle = '#596cff';
