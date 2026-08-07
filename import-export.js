@@ -116,43 +116,20 @@
         saveJson: (filename, data) =>
           window.__TAURI__.core.invoke("save_json", { filename, data }),
       };
-    const dialog = document.getElementById("diveDialog"),
-      choiceDialog = document.getElementById("addDiveDialog"),
+    const choiceDialog = document.getElementById("addDiveDialog"),
       importFile = document.getElementById("importFile");
+    const choiceClose = choiceDialog.querySelector(".close");
+    choiceClose.textContent = "\u00d7";
+    choiceClose.setAttribute("aria-label", "Close");
     document.getElementById("addDive").onclick = () => choiceDialog.showModal();
     document.getElementById("chooseManualDive").onclick = () => {
       choiceDialog.close();
-      dialog.querySelector("[name=date]").value = new Date()
-        .toISOString()
-        .slice(0, 10);
-      dialog.showModal();
+      Core.feature("diveEditor").createManual();
     };
     document.getElementById("chooseImportDive").onclick = () => {
       choiceDialog.close();
       importFile.click();
     };
-    dialog.addEventListener("close", () => {
-      if (dialog.returnValue !== "default") return;
-      const form = new FormData(dialog.querySelector("form")),
-        depth = +form.get("depth"),
-        duration = +form.get("duration");
-      Core.commit((state) =>
-        state.dives.push({
-          id: crypto.randomUUID(),
-          date: form.get("date"),
-          site: form.get("site"),
-          depth,
-          duration,
-          temp: form.get("temp") === "" ? null : +form.get("temp"),
-          buddy: form.get("buddy"),
-          notes: form.get("notes"),
-          diveMode: "OC",
-          diveStyle: "",
-          profile: Core.sampleProfile(depth, duration),
-          updatedAt: new Date().toISOString(),
-        }),
-      ).then(() => Core.notify("Dive saved"));
-    });
     document.getElementById("backupJson").onclick = () =>
       exportJson().catch((error) => Core.notify(`Backup failed · ${error.message}`));
     document.getElementById("restoreJson").onchange = (event) => {

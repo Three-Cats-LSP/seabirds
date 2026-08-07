@@ -103,11 +103,11 @@ test("creates, imports, backs up, restores and deletes dives", async ({
   await page.getByRole("button", { name: "+ Add dive" }).click();
   await expect(page.locator("#addDiveDialog")).toBeVisible();
   await page.getByRole("button", { name: /Manual Input/i }).click();
-  const dialog = page.locator("#diveDialog");
-  await dialog.getByLabel("Site").fill("Manual Reef");
-  await dialog.getByLabel("Maximum depth (m)").fill("12.5");
-  await dialog.getByLabel("Duration (minutes)").fill("35");
-  await dialog.getByRole("button", { name: "Save dive" }).click();
+  const dialog = page.locator("#profileDialog");
+  await expect(dialog).toBeVisible();
+  await expect(page.getByRole("button", { name: "Notes", exact: true })).toHaveClass(/active/);
+  await dialog.getByLabel("Dive title").fill("Manual Reef");
+  await dialog.getByRole("button", { name: "Save changes" }).click();
   await expect(page.locator("#allDives .dive-row")).toContainText(
     "Manual Reef",
   );
