@@ -100,6 +100,12 @@ test("allows a user gas mix to override automatic gas detection", async ({
 test("exports one dive as text, PDF and UDDF", async ({ page }) => {
   await page.locator('.nav[data-view="settings"]').click();
   await page.getByLabel("Load sample dives").check();
+  const textExport = await page.evaluate(() =>
+    window.SeaBirds.DiveTextExport.build(window.SeaBirds.Core.getState().dives[0]),
+  );
+  expect(textExport).toContain("PROFILE SAMPLES");
+  expect(textExport).toMatch(/min\s+\d+\.\d m\s+\S+ \u00b0C\s+NDL/);
+  expect(textExport).not.toContain("\t");
   await page.locator('.nav[data-view="dives"]').click();
   await page.locator("#allDives .dive-row").first().click();
   const formats = [
