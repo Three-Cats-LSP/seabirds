@@ -7,6 +7,10 @@ test.beforeEach(async ({ page }) => {
   );
 });
 test("starts all modules and navigates", async ({ page }) => {
+  await expect(page.locator('.nav[data-view="dashboard"]')).toHaveCount(0);
+  await expect(page.locator("#dashboard")).toHaveCount(0);
+  await expect(page.locator("#dives")).toHaveClass(/active/);
+  await expect(page.locator("#dives .stats")).toBeVisible();
   const modules = await page.evaluate(() =>
     [
       "diveList",

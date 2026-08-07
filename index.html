@@ -22,11 +22,7 @@
           </span>
         </a>
         <nav>
-          <button class="nav active" data-view="dashboard">
-            <span>⌁</span>
-            Overview
-          </button>
-          <button class="nav" data-view="dives">
+          <button class="nav active" data-view="dives">
             <span>◫</span>
             Dive log
             <em id="diveCount">0</em>
@@ -55,12 +51,12 @@
           <div class="crumb">
             Dive log
             <span>/</span>
-            <b id="viewName">Overview</b>
+            <b id="viewName">Dive log</b>
           </div>
         </header>
 
-        <section class="view active" id="dashboard">
-          <div class="hero overview-welcome">
+        <section class="view active" id="dives">
+          <div class="hero overview-welcome logbook-welcome">
             <div>
               <p class="eyebrow">WELCOME BACK</p>
             </div>
@@ -73,10 +69,7 @@
             </article>
             <article>
               <span>Total Bottom Time</span>
-              <strong id="statTime">
-                0
-                <sup>h</sup>
-              </strong>
+              <strong id="statTime">0 <sup>h</sup></strong>
               <small>across all dives</small>
             </article>
             <article>
@@ -90,17 +83,6 @@
               <small>personal record</small>
             </article>
           </div>
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">LOGBOOK</p>
-              <h2>Recent dives</h2>
-            </div>
-            <button class="text-btn" data-goto="dives">View all →</button>
-          </div>
-          <div id="recentDives" class="dive-list"></div>
-        </section>
-
-        <section class="view" id="dives">
           <div class="page-head">
             <div>
               <p class="eyebrow">LOGBOOK</p>
