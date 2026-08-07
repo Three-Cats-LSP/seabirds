@@ -421,14 +421,14 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     const label = `Max depth ${depthValue.toFixed(1)} ${depthUnit}`;
     ctx.save();
     clipToPlot();
-    ctx.strokeStyle = isLight ? 'rgba(23,145,97,0.82)' : 'rgba(106,224,150,0.88)';
+    ctx.strokeStyle = isLight ? 'rgba(201,151,24,0.9)' : 'rgba(255,216,94,0.92)';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 3]);
     ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, y); ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
     ctx.save();
-    ctx.fillStyle = isLight ? '#137e55' : '#6ae096';
+    ctx.fillStyle = isLight ? '#a97708' : '#ffd85e';
     ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
     ctx.textAlign = 'left';
     ctx.translate(Math.min(x + 10, PAD.left + PW - 5), PAD.top + 12);
@@ -490,8 +490,9 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     const suffix = `°${useFahrenheit ? 'F' : 'C'}`;
     ctx.fillText(`${rawTempMax.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + 10);
     ctx.fillText(`${rawTempMin.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + PH - 5);
-    ctx.textAlign = 'left';
-    ctx.fillText('WATER TEMP', Math.min(PAD.left + PW - 58, toX(displayed[0].t) + 5), Math.max(PAD.top + 10, toTempY(displayed[0].value) - 5));
+    const finalTemperature = displayed[displayed.length - 1];
+    ctx.textAlign = 'right';
+    ctx.fillText('WATER TEMP', Math.max(PAD.left + 58, toX(finalTemperature.t) - 4), Math.max(PAD.top + 10, toTempY(finalTemperature.value) - 5));
   }
 
   // ── Deco ceiling line overlay ──
@@ -531,9 +532,8 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.save();
     ctx.fillStyle = color;
     ctx.font = `700 ${isMobile ? 6 : 8}px "JetBrains Mono",monospace`;
-    const firstVisible = finite.find(point => point.t >= tMin && point.t <= tMax);
     ctx.textAlign = 'left';
-    if (firstVisible) ctx.fillText(label, PAD.left + 5, Math.max(PAD.top + 10, toMetricY(firstVisible.value) - 5));
+    ctx.fillText(label, PAD.left + 5, PAD.top + 11);
     ctx.restore();
   }
   drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
