@@ -428,7 +428,7 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.setLineDash([]);
     ctx.restore();
     ctx.save();
-    ctx.fillStyle = isLight ? '#f0bd00' : '#ffd85e';
+    ctx.fillStyle = isLight ? '#000000' : '#ffd85e';
     ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
     ctx.textAlign = 'left';
     ctx.translate(Math.min(x + 10, PAD.left + PW - 5), PAD.top + 12);
