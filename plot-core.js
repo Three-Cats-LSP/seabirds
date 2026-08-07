@@ -421,18 +421,18 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     const label = `Max depth ${depthValue.toFixed(1)} ${depthUnit}`;
     ctx.save();
     clipToPlot();
-    ctx.strokeStyle = isLight ? 'rgba(5,91,108,0.65)' : 'rgba(151,224,229,0.8)';
+    ctx.strokeStyle = isLight ? 'rgba(23,145,97,0.82)' : 'rgba(106,224,150,0.88)';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 3]);
     ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, y); ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
     ctx.save();
-    ctx.fillStyle = isLight ? '#075d70' : '#c7f6f4';
+    ctx.fillStyle = isLight ? '#137e55' : '#6ae096';
     ctx.font = `600 ${isMobile ? 7 : 9}px "JetBrains Mono",monospace`;
     ctx.textAlign = 'left';
-    ctx.translate(Math.min(x + 10, PAD.left + PW - 5), Math.max(PAD.top + 36, y - 5));
-    ctx.rotate(-Math.PI / 2);
+    ctx.translate(Math.min(x + 10, PAD.left + PW - 5), PAD.top + 12);
+    ctx.rotate(Math.PI / 2);
     ctx.fillText(label, 0, 0);
     ctx.restore();
   }
@@ -491,7 +491,7 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.fillText(`${rawTempMax.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + 10);
     ctx.fillText(`${rawTempMin.toFixed(0)}${suffix}`, PAD.left + PW - 4, PAD.top + PH - 5);
     ctx.textAlign = 'left';
-    ctx.fillText('WATER TEMP', PAD.left + 5, PAD.top + 10);
+    ctx.fillText('WATER TEMP', Math.min(PAD.left + PW - 58, toX(displayed[0].t) + 5), Math.max(PAD.top + 10, toTempY(displayed[0].value) - 5));
   }
 
   // ── Deco ceiling line overlay ──
@@ -512,7 +512,7 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.strokeStyle = color;
     ctx.lineWidth = isMobile ? 1.4 : 1.8;
     ctx.globalAlpha = 0.92;
-    let started = false;
+    let started = false, skippedOpeningPoint = false;
     values.forEach(point => {
       if (point.t < tMin || point.t > tMax || !Number.isFinite(point.value)) {
         if (started) ctx.stroke();
@@ -520,6 +520,9 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
         return;
       }
       const x = toX(point.t), y = toMetricY(point.value);
+      // The first packet commonly contains a placeholder. Skipping it avoids
+      // an artificial vertical trace along the left edge of the graph.
+      if (!skippedOpeningPoint) { skippedOpeningPoint = true; return; }
       if (!started) { ctx.beginPath(); ctx.moveTo(x, y); started = true; }
       else ctx.lineTo(x, y);
     });
@@ -528,8 +531,9 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.save();
     ctx.fillStyle = color;
     ctx.font = `700 ${isMobile ? 6 : 8}px "JetBrains Mono",monospace`;
-    ctx.textAlign = 'right';
-    ctx.fillText(label, PAD.left + PW - 5, PAD.top + (label === 'NDL' ? 22 : 34));
+    const firstVisible = finite.find(point => point.t >= tMin && point.t <= tMax);
+    ctx.textAlign = 'left';
+    if (firstVisible) ctx.fillText(label, PAD.left + 5, Math.max(PAD.top + 10, toMetricY(firstVisible.value) - 5));
     ctx.restore();
   }
   drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
