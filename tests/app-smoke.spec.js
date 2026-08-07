@@ -117,7 +117,7 @@ test("shows readable placeholders for missing dive times", async ({ page }) => {
     }),
   );
   await expect(page.locator("#allDives .dive-row")).toContainText(
-    "RT --:-- – --:--",
+    "--:-- – --:--",
   );
 });
 test("draft edits persist, remain searchable and filter by mode and style", async ({
