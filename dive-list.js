@@ -16,7 +16,7 @@
       !d.computerModel &&
       !String(d.id || "").startsWith("shearwater-")
     )
-      return "Manual entry";
+      return "Manual";
     const raw = String(d.computer || d.computerModel || "Shearwater")
         .replace(/^Shearwater\s+/i, "")
         .trim(),
@@ -89,7 +89,7 @@
   }
   function sources() {
     return [...new Set(Core.getState().dives.map(source))].sort((a, b) =>
-      a === "Manual entry" ? 1 : b === "Manual entry" ? -1 : a.localeCompare(b),
+      a === "Manual" ? 1 : b === "Manual" ? -1 : a.localeCompare(b),
     );
   }
   function renderGroup(id, label, attribute, available, selected) {
