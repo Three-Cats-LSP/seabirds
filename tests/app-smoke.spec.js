@@ -25,7 +25,10 @@ test("starts all modules and navigates", async ({ page }) => {
   expect(modules).toEqual([true, true, true, true, true, true, true]);
   await page.locator('.nav[data-view="settings"]').click();
   await expect(page.locator("#settings")).toHaveClass(/active/);
-  await expect(page.locator(".settings-collapse")).not.toHaveAttribute("open", "");
+  await expect(page.locator(".settings-collapse")).not.toHaveAttribute(
+    "open",
+    "",
+  );
   await page.getByText("Units & formats", { exact: true }).click();
   await expect(page.locator(".settings-collapse")).toHaveAttribute("open", "");
   await expect(page.locator("#masterGearLibrary")).toBeHidden();
@@ -37,16 +40,20 @@ test("starts all modules and navigates", async ({ page }) => {
   await expect(page.locator("#settingsMain")).toBeVisible();
 });
 
-test("calculates GF99 samples with the ZHL profile engine", async ({ page }) => {
-  const result = await page.evaluate(() => window.SeaBirdsZhlProfile.annotate([
-    { t: 0, depth: 0, gas: "21/0" },
-    { t: 2, depth: 20, gas: "21/0" },
-    { t: 22, depth: 20, gas: "21/0" },
-    { t: 25, depth: 0, gas: "21/0" },
-  ]));
+test("calculates GF99 samples with the ZHL profile engine", async ({
+  page,
+}) => {
+  const result = await page.evaluate(() =>
+    window.SeaBirdsZhlProfile.annotate([
+      { t: 0, depth: 0, gas: "21/0" },
+      { t: 2, depth: 20, gas: "21/0" },
+      { t: 22, depth: 20, gas: "21/0" },
+      { t: 25, depth: 0, gas: "21/0" },
+    ]),
+  );
   expect(result).toHaveLength(4);
-  expect(result.every(point => Number.isFinite(point.gf99))).toBeTruthy();
-  expect(Math.max(...result.map(point => point.gf99))).toBeGreaterThan(0);
+  expect(result.every((point) => Number.isFinite(point.gf99))).toBeTruthy();
+  expect(Math.max(...result.map((point) => point.gf99))).toBeGreaterThan(0);
 });
 test("paginates dives and filters by year and month", async ({ page }) => {
   await page.evaluate(() =>
@@ -54,7 +61,10 @@ test("paginates dives and filters by year and month", async ({ page }) => {
       state.dives = Array.from({ length: 12 }, (_, index) => ({
         id: `page-${index}`,
         site: `Pagination dive ${index + 1}`,
-        date: index < 6 ? `2026-08-${String(index + 1).padStart(2, "0")}` : `2025-07-${String(index - 5).padStart(2, "0")}`,
+        date:
+          index < 6
+            ? `2026-08-${String(index + 1).padStart(2, "0")}`
+            : `2025-07-${String(index - 5).padStart(2, "0")}`,
         time: "10:00",
         depth: 18,
         duration: 40,
@@ -99,23 +109,29 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("Dive title").fill("Saved smoke dive");
   await page.getByLabel("Location").fill("Okinawa");
   await page.getByRole("dialog").getByLabel("Site").fill("Blue Cave");
-  await page.getByLabel("Dive mode").selectOption("CCR");
+  await page.getByLabel("Dive mode").selectOption("CC/BO");
   await page.getByLabel("Dive style").selectOption("Sidemount");
+  await page.getByLabel("Salinity").selectOption("Fresh");
   await page.getByRole("button", { name: "Save changes" }).click();
   const savedRow = page.locator("#allDives .dive-row").first();
   await expect(savedRow).toContainText("Saved smoke dive");
-  await expect(savedRow).toContainText("CCR / Sidemount");
+  await expect(savedRow).toContainText("CC/BO / Sidemount");
   await expect(savedRow).toContainText("2026-08-02");
   await expect(savedRow).toContainText("2:35 PM");
   await expect(savedRow.locator(".dive-number-cell")).toContainText("321");
   await expect(savedRow).toContainText("Okinawa");
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.SeaBirds.Core.getState().dives[0]?.salinity),
+    )
+    .toBe("Fresh");
   await page.waitForTimeout(300);
   await page.reload();
   await page.locator('.nav[data-view="dives"]').click();
   await page.getByRole("searchbox").fill("321");
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.getByRole("searchbox").fill("");
-  await page.locator("#modeFilters").getByLabel("CCR").check();
+  await page.locator("#modeFilters").getByLabel("CC/BO").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.locator("#styleFilters").getByLabel("Sidemount").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
@@ -149,7 +165,9 @@ test("exports one dive as text, PDF and UDDF", async ({ page }) => {
   await page.locator('.nav[data-view="settings"]').click();
   await page.getByLabel("Load sample dives").check();
   const textExport = await page.evaluate(() =>
-    window.SeaBirds.DiveTextExport.build(window.SeaBirds.Core.getState().dives[0]),
+    window.SeaBirds.DiveTextExport.build(
+      window.SeaBirds.Core.getState().dives[0],
+    ),
   );
   expect(textExport).toContain("PROFILE SAMPLES");
   expect(textExport).toMatch(/min\s+\d+\.\d m\s+\S+ \u00b0C\s+NDL/);
@@ -158,17 +176,34 @@ test("exports one dive as text, PDF and UDDF", async ({ page }) => {
     const dive = window.SeaBirds.Core.getState().dives[0];
     return { source: dive, xml: window.SeaBirds.DiveUddfExport.build(dive) };
   });
-  expect(uddfExport.xml).toContain("<profiletimeunit>seconds</profiletimeunit>");
+  expect(uddfExport.xml).toContain(
+    "<profiletimeunit>seconds</profiletimeunit>",
+  );
   await page.locator("#importFile").setInputFiles({
     name: "round-trip.uddf",
     mimeType: "application/xml",
     buffer: Buffer.from(uddfExport.xml),
   });
-  await expect.poll(() => page.evaluate(() => window.SeaBirds.Core.getState().dives.length)).toBe(4);
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.SeaBirds.Core.getState().dives.length),
+    )
+    .toBe(4);
   const restoredProfile = await page.evaluate(() => {
     const state = window.SeaBirds.Core.getState();
-    const normalise = (profile) => profile.map((point) => [point.t, point.depth, point.temperature ?? point.temp ?? null, point.ndl ?? null, point.tts ?? null]);
-    return { duration: state.dives.at(-1).duration, source: normalise(state.dives[0].profile), restored: normalise(state.dives.at(-1).profile) };
+    const normalise = (profile) =>
+      profile.map((point) => [
+        point.t,
+        point.depth,
+        point.temperature ?? point.temp ?? null,
+        point.ndl ?? null,
+        point.tts ?? null,
+      ]);
+    return {
+      duration: state.dives.at(-1).duration,
+      source: normalise(state.dives[0].profile),
+      restored: normalise(state.dives.at(-1).profile),
+    };
   });
   expect(restoredProfile.duration).toBe(uddfExport.source.duration);
   expect(restoredProfile.restored).toEqual(restoredProfile.source);
@@ -197,7 +232,9 @@ test("creates, imports, backs up, restores and deletes dives", async ({
   await page.getByRole("button", { name: /Manual Input/i }).click();
   const dialog = page.locator("#profileDialog");
   await expect(dialog).toBeVisible();
-  await expect(page.getByRole("button", { name: "Notes", exact: true })).toHaveClass(/active/);
+  await expect(
+    page.getByRole("button", { name: "Notes", exact: true }),
+  ).toHaveClass(/active/);
   await dialog.getByLabel("Dive title").fill("Manual Reef");
   await dialog.getByRole("button", { name: "Save changes" }).click();
   await expect(page.locator("#allDives .dive-row")).toContainText(

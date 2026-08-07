@@ -1,7 +1,134 @@
-(function(){
-'use strict';
-const NS=window.SeaBirds=window.SeaBirds||{};
-function clean(value){return value===null||value===undefined||value===''?'—':String(value)}
-async function save(dive){if(!window.jspdf?.jsPDF)throw new Error('PDF engine is not available.');const{jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'}),margin=16,width=178;let y=18;const page=()=>{if(y>278){doc.addPage();y=18}},row=(label,value)=>{page();doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(22,123,138);doc.text(label.toUpperCase(),margin,y);doc.setFont('helvetica','normal');doc.setTextColor(7,27,37);doc.setFontSize(11);const lines=doc.splitTextToSize(clean(value),125);doc.text(lines,62,y);y+=Math.max(7,lines.length*5)};doc.setTextColor(7,27,37);doc.setFont('times','bold');doc.setFontSize(24);doc.text(dive.site||'Untitled dive',margin,y);y+=9;doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(97,113,122);doc.text(`SeaBirds dive log${dive.diveNumber?' · #'+dive.diveNumber:''}`,margin,y);y+=10;row('Date',dive.date);row('Time',`${clean(dive.time)} – ${clean(dive.endTime)}`);row('Dive spot',dive.location);row('Buddy',dive.buddy);row('Mode / style',[dive.diveMode,dive.diveStyle].filter(Boolean).join(' / '));row('Gas',dive.gasUsed);row('Depth / duration',`${clean(dive.depth)} m · ${clean(dive.duration)} min`);row('Temperature',dive.temp==null?'—':dive.temp+' °C');row('Tags',(dive.tags||[]).join(', '));row('Equipment',(dive.equipment||[]).join(', '));row('Notes',dive.notes);row('Dive computer',[dive.computer,dive.computerSerial,dive.computerFirmware].filter(Boolean).join(' · '));const canvas=document.getElementById('seaBirdsProfileCanvas');if(canvas&&canvas.width&&canvas.height&&NS.DiveExportUtils.profile(dive).length){page();y+=3;doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(7,27,37);doc.text('DIVE PROFILE',margin,y);y+=5;const imageHeight=width*(canvas.height/canvas.width);if(y+imageHeight>285){doc.addPage();y=18}doc.addImage(canvas.toDataURL('image/png'),'PNG',margin,y,width,imageHeight);y+=imageHeight+6}const p=NS.DiveExportUtils.profile(dive);if(p.length){page();doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text('PROFILE SAMPLES',margin,y);y+=6;doc.setFont('courier','normal');doc.setFontSize(7);doc.setTextColor(60,70,75);for(const point of p.filter((_,index)=>index%Math.max(1,Math.ceil(p.length/80))===0)){page();doc.text(`${point.t.toFixed(1).padStart(6)} min   ${point.depth.toFixed(1).padStart(5)} m   ${clean(point.temperature??point.temp).padStart(5)} °C   NDL ${clean(point.ndl).padStart(4)}   TTS ${clean(point.tts).padStart(4)}`,margin,y);y+=3.5}}doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(120,130,135);doc.text(`Exported by SeaBirds · ${new Date().toISOString()}`,margin,291);await NS.DiveExportUtils.saveBlob(doc.output('blob'),NS.DiveExportUtils.safeName(dive,'pdf'))}
-NS.DivePdfExport={save};
+(function () {
+  "use strict";
+  const NS = (window.SeaBirds = window.SeaBirds || {});
+  function clean(value) {
+    return value === null || value === undefined || value === ""
+      ? "—"
+      : String(value);
+  }
+  async function save(dive) {
+    if (!window.jspdf?.jsPDF) throw new Error("PDF engine is not available.");
+    const { jsPDF } = window.jspdf,
+      doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" }),
+      margin = 16,
+      width = 178;
+    let y = 18;
+    const page = () => {
+        if (y > 278) {
+          doc.addPage();
+          y = 18;
+        }
+      },
+      row = (label, value) => {
+        page();
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(22, 123, 138);
+        doc.text(label.toUpperCase(), margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(7, 27, 37);
+        doc.setFontSize(11);
+        const lines = doc.splitTextToSize(clean(value), 125);
+        doc.text(lines, 62, y);
+        y += Math.max(7, lines.length * 5);
+      };
+    doc.setTextColor(7, 27, 37);
+    doc.setFont("times", "bold");
+    doc.setFontSize(24);
+    doc.text(dive.site || "Untitled dive", margin, y);
+    y += 9;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(97, 113, 122);
+    doc.text(
+      `SeaBirds dive log${dive.diveNumber ? " · #" + dive.diveNumber : ""}`,
+      margin,
+      y,
+    );
+    y += 10;
+    row("Date", dive.date);
+    row("Time", `${clean(dive.time)} – ${clean(dive.endTime)}`);
+    row("Dive spot", dive.location);
+    row("Buddy", dive.buddy);
+    row(
+      "Mode / style",
+      [dive.diveMode, dive.diveStyle].filter(Boolean).join(" / "),
+    );
+    row("Gas", dive.gasUsed);
+    row("Salinity", dive.salinity);
+    row(
+      "Depth / duration",
+      `${clean(dive.depth)} m · ${clean(dive.duration)} min`,
+    );
+    row("Temperature", dive.temp == null ? "—" : dive.temp + " °C");
+    row("Tags", (dive.tags || []).join(", "));
+    row("Equipment", (dive.equipment || []).join(", "));
+    row("Notes", dive.notes);
+    row(
+      "Dive computer",
+      [dive.computer, dive.computerSerial, dive.computerFirmware]
+        .filter(Boolean)
+        .join(" · "),
+    );
+    const canvas = document.getElementById("seaBirdsProfileCanvas");
+    if (
+      canvas &&
+      canvas.width &&
+      canvas.height &&
+      NS.DiveExportUtils.profile(dive).length
+    ) {
+      page();
+      y += 3;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(7, 27, 37);
+      doc.text("DIVE PROFILE", margin, y);
+      y += 5;
+      const imageHeight = width * (canvas.height / canvas.width);
+      if (y + imageHeight > 285) {
+        doc.addPage();
+        y = 18;
+      }
+      doc.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        margin,
+        y,
+        width,
+        imageHeight,
+      );
+      y += imageHeight + 6;
+    }
+    const p = NS.DiveExportUtils.profile(dive);
+    if (p.length) {
+      page();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("PROFILE SAMPLES", margin, y);
+      y += 6;
+      doc.setFont("courier", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(60, 70, 75);
+      for (const point of p.filter(
+        (_, index) => index % Math.max(1, Math.ceil(p.length / 80)) === 0,
+      )) {
+        page();
+        doc.text(
+          `${point.t.toFixed(1).padStart(6)} min   ${point.depth.toFixed(1).padStart(5)} m   ${clean(point.temperature ?? point.temp).padStart(5)} °C   NDL ${clean(point.ndl).padStart(4)}   TTS ${clean(point.tts).padStart(4)}`,
+          margin,
+          y,
+        );
+        y += 3.5;
+      }
+    }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(120, 130, 135);
+    doc.text(`Exported by SeaBirds · ${new Date().toISOString()}`, margin, 291);
+    await NS.DiveExportUtils.saveBlob(
+      doc.output("blob"),
+      NS.DiveExportUtils.safeName(dive, "pdf"),
+    );
+  }
+  NS.DivePdfExport = { save };
 })();

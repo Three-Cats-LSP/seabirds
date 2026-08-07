@@ -4,6 +4,14 @@
     Core = NS.Core;
   let activeId = null,
     draft = null;
+  const normalizeDiveMode = (value, profile = []) => {
+    const legacy = { OC: "Air", CCR: "CC/BO", pSCR: "CC/BO" };
+    return (
+      legacy[value] ||
+      value ||
+      (profile.some((point) => point.setpoint != null) ? "CC/BO" : "Air")
+    );
+  };
   function getDraft() {
     return draft;
   }
@@ -73,8 +81,7 @@
           ? null
           : "Air",
       gas = d.gasUsed || detectedGas,
-      mode =
-        d.diveMode || (profile.some((p) => p.setpoint != null) ? "CCR" : "OC"),
+      mode = normalizeDiveMode(d.diveMode, profile),
       formattedDate = Core.formatDate(d.date).full,
       formattedTime = displayTime(d.time);
     document.getElementById("profileTitle").textContent =
@@ -89,6 +96,7 @@
       ["Dive date", formattedDate],
       ["Dive time", formattedTime || null],
       ["Dive mode", mode],
+      ["Salinity", d.salinity || null],
       [
         "Maximum depth",
         Core.converted(+d.depth).toFixed(1) + " " + state.settings.depth,
@@ -125,6 +133,7 @@
     document.getElementById("editDiveMode").value = mode;
     document.getElementById("editDiveStyle").value = d.diveStyle || "";
     document.getElementById("editDiveGas").value = gas || "";
+    document.getElementById("editDiveSalinity").value = d.salinity || "";
     document.getElementById("editDiveNotes").value =
       d.notes === "Downloaded from Perdix" ? "" : d.notes || "";
     Core.feature("equipment")?.renderDive(d);
@@ -205,9 +214,10 @@
         buddy: "",
         tags: [],
         notes: "",
-        diveMode: "OC",
+        diveMode: "Air",
         diveStyle: "",
         gasUsed: "",
+        salinity: "",
         depth: 0,
         duration: 0,
         temp: null,
@@ -268,6 +278,7 @@
     draft.diveMode = document.getElementById("editDiveMode").value;
     draft.diveStyle = document.getElementById("editDiveStyle").value;
     draft.gasUsed = document.getElementById("editDiveGas").value.trim();
+    draft.salinity = document.getElementById("editDiveSalinity").value;
     draft.notes = document.getElementById("editDiveNotes").value.trim();
     draft.userEdited = true;
     draft.updatedAt = new Date().toISOString();
