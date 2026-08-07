@@ -1,4 +1,4 @@
-const CACHE='seabirds-v88';
+const CACHE='seabirds-v89';
 const ASSETS=['./','index.html','app.css','seabirds.css','app.js','app-core.js','dive-list.js','dive-editor.js','equipment.js','devices-ui.js','settings-ui.js','import-export.js','storage.js','shearwater.js','sync.js','update.js','app-version.js','version.json','plot-core.js','manifest.webmanifest','icon-192.png','icon-512.png','seabirds-app-icon.png','shearwater-logo-stacked.png','tab-profile.png','tab-notes.png','tab-equipment.png','tab-information.png','app-threecats.png','app-dplanner.png','app-tviewer.png','app-getinwater.png','firebase-config.js','vendor/firebase/firebase-app-compat.js','vendor/firebase/firebase-auth-compat.js','vendor/firebase/firebase-firestore-compat.js'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
