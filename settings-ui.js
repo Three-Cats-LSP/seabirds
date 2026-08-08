@@ -10,17 +10,8 @@
     if (!target) return;
     const groups = Core.getState().diveGroups || [];
     target.innerHTML = groups.length
-      ? groups.map((group) => `<article class="dive-group-card"><span><b>${Core.esc(group.name)}</b><small>${group.type === "rule" ? `Automatic: ${Core.esc(group.field)} = ${Core.esc(group.value)}` : "Manual collection"}</small></span><span class="dive-group-card-actions"><button type="button" class="edit-dive-group" data-group-id="${Core.esc(group.id)}">Edit</button><button type="button" class="remove-dive-group" data-group-id="${Core.esc(group.id)}" title="Delete group">×</button></span></article>`).join("")
+      ? groups.map((group) => `<article class="dive-group-card"><span><b>${Core.esc(group.name)}</b><small>${group.type === "rule" ? `Automatic: ${Core.esc(group.field)} = ${Core.esc(group.value)}` : "Manual collection"}</small></span><span class="dive-group-card-actions"><button type="button" class="edit-dive-group" data-group-id="${Core.esc(group.id)}" title="Edit group" aria-label="Edit group">&#9998;</button><button type="button" class="remove-dive-group" data-group-id="${Core.esc(group.id)}" title="Delete group" aria-label="Delete group">&#215;</button></span></article>`).join("")
       : "<small>No groups yet. Create a group to organize your logbook.</small>";
-    target.querySelectorAll(".edit-dive-group").forEach((button) => {
-      button.textContent = "✎";
-      button.title = "Edit group";
-      button.setAttribute("aria-label", "Edit group");
-    });
-    target.querySelectorAll(".remove-dive-group").forEach((button) => {
-      button.title = "Delete group";
-      button.setAttribute("aria-label", "Delete group");
-    });
   }
   function render() {
     const state = Core.getState();
