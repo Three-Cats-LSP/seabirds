@@ -116,6 +116,29 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await page.locator("#search").click();
   await expect(page.locator("#monthFilter")).not.toHaveAttribute("open", "");
 });
+test("filters manual and automatic dive groups", async ({ page }) => {
+  await page.evaluate(() =>
+    window.SeaBirds.Core.commit((state) => {
+      state.diveGroups = [
+        { id: "okinawa", name: "Okinawa", type: "rule", field: "location", value: "Okinawa" },
+        { id: "fun", name: "Fun dives", type: "manual" },
+      ];
+      state.dives = [
+        { id: "group-rule", site: "Rule dive", date: "2026-08-01", depth: 10, duration: 30, temp: 25, location: "Okinawa" },
+        { id: "group-manual", site: "Manual group dive", date: "2026-08-02", depth: 12, duration: 35, temp: 25, groupIds: ["fun"] },
+      ];
+    }),
+  );
+  await expect(page.locator("#groupFilters")).toContainText("Okinawa");
+  await page.locator(".logbook-filter-collapse summary").click();
+  await page.locator("#groupFilters").getByLabel("Okinawa").check();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
+  await expect(page.locator("#allDives")).toContainText("Rule dive");
+  await page.locator("#groupFilters").getByLabel("All").check();
+  await page.locator("#groupFilters").getByLabel("Fun dives").check();
+  await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
+  await expect(page.locator("#allDives")).toContainText("Manual group dive");
+});
 test("shows readable placeholders for missing dive times", async ({ page }) => {
   await page.evaluate(() =>
     window.SeaBirds.Core.commit((state) => {

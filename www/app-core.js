@@ -10,7 +10,7 @@ const gearCatalog={
 const clone=value=>value==null?value:(typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value)));
 const defaultGearLibrary=()=>clone(gearCatalog);
 const defaultSettings=()=>({depth:'m',temp:'c',volume:'l',weight:'kg',pressure:'bar',dateFormat:'ymd',timeFormat:'12',divesPerPage:25});
-const normalizeState=(value={})=>Object.assign({dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),revision:0,updatedAt:''},value,{settings:Object.assign(defaultSettings(),value.settings||{})});
+const normalizeState=(value={})=>Object.assign({dives:[],deletedDiveIds:[],gearLibrary:defaultGearLibrary(),diveGroups:[],revision:0,updatedAt:''},value,{diveGroups:Array.isArray(value.diveGroups)?value.diveGroups:[],settings:Object.assign(defaultSettings(),value.settings||{})});
 const sampleProfile=(depth,duration)=>[{t:0,depth:0,type:'surface'},{t:2,depth,type:'descent'},{t:Math.max(3,duration-5),depth,type:'bottom'},{t:duration-2,depth:5,type:'ascent'},{t:duration,depth:0,type:'surface'}];
 const demo=[
  {id:'demo-1',date:'2026-07-28',site:'Blue Corner',location:'Palau',depth:31.8,duration:52,temp:28,buddy:'Maya',notes:'Strong current, grey reef sharks.',profile:sampleProfile(31.8,52)},

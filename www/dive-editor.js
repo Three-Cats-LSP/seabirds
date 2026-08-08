@@ -35,6 +35,18 @@
     document.getElementById("profileTitle").innerHTML =
       `<span class="dive-entry-primary"><span class="dive-entry-number">#${Core.esc(number)}</span><span class="dive-entry-title">${Core.esc(d.site || "Untitled dive")}</span></span><span class="dive-entry-meta">${Core.esc(date)}</span>`;
   }
+  function renderGroupChoices(d) {
+    const target = document.getElementById("editDiveGroups"),
+      groups = Core.getState().diveGroups || [],
+      matches = Core.feature("diveList")?.matchesGroup;
+    if (!target) return;
+    target.innerHTML = `<legend>Groups</legend>${groups.length ? groups.map((group) => {
+      const automatic = group.type === "rule";
+      const checked = automatic ? matches?.(d, group) : (d.groupIds || []).includes(group.id);
+      const detail = automatic ? `${group.field}: ${group.value}` : "Manual";
+      return `<label><input type="checkbox" data-dive-group="${Core.esc(group.id)}" ${checked ? "checked" : ""} ${automatic ? "disabled" : ""}> ${Core.esc(group.name)} <small>${Core.esc(detail)}</small></label>`;
+    }).join("") : '<small>Create dive groups in Settings to organize this logbook.</small>'}`;
+  }
   function fill(d) {
     const state = Core.getState(),
       profile = d.profile?.length
@@ -137,6 +149,7 @@
     document.getElementById("editDiveSalinity").value = d.salinity || "";
     document.getElementById("editDiveNotes").value =
       d.notes === "Downloaded from Perdix" ? "" : d.notes || "";
+    renderGroupChoices(d);
     Core.feature("equipment")?.renderDive(d);
     const isComputerDive = String(d.id).startsWith("shearwater-"),
       serialFallback = isComputerDive ? String(d.id).split("-")[1] : null,
@@ -278,6 +291,9 @@
       .value.split(",")
       .map((x) => x.trim())
       .filter(Boolean);
+    draft.groupIds = [...document.querySelectorAll("#editDiveGroups [data-dive-group]:checked")]
+      .filter((input) => !input.disabled)
+      .map((input) => input.dataset.diveGroup);
     draft.diveMode = document.getElementById("editDiveMode").value;
     draft.diveStyle = document.getElementById("editDiveStyle").value;
     draft.gasUsed = document.getElementById("editDiveGas").value.trim();

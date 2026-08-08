@@ -190,6 +190,11 @@
                 class="device-filters classification-filters"
                 aria-label="Dive type filters"
               ></div>
+              <div
+                id="groupFilters"
+                class="device-filters classification-filters"
+                aria-label="Dive group filters"
+              ></div>
             </div>
           </details>
           <div id="allDives" class="dive-list"></div>
@@ -410,6 +415,12 @@
                 </span>
                 <button type="button" id="openMasterGear">Manage lists</button>
               </div>
+              <details class="dive-groups-settings">
+                <summary>Dive groups</summary>
+                <p>Organize dives with automatic field rules or your own manual groups.</p>
+                <div id="diveGroupsLibrary" class="dive-groups-library"></div>
+                <button type="button" id="addDiveGroup">+ Add group</button>
+              </details>
               <label class="check">
                 <input id="demoToggle" type="checkbox" />
                 Load sample dives
@@ -875,6 +886,9 @@
                 id="editDiveTags"
                 placeholder="training, wreck, night"
             /></label>
+            <fieldset id="editDiveGroups" class="wide dive-groups-field">
+              <legend>Groups</legend>
+            </fieldset>
             <label class="wide"
               >Notes<textarea
                 id="editDiveNotes"

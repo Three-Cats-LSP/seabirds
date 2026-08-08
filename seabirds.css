@@ -1632,6 +1632,64 @@
   gap: 18px;
   padding-top: 20px;
 }
+.dive-groups-settings {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+.dive-groups-settings summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 2px 0;
+  list-style: none;
+}
+.dive-groups-settings summary::-webkit-details-marker { display: none; }
+.dive-groups-settings summary:after {
+  content: "+";
+  float: right;
+  color: var(--blue);
+  font-size: 18px;
+  line-height: 1;
+}
+.dive-groups-settings[open] summary:after { content: "\2212"; }
+.dive-groups-settings p {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dive-groups-library {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 12px;
+}
+.dive-group-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.dive-group-card span { display: grid; gap: 2px; }
+.dive-group-card small { color: var(--muted); }
+.remove-dive-group {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  color: #b84232;
+}
+.dive-groups-field {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.dive-groups-field legend { padding: 0 4px; font-size: 12px; color: var(--muted); }
+.dive-groups-field label { display: flex; align-items: baseline; gap: 6px; font-size: 13px; }
+.dive-groups-field small { color: var(--muted); }
 .settings-options label {
   width: 100%;
 }

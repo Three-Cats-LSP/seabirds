@@ -6,6 +6,7 @@
     modeFilters = new Set(),
     styleFilters = new Set(),
     typeFilters = new Set(),
+    groupFilters = new Set(),
     yearFilters = new Set(),
     monthFilters = new Set(),
     sort = "date-desc",
@@ -41,6 +42,12 @@
       : "Air");
   const style = (d) => d.diveStyle || "N/A";
   const diveType = (d) => d.diveType || "N/A";
+  const matchesGroup = (d, group) => {
+    if (!group) return false;
+    if (group.type === "manual") return (d.groupIds || []).includes(group.id);
+    const value = String(d[group.field] || "").trim().toLowerCase();
+    return value === String(group.value || "").trim().toLowerCase();
+  };
   const MODE_OPTIONS = ["Air", "Nitrox", "3 GasNx", "OC Tec", "Gauge", "CC/BO"];
   const STYLE_OPTIONS = ["Single Tank", "Double tanks", "Sidemount", "N/A"];
   function mostUsed(values, fallback = "—") {
@@ -178,6 +185,13 @@
       ["Shore/Beach", "Boat", "N/A"],
       typeFilters,
     );
+    groupFilters = renderGroup(
+      "groupFilters",
+      "Groups",
+      "group-filter",
+      Core.getState().diveGroups.map((group) => group.name),
+      groupFilters,
+    );
   }
   function renderPagination(total, totalPages) {
     const target = document.getElementById("divePagination");
@@ -203,6 +217,12 @@
       dives = dives.filter((d) => styleFilters.has(style(d)));
     if (typeFilters.size)
       dives = dives.filter((d) => typeFilters.has(diveType(d)));
+    if (groupFilters.size)
+      dives = dives.filter((d) =>
+        state.diveGroups.some(
+          (group) => groupFilters.has(group.name) && matchesGroup(d, group),
+        ),
+      );
     dives.sort(
       sort === "date-asc"
         ? (a, b) => stamp(a).localeCompare(stamp(b))
@@ -327,6 +347,12 @@
       () => typeFilters,
       (value) => (typeFilters = value),
     );
+    bindFilter(
+      "groupFilters",
+      "group-filter",
+      () => groupFilters,
+      (value) => (groupFilters = value),
+    );
     const dropdowns = Array.from(
       document.querySelectorAll(".filter-dropdown"),
     );
@@ -357,5 +383,5 @@
       if (row) Core.feature("diveEditor")?.open(row.dataset.id);
     });
   }
-  Core.registerFeature("diveList", { init, render, filterRows, source });
+  Core.registerFeature("diveList", { init, render, filterRows, source, matchesGroup });
 })();
