@@ -171,14 +171,15 @@
       groupFilters,
     );
     filterSummary("groupFilterSummary", "All", groupFilters);
-    renderSortFilters();
     modeFilters = renderGroup(
       "modeFilters",
-      "Mode",
+      "",
       "mode-filter",
       MODE_OPTIONS,
       modeFilters,
     );
+    filterSummary("modeFilterSummary", "All", modeFilters);
+    renderSortFilters();
     styleFilters = renderGroup(
       "styleFilters",
       "Style",

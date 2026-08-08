@@ -284,6 +284,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
     "Boat",
     "N/A",
   ]);
+  await page.locator("#modeFilter summary").click();
   await page.locator("#modeFilters").getByLabel("CC/BO").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.locator("#styleFilters").getByLabel("Sidemount").check();

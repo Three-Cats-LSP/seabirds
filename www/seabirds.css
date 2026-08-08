@@ -2642,7 +2642,7 @@ body {
 }
 .filter-dropdown-row {
   display: grid;
-  grid-template-columns: 150px 160px 160px;
+  grid-template-columns: 150px 160px 160px 160px;
   gap: 10px;
   margin: 0 0 13px;
 }
