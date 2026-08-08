@@ -13,6 +13,19 @@
   color: var(--muted);
   margin-top: 5px;
 }
+.support-block {
+  align-items: flex-start;
+}
+.support-content {
+  min-width: 0;
+}
+.support-content p {
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+.support-content p + p {
+  margin-top: 3px;
+}
 .sync-block button,
 .sync-block .download {
   padding: 11px 15px;
