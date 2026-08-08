@@ -1,11 +1,8 @@
 const fs=require('fs');const path=require('path');const crypto=require('crypto');
 const root=path.resolve(__dirname,'..'),www=path.join(root,'www');
-fs.mkdirSync(www,{recursive:true});
-const files=['index.html','app.css','seabirds.css','app.js','app-core.js','dive-list.js','dive-editor.js','dive-export-utils.js','dive-export-text.js','dive-export-pdf.js','dive-export-uddf.js','dive-export-ui.js','equipment.js','devices-ui.js','settings-ui.js','import-export.js','storage.js','shearwater.js','sync.js','update.js','app-version.js','version.json','zhl-profile-engine.js','plot-core.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','seabirds-app-icon.png','shearwater-logo-stacked.png','firebase-config.js','sw.js','tab-profile.png','tab-notes.png','tab-equipment.png','tab-information.png','tab-export.png'];
-for(const file of files)fs.copyFileSync(path.join(root,file),path.join(www,file));
-const src=path.join(root,'vendor','firebase'),dest=path.join(www,'vendor','firebase');fs.mkdirSync(dest,{recursive:true});
-for(const file of fs.readdirSync(src))fs.copyFileSync(path.join(src,file),path.join(dest,file));
-fs.copyFileSync(path.join(root,'vendor','jspdf.umd.min.js'),path.join(www,'vendor','jspdf.umd.min.js'));
+const files=fs.readFileSync(path.join(root,'site-assets-manifest.txt'),'utf8').split(/\r?\n/).map(line=>line.trim()).filter(line=>line&&!line.startsWith('#'));
+fs.rmSync(www,{recursive:true,force:true});fs.mkdirSync(www,{recursive:true});
+for(const file of files){const destination=path.join(www,file);fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(path.join(root,file),destination);}
 const cacheHash=crypto.createHash('sha256');
 for(const file of files)if(file!=='sw.js')cacheHash.update(fs.readFileSync(path.join(www,file)));
 const cacheRevision=cacheHash.digest('hex').slice(0,12);

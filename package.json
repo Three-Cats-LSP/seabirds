@@ -4,7 +4,8 @@
   "private": true,
   "description": "SeaBirds native and web dive log",
   "scripts": {
-    "sync:www": "node tools/sync-www.cjs",
+    "sync:www": "node tools/sync-www.cjs && node tools/verify-deployment-assets.cjs",
+    "verify:deploy": "node tools/verify-deployment-assets.cjs",
     "test": "npm run test:smoke",
     "test:smoke": "playwright test",
     "android:add": "npm run sync:www && npx cap add android",
