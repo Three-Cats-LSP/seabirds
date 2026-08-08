@@ -29,6 +29,19 @@
       total = (hours * 60 + minutes + (+duration || 0)) % (24 * 60);
     return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
   }
+  // GF99 is a calculated display value, not data that has to be present in a
+  // Shearwater log.  Calculate it before rendering so stored downloads from
+  // before the GF99 overlay was added get the same graph as new downloads.
+  function profileWithGf99(profile, dive) {
+    const engine = window.SeaBirdsZhlProfile;
+    if (!engine?.annotate || profile.length < 2) return profile;
+    const fallbackGas =
+      (dive.gases || []).find(Boolean) ||
+      profile.find((point) => point.gas)?.gas ||
+      dive.gasUsed ||
+      "21/0";
+    return engine.annotate(profile, { gas: fallbackGas });
+  }
   function renderHeader(d) {
     const date = Core.formatDate(d.date).ymd || d.date || "—",
       number = d.diveNumber ?? "—";
@@ -49,9 +62,10 @@
   }
   function fill(d) {
     const state = Core.getState(),
-      profile = d.profile?.length
+      rawProfile = d.profile?.length
         ? d.profile.map((point) => ({ ...point, t: point.t ?? point.time }))
         : Core.sampleProfile(+d.depth, +d.duration),
+      profile = profileWithGf99(rawProfile, d),
       temps = profile
         .map((p) => p.temperature ?? p.temp)
         .filter(Number.isFinite),
@@ -194,6 +208,7 @@
           isLight: true,
           ceilingWps: ceiling,
           showDecoCeiling: true,
+          showGF99: true,
         }),
       ),
     );

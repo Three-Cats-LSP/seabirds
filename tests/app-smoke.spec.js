@@ -70,6 +70,44 @@ test("calculates GF99 samples with the ZHL profile engine", async ({
   expect(result.every((point) => Number.isFinite(point.gf99))).toBeTruthy();
   expect(Math.max(...result.map((point) => point.gf99))).toBeGreaterThan(0);
 });
+test("renders the calculated GF99 overlay for an existing dive profile", async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const dive = {
+      id: "gf99-render",
+      site: "GF99 render check",
+      date: "2026-08-08",
+      time: "09:00",
+      duration: 46,
+      depth: 30,
+      gases: ["21/0"],
+      profile: [
+        { t: 0, depth: 0, gas: "21/0" },
+        { t: 4, depth: 15, gas: "21/0" },
+        { t: 10, depth: 22, gas: "21/0" },
+        { t: 20, depth: 30, gas: "21/0" },
+        { t: 30, depth: 15, gas: "21/0" },
+        { t: 40, depth: 6, gas: "21/0" },
+        { t: 46, depth: 0, gas: "21/0" },
+      ],
+    };
+    window.SeaBirds.Core.getState().dives = [dive];
+    window.SeaBirds.Core.feature("diveEditor").open(dive.id);
+  });
+  await expect(page.locator("#profileDialog")).toHaveAttribute("open", "");
+  await page.waitForTimeout(100);
+  const orangePixels = await page.evaluate(() => {
+    const canvas = document.getElementById("seaBirdsProfileCanvas");
+    const { data } = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+    let count = 0;
+    for (let index = 0; index < data.length; index += 4) {
+      if (data[index] > 190 && data[index + 1] > 95 && data[index + 1] < 180 && data[index + 2] < 90) count++;
+    }
+    return count;
+  });
+  expect(orangePixels).toBeGreaterThan(20);
+});
 test("uses the detected dive computer in default imported titles", async ({ page }) => {
   const dives = await page.evaluate(() =>
     window.SeaBirds.Core.normalizeState({

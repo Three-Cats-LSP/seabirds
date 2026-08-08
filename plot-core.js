@@ -913,7 +913,11 @@ const _graphOpts = {};
 // Wrapper stores opts for hover interaction then calls core renderer
 // AUDIT-UNIT:UI-TOOLS-PROFILE
 function drawDiveProfile(canvasId, waypoints, opts) {
-  const plottedWaypoints = canvasId === 'seaBirdsProfileCanvas' && globalThis.SeaBirdsZhlProfile
+  // SeaBirds profiles can arrive here already annotated by the editor.  Do
+  // not calculate a second time on interaction redraws: it is needless work
+  // and can make the graph depend on which render path was used first.
+  const needsGf99 = Array.isArray(waypoints) && waypoints.some(point => !Number.isFinite(+point.gf99));
+  const plottedWaypoints = canvasId === 'seaBirdsProfileCanvas' && needsGf99 && globalThis.SeaBirdsZhlProfile
     ? globalThis.SeaBirdsZhlProfile.annotate(waypoints)
     : waypoints;
   _drawDiveProfileCore(canvasId, plottedWaypoints, opts);
