@@ -921,7 +921,7 @@ function drawDiveProfile(canvasId, waypoints, opts) {
   // and can make the graph depend on which render path was used first.
   const needsGf99 = Array.isArray(waypoints) && waypoints.some(point => !Number.isFinite(+point.gf99));
   const plottedWaypoints = canvasId === 'seaBirdsProfileCanvas' && needsGf99 && globalThis.SeaBirdsZhlProfile
-    ? globalThis.SeaBirdsZhlProfile.annotate(waypoints)
+    ? globalThis.SeaBirdsZhlProfile.annotate(waypoints, opts?.gf99Options)
     : waypoints;
   _drawDiveProfileCore(canvasId, plottedWaypoints, opts);
   _graphOpts[canvasId] = { waypoints: plottedWaypoints, opts };

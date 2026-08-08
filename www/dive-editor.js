@@ -215,6 +215,12 @@
           ceilingWps: ceiling,
           showDecoCeiling: true,
           showGF99: true,
+          // Preserve the same breathing-gas assumptions if plot-core has to
+          // redraw the graph after zooming or panning.
+          gf99Options: {
+            gas: (d.gases || []).find(Boolean) || d.gasUsed || "21/0",
+            closedCircuit: /^(CC\/BO|CCR)$/i.test(String(d.diveMode || "")),
+          },
         }),
       ),
     );
