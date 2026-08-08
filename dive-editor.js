@@ -40,7 +40,13 @@
       profile.find((point) => point.gas)?.gas ||
       dive.gasUsed ||
       "21/0";
-    return engine.annotate(profile, { gas: fallbackGas });
+    return engine.annotate(profile, {
+      gas: fallbackGas,
+      // Do not infer CCR from a generic PPO2 telemetry field: original
+      // Perdix/Teric OC logs can carry one as well.  The dive mode is the
+      // authoritative source for this display calculation.
+      closedCircuit: /^(CC\/BO|CCR)$/i.test(String(dive.diveMode || "")),
+    });
   }
   function renderHeader(d) {
     const date = Core.formatDate(d.date).ymd || d.date || "—",

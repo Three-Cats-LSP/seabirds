@@ -511,8 +511,11 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     ctx.save();
     clipToPlot();
     ctx.strokeStyle = color;
-    ctx.lineWidth = isMobile ? 1.4 : 1.8;
-    ctx.globalAlpha = 0.92;
+    // GF99 needs to remain readable where it shares the bottom of the graph
+    // with an NDL value of zero, so paint it last as a solid, slightly wider
+    // trace.
+    ctx.lineWidth = label === 'GF99' ? (isMobile ? 2 : 2.5) : (isMobile ? 1.4 : 1.8);
+    ctx.globalAlpha = 1;
     let started = false, skippedOpeningPoint = false;
     values.forEach(point => {
       if (point.t < tMin || point.t > tMax || !Number.isFinite(point.value)) {

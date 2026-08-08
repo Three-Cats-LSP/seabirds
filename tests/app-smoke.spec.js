@@ -80,6 +80,20 @@ test("calculates GF99 samples with the ZHL profile engine", async ({
   expect(result.every((point) => Number.isFinite(point.gf99))).toBeTruthy();
   expect(Math.max(...result.map((point) => point.gf99))).toBeGreaterThan(0);
 });
+test("does not mistake OC PPO2 telemetry for a CCR setpoint", async ({ page }) => {
+  const result = await page.evaluate(() =>
+    window.SeaBirdsZhlProfile.annotate(
+      [
+        { t: 0, depth: 0, gas: "21/0", ppo2: 0.21 },
+        { t: 3, depth: 27, gas: "21/0", ppo2: 0.78 },
+        { t: 30, depth: 27, gas: "21/0", ppo2: 0.78 },
+        { t: 48, depth: 0, gas: "21/0", ppo2: 0.21 },
+      ],
+      { gas: "21/0", closedCircuit: false },
+    ),
+  );
+  expect(Math.max(...result.map((point) => point.gf99))).toBeGreaterThan(20);
+});
 test("renders the calculated GF99 overlay for an existing dive profile", async ({
   page,
 }) => {

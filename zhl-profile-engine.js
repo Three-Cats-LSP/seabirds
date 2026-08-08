@@ -64,12 +64,18 @@ function gf99(tissues,depth){
 }
 function annotate(profile,options){
   if(!Array.isArray(profile)||profile.length<2)return profile||[];
+  // A Shearwater OC sample may expose a measured PPO2 value.  That is not a
+  // CCR setpoint and must not be used to reduce inert-gas loading.  Doing so
+  // produces an artificially low (often invisible) GF99 trace for air/Nx
+  // dives.  Only honour setpoint data when the caller explicitly identifies a
+  // closed-circuit profile.
+  const closedCircuit=options?.closedCircuit===true;
   let tissues=initTissues(),previousTime=0,previousDepth=0,gas=parseGas(options?.gas),setpoint=null;
   return profile.map(point=>{
     const time=+(point.t??point.time),depth=Math.max(0,+point.depth||0);
     if(!Number.isFinite(time))return{...point};
     gas=parseGas(point.gas,gas);
-    const nextSetpoint=+(point.setpoint??point.ppo2);
+    const nextSetpoint=closedCircuit?+(point.setpoint??point.ppo2):NaN;
     if(Number.isFinite(nextSetpoint)&&nextSetpoint>0)setpoint=nextSetpoint;
     const duration=Math.max(0,time-previousTime);
     tissues=loadSegment(tissues,previousDepth,depth,duration,gas,setpoint);
