@@ -1703,14 +1703,23 @@
 }
 .dive-group-card span { display: grid; gap: 2px; }
 .dive-group-card small { color: var(--muted); }
-.dive-group-card-actions { display: flex !important; align-items: center; gap: 7px; }
-.dive-group-card-actions button { min-height: 30px; padding: 5px 9px; font-size: 12px; }
-.remove-dive-group {
-  min-width: 30px;
-  min-height: 30px;
+.dive-group-card-actions { display: flex !important; align-items: center; gap: 5px; }
+.dive-group-card-actions button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
   padding: 0;
-  color: #b84232;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
 }
+.edit-dive-group { color: var(--blue); }
+.remove-dive-group { color: #b8432d; }
 .dive-groups-editor-card,
 .dive-groups-list-card { margin-top: 18px; }
 .dive-groups-list-card > header {
@@ -1770,6 +1779,10 @@
   border-top: 1px solid var(--line);
 }
 .dive-group-editor-actions .primary { margin-left: auto; }
+.dive-group-editor-actions #saveDiveGroup {
+  min-height: 0;
+  padding: 11px 15px;
+}
 @media (max-width: 600px) {
   .group-editor-dialog form { padding: 26px 20px; }
   .dive-groups-list-card header {

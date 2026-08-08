@@ -60,6 +60,8 @@ test("starts all modules and navigates", async ({ page }) => {
   await page.getByRole("button", { name: "Save group" }).click();
   await expect(page.locator("#diveGroupDialog")).not.toHaveAttribute("open", "");
   await expect(page.locator("#diveGroupsLibrary")).toContainText("Weekend dives");
+  await expect(page.getByRole("button", { name: "Edit group" })).toContainText("✎");
+  await expect(page.locator("#saveMasterGear")).toHaveClass(/save-dive/);
   await page.getByRole("button", { name: /Back to Settings/ }).click();
   await expect(page.locator("#settingsMain")).toBeVisible();
 });
