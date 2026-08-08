@@ -420,7 +420,7 @@
                 <input id="demoToggle" type="checkbox" />
                 Load sample dives
               </label>
-              <button id="clearData" class="danger">Clear local data</button>
+              <button id="clearData" class="danger delete-action">Clear local data</button>
               <div class="other-apps">
                 <b>Three Cats links &amp; apps</b>
                 <div class="app-icon-row">
@@ -638,7 +638,7 @@
                 <button type="button" id="addMasterGearCard">+ Add list</button>
               </header>
               <div id="masterGearLibrary" class="master-gear-library"></div>
-              <button type="button" id="saveMasterGear" class="primary compact save-dive">
+              <button type="button" id="saveMasterGear" class="primary save-dive save-action">
                 Save master lists
               </button>
             </section>
@@ -725,8 +725,8 @@
           <p id="diveGroupHelp" class="wide group-editor-help"></p>
         </div>
         <footer class="dive-group-editor-actions">
-          <button type="button" id="deleteDiveGroup" class="danger" hidden>Delete group</button>
-          <button type="button" id="saveDiveGroup" class="primary save-dive">Save group</button>
+          <button type="button" id="deleteDiveGroup" class="danger delete-action" hidden>Delete group</button>
+          <button type="button" id="saveDiveGroup" class="primary save-dive save-action">Save group</button>
         </footer>
       </form>
     </dialog>
@@ -765,7 +765,7 @@
             <textarea name="notes" rows="3"></textarea>
           </label>
         </div>
-        <button class="primary compact save-dive" value="default">Save dive</button>
+        <button class="primary save-dive save-action" value="default">Save dive</button>
       </form>
     </dialog>
     <dialog id="profileDialog" class="profile-dialog">
@@ -969,10 +969,10 @@
           <div id="diveInformation" class="information-grid"></div>
         </section>
         <footer class="dive-actions">
-          <button type="button" id="deleteDive" class="danger">
+          <button type="button" id="deleteDive" class="danger delete-action">
             Delete dive
           </button>
-          <button type="button" id="saveDiveDetails" class="primary save-dive">
+          <button type="button" id="saveDiveDetails" class="primary save-dive save-action">
             Save
           </button>
         </footer>
