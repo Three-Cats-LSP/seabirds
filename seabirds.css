@@ -1683,6 +1683,25 @@
 }
 .dive-groups-editor-card,
 .dive-groups-list-card { margin-top: 18px; }
+.dive-groups-list-card header > span {
+  display: grid;
+  gap: 5px;
+}
+.dive-groups-list-card header small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+.group-editor-dialog {
+  width: min(620px, calc(100% - 28px));
+}
+.group-editor-dialog form {
+  padding: 30px;
+}
+.group-dialog-intro {
+  margin: -8px 0 20px;
+  color: var(--muted);
+  line-height: 1.45;
+}
 .dive-group-form { margin-top: 18px; }
 .dive-group-rule-fields {
   grid-column: span 2;
@@ -1702,6 +1721,12 @@
   border-top: 1px solid var(--line);
 }
 .dive-group-editor-actions .primary { margin-left: auto; }
+@media (max-width: 600px) {
+  .group-editor-dialog form { padding: 26px 20px; }
+  .dive-groups-list-card header {
+    align-items: flex-start;
+  }
+}
 .dive-groups-field {
   display: grid;
   gap: 6px;

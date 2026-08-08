@@ -24,7 +24,7 @@
     main.hidden = page !== "main"; gear.hidden = page !== "gear"; groups.hidden = page !== "groups";
     if (viewName) viewName.textContent = page === "gear" ? "Equipment lists" : page === "groups" ? "Dive groups" : "Settings";
     if (page === "gear") Core.feature("equipment")?.renderMaster();
-    if (page === "groups") { renderGroups(); if (!activeGroupId) fillGroupEditor(); }
+    if (page === "groups") renderGroups();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function showMasterGear(show) { showPage(show ? "gear" : "main"); }
@@ -46,6 +46,11 @@
     document.getElementById("deleteDiveGroup").hidden = !group;
     syncGroupType();
   }
+  function openGroupEditor(group = null) {
+    fillGroupEditor(group);
+    const dialog = document.getElementById("diveGroupDialog");
+    if (dialog && !dialog.open) dialog.showModal();
+  }
   async function saveGroup() {
     const name = document.getElementById("diveGroupName").value.trim();
     const type = document.getElementById("diveGroupType").value;
@@ -60,8 +65,8 @@
       else state.diveGroups = [...(state.diveGroups || []), group];
     });
     activeGroupId = group.id;
-    fillGroupEditor(group);
     renderGroups();
+    document.getElementById("diveGroupDialog")?.close();
     Core.notify(`Group "${name}" saved`);
   }
   async function deleteGroup(id = activeGroupId) {
@@ -72,8 +77,8 @@
       state.dives.forEach((dive) => { dive.groupIds = (dive.groupIds || []).filter((groupId) => groupId !== id); });
     });
     activeGroupId = null;
-    fillGroupEditor();
     renderGroups();
+    document.getElementById("diveGroupDialog")?.close();
     Core.notify("Group deleted");
   }
   function bindMaster() {
@@ -104,16 +109,16 @@
     document.getElementById("openDiveGroups").onclick = () => showPage("groups");
     document.getElementById("closeDiveGroups").onclick = () => showPage();
     document.querySelector('.nav[data-view="settings"]').addEventListener("click", () => showPage());
-    document.getElementById("newDiveGroup").onclick = () => fillGroupEditor();
+    document.getElementById("newDiveGroup").onclick = () => openGroupEditor();
     document.getElementById("diveGroupType").onchange = syncGroupType;
     document.getElementById("saveDiveGroup").onclick = saveGroup;
     document.getElementById("deleteDiveGroup").onclick = () => deleteGroup();
     document.getElementById("diveGroupsLibrary").onclick = (event) => {
       const edit = event.target.closest(".edit-dive-group"), remove = event.target.closest(".remove-dive-group");
-      if (edit) return fillGroupEditor((Core.getState().diveGroups || []).find((group) => group.id === edit.dataset.groupId));
+      if (edit) return openGroupEditor((Core.getState().diveGroups || []).find((group) => group.id === edit.dataset.groupId));
       if (remove) deleteGroup(remove.dataset.groupId);
     };
     bindMaster();
   }
-  Core.registerFeature("settings", { init, render, showMasterGear, showPage });
+  Core.registerFeature("settings", { init, render, showMasterGear, showPage, openGroupEditor });
 })();

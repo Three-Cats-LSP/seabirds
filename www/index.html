@@ -646,47 +646,14 @@
                 &larr; Back to Settings
               </button>
             </div>
-            <section class="settings-card dive-groups-editor-card">
+            <section class="settings-card dive-groups-list-card">
               <header>
                 <span>
-                  <b id="diveGroupEditorTitle">New dive group</b>
-                  <small>Groups appear as a filter beside Year and Month.</small>
+                  <b>Your dive groups</b>
+                  <small>Edit or remove groups. Removing a group never deletes dives.</small>
                 </span>
-                <button type="button" id="newDiveGroup">+ New group</button>
+                <button type="button" id="newDiveGroup">+ Add group</button>
               </header>
-              <div class="form-grid dive-group-form">
-                <label class="wide">Group name
-                  <input id="diveGroupName" maxlength="80" placeholder="e.g. Okinawa dives or Fun dives" />
-                </label>
-                <label>Group type
-                  <select id="diveGroupType">
-                    <option value="rule">Automatic rule</option>
-                    <option value="manual">Manual collection</option>
-                  </select>
-                </label>
-                <div id="diveGroupRuleFields" class="dive-group-rule-fields">
-                  <label>Match field
-                    <select id="diveGroupField" aria-label="Group match field">
-                      <option value="location">Location</option>
-                      <option value="diveSite">Site</option>
-                      <option value="diveStyle">Dive style</option>
-                      <option value="diveMode">DC mode</option>
-                      <option value="diveType">Type</option>
-                    </select>
-                  </label>
-                  <label>Match value
-                    <input id="diveGroupValue" maxlength="80" placeholder="e.g. Okinawa" />
-                  </label>
-                </div>
-                <p id="diveGroupHelp" class="wide group-editor-help"></p>
-              </div>
-              <footer class="dive-group-editor-actions">
-                <button type="button" id="deleteDiveGroup" class="danger" hidden>Delete group</button>
-                <button type="button" id="saveDiveGroup" class="primary">Save group</button>
-              </footer>
-            </section>
-            <section class="settings-card dive-groups-list-card">
-              <header><span><b>Your dive groups</b><small>Edit or remove groups. Removing a group never deletes dives.</small></span></header>
               <div id="diveGroupsLibrary" class="dive-groups-library"></div>
             </section>
           </div>
@@ -715,6 +682,44 @@
           accept=".uddf,.xml,application/xml"
           hidden
         />
+      </form>
+    </dialog>
+    <dialog id="diveGroupDialog" class="choice-dialog group-editor-dialog" aria-labelledby="diveGroupEditorTitle">
+      <form method="dialog">
+        <button class="close" value="cancel" aria-label="Close group editor">&times;</button>
+        <p class="eyebrow">LOGBOOK</p>
+        <h2 id="diveGroupEditorTitle">New dive group</h2>
+        <p class="group-dialog-intro">Create an automatic group from a dive field or a manual collection.</p>
+        <div class="form-grid dive-group-form">
+          <label class="wide">Group name
+            <input id="diveGroupName" maxlength="80" placeholder="e.g. Okinawa dives or Fun dives" />
+          </label>
+          <label>Group type
+            <select id="diveGroupType">
+              <option value="rule">Automatic rule</option>
+              <option value="manual">Manual collection</option>
+            </select>
+          </label>
+          <div id="diveGroupRuleFields" class="dive-group-rule-fields">
+            <label>Match field
+              <select id="diveGroupField" aria-label="Group match field">
+                <option value="location">Location</option>
+                <option value="diveSite">Site</option>
+                <option value="diveStyle">Dive style</option>
+                <option value="diveMode">DC mode</option>
+                <option value="diveType">Type</option>
+              </select>
+            </label>
+            <label>Match value
+              <input id="diveGroupValue" maxlength="80" placeholder="e.g. Okinawa" />
+            </label>
+          </div>
+          <p id="diveGroupHelp" class="wide group-editor-help"></p>
+        </div>
+        <footer class="dive-group-editor-actions">
+          <button type="button" id="deleteDiveGroup" class="danger" hidden>Delete group</button>
+          <button type="button" id="saveDiveGroup" class="primary">Save group</button>
+        </footer>
       </form>
     </dialog>
     <dialog id="diveDialog">
@@ -1047,7 +1052,7 @@
     <script src="dive-export-ui.js?v=92"></script>
     <script src="equipment.js?v=82"></script>
     <script src="devices-ui.js?v=82"></script>
-    <script src="settings-ui.js?v=84"></script>
+    <script src="settings-ui.js?v=85"></script>
     <script src="import-export.js?v=88"></script>
     <script src="app.js?v=82"></script>
     <script src="update.js?v=82"></script>
