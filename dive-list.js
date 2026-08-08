@@ -296,6 +296,12 @@
       setSet(selected);
       page = 1;
       renderFilters();
+      // Mode is a compact single-purpose menu directly above the remaining
+      // filters. Close it after a selection so its list never masks Style or
+      // Type controls on narrower desktop layouts. Year, Month and Group stay
+      // open because they are deliberately multi-select menus.
+      if (id === "modeFilters")
+        document.getElementById("modeFilter")?.removeAttribute("open");
       filterRows();
     };
   }
