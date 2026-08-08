@@ -1713,6 +1713,12 @@
 }
 .dive-groups-editor-card,
 .dive-groups-list-card { margin-top: 18px; }
+.dive-groups-list-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .dive-groups-list-card header > span {
   display: grid;
   gap: 5px;
@@ -1720,6 +1726,19 @@
 .dive-groups-list-card header small {
   color: var(--muted);
   line-height: 1.45;
+}
+.dive-groups-list-card #newDiveGroup {
+  flex: none;
+  padding: 9px 12px;
+  border: 1px solid var(--coral);
+  border-radius: 8px;
+  background: var(--coral);
+  color: #fff;
+  box-shadow: 0 8px 18px #d45b4528;
+  white-space: nowrap;
+}
+.dive-groups-list-card #newDiveGroup:hover {
+  background: #cf513e;
 }
 .group-editor-dialog {
   width: min(620px, calc(100% - 28px));
