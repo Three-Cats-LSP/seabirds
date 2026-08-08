@@ -196,7 +196,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByLabel("DC mode").selectOption("CC/BO");
   await page.getByLabel("Dive style").selectOption("Sidemount");
   await page.getByLabel("Salinity").selectOption("Fresh");
-  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.getByRole("button", { name: "Save" }).click();
   const savedRow = page.locator("#allDives .dive-row").first();
   await expect(savedRow).toContainText("Saved smoke dive");
   await expect(savedRow).toContainText("CC/BO / Sidemount");
@@ -254,7 +254,7 @@ test("allows a user gas mix to override automatic gas detection", async ({
   await page.getByRole("button", { name: "Notes", exact: true }).click();
   await expect(page.getByLabel("Gas Used")).toHaveValue("Air");
   await page.getByLabel("Gas Used").fill("EAN32");
-  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.getByRole("button", { name: "Save" }).click();
   await expect(page.locator("#profileDialog")).not.toBeVisible();
   expect(
     await page.evaluate(() =>
@@ -406,7 +406,7 @@ test("creates, imports, backs up, restores and deletes dives", async ({
     page.getByRole("button", { name: "Notes", exact: true }),
   ).toHaveClass(/active/);
   await dialog.getByLabel("Dive title").fill("Manual Reef");
-  await dialog.getByRole("button", { name: "Save changes" }).click();
+  await dialog.getByRole("button", { name: "Save" }).click();
   await expect(page.locator("#allDives .dive-row")).toContainText(
     "Manual Reef",
   );

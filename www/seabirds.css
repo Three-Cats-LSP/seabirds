@@ -2115,6 +2115,16 @@ body {
 .save-dive:hover {
   background: linear-gradient(135deg, #1d7b5d, #106546) !important;
 }
+/* The entry footer intentionally uses swapped action sizes: a compact delete
+   action and a full-height save action. */
+.profile-dialog #saveDiveDetails {
+  min-height: 0;
+  padding: 11px 15px;
+}
+.profile-dialog #deleteDive {
+  min-height: 0;
+  padding: 2px 6px;
+}
 .actions button,
 .import,
 .sync-block button,
