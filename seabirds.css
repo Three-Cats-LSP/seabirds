@@ -30,6 +30,27 @@
   border-color: var(--blue);
   background: #f2fbfa;
 }
+.legacy-download { display: none; }
+.platform-downloads {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.platform-downloads .download {
+  display: grid;
+  place-items: center;
+  min-width: 92px;
+  gap: 2px;
+  padding: 8px 13px;
+  text-align: center;
+  line-height: 1.1;
+}
+.platform-downloads .download small {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
 .backup-actions {
   display: flex;
   gap: 8px;
@@ -49,6 +70,15 @@
   display: none;
 }
 @media (max-width: 600px) {
+  .seabirds-downloads {
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .seabirds-downloads > span,
+  .platform-downloads {
+    width: 100%;
+  }
+  .platform-downloads .download { flex: 1; }
   .backup-block {
     align-items: flex-start;
     gap: 14px;

@@ -30,6 +30,10 @@ test("starts all modules and navigates", async ({ page }) => {
   expect(modules).toEqual([true, true, true, true, true, true, true]);
   await page.locator('.nav[data-view="settings"]').click();
   await expect(page.locator("#settings")).toHaveClass(/active/);
+  await expect(page.getByText("Application updates", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".platform-downloads .download")).toHaveCount(2);
+  await expect(page.locator(".platform-downloads")).toContainText("Android");
+  await expect(page.locator(".platform-downloads")).toContainText("Windows");
   await expect(page.locator(".settings-collapse")).not.toHaveAttribute(
     "open",
     "",
