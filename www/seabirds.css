@@ -2504,7 +2504,7 @@ body {
   }
 }
 .toolbar {
-  grid-template-columns: minmax(180px, 1fr) 150px 160px 160px;
+  grid-template-columns: minmax(0, 1fr);
 }
 .filter-dropdown {
   position: relative;
@@ -2640,6 +2640,12 @@ body {
 .logbook-filter-options {
   padding: 12px 13px 2px;
 }
+.filter-dropdown-row {
+  display: grid;
+  grid-template-columns: 150px 160px 160px;
+  gap: 10px;
+  margin: 0 0 13px;
+}
 .logbook-filter-options .device-filters {
   margin: 0 0 12px;
 }
@@ -2667,6 +2673,11 @@ body {
   }
   .logbook-filter-options {
     padding: 11px 12px 1px;
+  }
+  .filter-dropdown-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 11px;
   }
   .dive-row {
     grid-template-columns: 48px minmax(0, 1fr);

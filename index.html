@@ -137,41 +137,24 @@
               data-1p-ignore
               data-lpignore="true"
             />
-            <details class="filter-dropdown" id="yearFilter">
-              <summary>
-                <span>Year</span><small id="yearFilterSummary">All years</small>
-              </summary>
-              <div
-                id="yearFilters"
-                class="dropdown-filter-options"
-                aria-label="Year filters"
-              ></div>
-            </details>
-            <details class="filter-dropdown" id="monthFilter">
-              <summary>
-                <span>Month</span
-                ><small id="monthFilterSummary">All months</small>
-              </summary>
-              <div
-                id="monthFilters"
-                class="dropdown-filter-options"
-                aria-label="Month filters"
-              ></div>
-            </details>
-            <details class="filter-dropdown" id="groupFilter">
-              <summary>
-                <span>Group</span><small id="groupFilterSummary">All</small>
-              </summary>
-              <div
-                id="groupFilters"
-                class="dropdown-filter-options"
-                aria-label="Dive group filters"
-              ></div>
-            </details>
           </div>
           <details class="logbook-filter-collapse">
             <summary>Filters</summary>
             <div class="logbook-filter-options">
+              <div class="filter-dropdown-row">
+                <details class="filter-dropdown" id="yearFilter">
+                  <summary><span>Year</span><small id="yearFilterSummary">All years</small></summary>
+                  <div id="yearFilters" class="dropdown-filter-options" aria-label="Year filters"></div>
+                </details>
+                <details class="filter-dropdown" id="monthFilter">
+                  <summary><span>Month</span><small id="monthFilterSummary">All months</small></summary>
+                  <div id="monthFilters" class="dropdown-filter-options" aria-label="Month filters"></div>
+                </details>
+                <details class="filter-dropdown" id="groupFilter">
+                  <summary><span>Group</span><small id="groupFilterSummary">All</small></summary>
+                  <div id="groupFilters" class="dropdown-filter-options" aria-label="Dive group filters"></div>
+                </details>
+              </div>
               <div
                 id="sortFilters"
                 class="device-filters sort-filters"

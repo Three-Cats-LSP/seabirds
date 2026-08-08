@@ -155,6 +155,7 @@ test("paginates dives and filters by year and month", async ({ page }) => {
   await expect(page.locator("#divePagination")).toContainText("Page 1 of 2");
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(2);
+  await page.locator(".logbook-filter-collapse > summary").click();
   await page.locator("#yearFilter summary").click();
   await page.locator("#yearFilters").getByLabel("2025").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(6);
@@ -190,6 +191,7 @@ test("filters manual and automatic dive groups", async ({ page }) => {
     }),
   );
   await expect(page.locator("#groupFilters")).toContainText("Okinawa");
+  await page.locator(".logbook-filter-collapse > summary").click();
   await page.locator("#groupFilter summary").click();
   await page.locator("#groupFilters").getByLabel("Okinawa").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
@@ -268,7 +270,7 @@ test("draft edits persist, remain searchable and filter by mode and style", asyn
   await page.getByRole("searchbox").fill("321");
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await page.getByRole("searchbox").fill("");
-  await page.locator(".logbook-filter-collapse summary").click();
+  await page.locator(".logbook-filter-collapse > summary").click();
   await expect(page.locator("#styleFilters label")).toHaveText([
     "All",
     "Single Tank",
