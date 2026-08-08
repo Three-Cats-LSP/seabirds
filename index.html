@@ -699,7 +699,7 @@
             <textarea name="notes" rows="3"></textarea>
           </label>
         </div>
-        <button class="primary compact" value="default">Save dive</button>
+        <button class="primary compact save-dive" value="default">Save dive</button>
       </form>
     </dialog>
     <dialog id="profileDialog" class="profile-dialog">
@@ -708,9 +708,6 @@
         <p class="eyebrow">DIVE LOG ENTRY</p>
         <div class="dive-entry-header">
           <h2 id="profileTitle">Dive profile</h2>
-          <button type="button" id="deleteDive" class="danger">
-            Delete dive
-          </button>
         </div>
         <nav class="dive-tabs" aria-label="Dive details">
           <button
@@ -903,7 +900,10 @@
           <div id="diveInformation" class="information-grid"></div>
         </section>
         <footer class="dive-actions">
-          <button type="button" id="saveDiveDetails" class="primary">
+          <button type="button" id="deleteDive" class="danger">
+            Delete dive
+          </button>
+          <button type="button" id="saveDiveDetails" class="primary save-dive">
             Save changes
           </button>
         </footer>

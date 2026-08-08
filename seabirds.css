@@ -864,13 +864,10 @@
   padding-top: 42px;
 }
 .profile-dialog .dive-actions {
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 .profile-dialog #deleteDive {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 3;
+  position: static;
 }
 .device-connect {
   display: flex;
@@ -2052,6 +2049,13 @@ body {
 .equipment-heading > button:hover,
 .master-gear > header button:hover {
   background: linear-gradient(135deg, #e56851, #cf513e);
+}
+.save-dive {
+  background: linear-gradient(135deg, #238a68, #167654) !important;
+  box-shadow: 0 8px 18px #16765428 !important;
+}
+.save-dive:hover {
+  background: linear-gradient(135deg, #1d7b5d, #106546) !important;
 }
 .actions button,
 .import,
