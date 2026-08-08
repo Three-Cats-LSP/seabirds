@@ -989,6 +989,33 @@ button.delete-action:hover {
   color: var(--muted);
   margin-top: 6px;
 }
+.graph-layer-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 9px 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.graph-layer-controls legend {
+  padding: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+.graph-layer-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.graph-layer-controls input {
+  accent-color: var(--accent);
+}
+@media (max-width: 600px) {
+  .graph-layer-controls { gap: 10px; font-size: 11px; }
+}
 .shearwater-logo {
   width: 100%;
   max-width: 360px;

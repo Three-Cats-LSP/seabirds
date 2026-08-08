@@ -3,7 +3,9 @@
   const NS = (window.SeaBirds = window.SeaBirds || {}),
     Core = NS.Core;
   let activeId = null,
-    draft = null;
+    draft = null,
+    lastGraph = null;
+  const graphLayers = { temperature: true, ndl: true, gf99: true };
   const normalizeDiveMode = (value, profile = []) => {
     const legacy = { OC: "Air", CCR: "CC/BO", pSCR: "CC/BO" };
     return (
@@ -65,6 +67,29 @@
       const detail = automatic ? `${group.field}: ${group.value}` : "Manual";
       return `<label class="dive-group-choice${automatic ? " is-automatic" : ""}"><input type="checkbox" data-dive-group="${Core.esc(group.id)}" ${checked ? "checked" : ""} ${automatic ? "disabled" : ""}><span><b>${Core.esc(group.name)}</b><small>${Core.esc(detail)}</small></span></label>`;
     }).join("")}</div>` : '<small class="dive-group-empty">Create dive groups in Settings to organize this logbook.</small>'}`;
+  }
+  function drawProfileGraph() {
+    if (!lastGraph) return;
+    const { dive, profile } = lastGraph;
+    const ceiling = profile
+      .map((p) => ({ t: +(p.t ?? p.time), ceil: +(p.stopDepth || 0) }))
+      .filter((p) => Number.isFinite(p.t) && Number.isFinite(p.ceil));
+    drawDiveProfile("seaBirdsProfileCanvas", profile, {
+      maxDepth: +dive.depth,
+      totalTime: +dive.duration,
+      isLight: true,
+      ceilingWps: ceiling,
+      showDecoCeiling: true,
+      showTemperature: graphLayers.temperature,
+      showNDL: graphLayers.ndl,
+      showGF99: graphLayers.gf99,
+      // Preserve the same breathing-gas assumptions if plot-core has to
+      // redraw the graph after zooming or panning.
+      gf99Options: {
+        gas: (dive.gases || []).find(Boolean) || dive.gasUsed || "21/0",
+        closedCircuit: /^(CC\/BO|CCR)$/i.test(String(dive.diveMode || "")),
+      },
+    });
   }
   function fill(d) {
     const state = Core.getState(),
@@ -203,26 +228,9 @@
       .forEach((node) =>
         node.classList.toggle("active", node.dataset.divePanel === "profile"),
       );
-    const ceiling = profile
-      .map((p) => ({ t: +(p.t ?? p.time), ceil: +(p.stopDepth || 0) }))
-      .filter((p) => Number.isFinite(p.t) && Number.isFinite(p.ceil));
+    lastGraph = { dive: d, profile };
     requestAnimationFrame(() =>
-      requestAnimationFrame(() =>
-        drawDiveProfile("seaBirdsProfileCanvas", profile, {
-          maxDepth: +d.depth,
-          totalTime: +d.duration,
-          isLight: true,
-          ceilingWps: ceiling,
-          showDecoCeiling: true,
-          showGF99: true,
-          // Preserve the same breathing-gas assumptions if plot-core has to
-          // redraw the graph after zooming or panning.
-          gf99Options: {
-            gas: (d.gases || []).find(Boolean) || d.gasUsed || "21/0",
-            closedCircuit: /^(CC\/BO|CCR)$/i.test(String(d.diveMode || "")),
-          },
-        }),
-      ),
+      requestAnimationFrame(drawProfileGraph),
     );
   }
   function showEntry(entry, isNew = false) {
@@ -379,6 +387,12 @@
     };
     document.getElementById("saveDiveDetails").onclick = save;
     document.getElementById("deleteDive").onclick = remove;
+    document.querySelectorAll("[data-graph-layer]").forEach((input) => {
+      input.onchange = () => {
+        graphLayers[input.dataset.graphLayer] = input.checked;
+        drawProfileGraph();
+      };
+    });
     document.getElementById("profileDialog").addEventListener("close", close);
   }
   Core.registerFeature("diveEditor", { init, open, createManual, getDraft });

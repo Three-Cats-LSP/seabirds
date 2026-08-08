@@ -441,7 +441,7 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
   const temperatureWps = pathWps
     .map(wp => ({ t: +wp.t, value: +(wp.temperature ?? wp.temp) }))
     .filter(wp => Number.isFinite(wp.t) && Number.isFinite(wp.value) && wp.t >= tMin && wp.t <= tMax);
-  if (temperatureWps.length > 1) {
+  if (opts?.showTemperature !== false && temperatureWps.length > 1) {
     const useFahrenheit = typeof units !== 'undefined' && units === 'imperial';
     const displayTemperature = value => useFahrenheit ? value * 9 / 5 + 32 : value;
     const displayed = temperatureWps.map(wp => ({ t: wp.t, value: displayTemperature(wp.value) }));
@@ -540,8 +540,8 @@ function _drawDiveProfileCore(canvasId, waypoints, opts) {
     if (firstVisible) ctx.fillText(label, PAD.left + 5, Math.max(PAD.top + 11, Math.min(PAD.top + PH - 5, toMetricY(firstVisible.value) - 5)));
     ctx.restore();
   }
-  drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
-  drawTelemetryOverlay(['gf99', 'gf', 'gradientFactor'], '#df8d2e', 'GF99', 100);
+  if (opts?.showNDL !== false) drawTelemetryOverlay(['ndl'], '#e0453a', 'NDL');
+  if (opts?.showGF99 !== false) drawTelemetryOverlay(['gf99', 'gf', 'gradientFactor'], '#df8d2e', 'GF99', 100);
 
   if (!simple) {
   const ceilWps = opts?.ceilingWps || (canvasId === 'decoProfileCanvas' ? window._decoCeilingWps

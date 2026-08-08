@@ -143,6 +143,18 @@ test("renders the calculated GF99 overlay for an existing dive profile", async (
   });
   expect(orangePixels).toBeGreaterThan(20);
 });
+test("toggles temperature, NDL and GF99 graph layers without changing the dive", async ({ page }) => {
+  await page.evaluate(() => {
+    const dive = { id: "layer-toggle", site: "Layer toggle", date: "2026-08-08", duration: 30, depth: 24, gases: ["21/0"], profile: [{ t: 0, depth: 0, temperature: 28, ndl: 99 }, { t: 10, depth: 24, temperature: 26, ndl: 25 }, { t: 30, depth: 0, temperature: 28, ndl: 99 }] };
+    window.SeaBirds.Core.getState().dives = [dive];
+    window.SeaBirds.Core.feature("diveEditor").open(dive.id);
+  });
+  await expect(page.locator("#profileDialog")).toHaveAttribute("open", "");
+  const before = await page.evaluate(() => JSON.stringify(window.SeaBirds.Core.getState().dives));
+  await page.evaluate(() => document.querySelectorAll('[data-graph-layer]').forEach((input) => input.click()));
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll('[data-graph-layer]')].map((input) => input.checked))).toEqual([false, false, false]);
+  expect(await page.evaluate(() => JSON.stringify(window.SeaBirds.Core.getState().dives))).toBe(before);
+});
 test("uses the detected dive computer in default imported titles", async ({ page }) => {
   const dives = await page.evaluate(() =>
     window.SeaBirds.Core.normalizeState({
