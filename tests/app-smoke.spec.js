@@ -34,6 +34,8 @@ test("starts all modules and navigates", async ({ page }) => {
   await expect(page.locator(".platform-downloads .download")).toHaveCount(2);
   await expect(page.locator(".platform-downloads")).toContainText("Android");
   await expect(page.locator(".platform-downloads")).toContainText("Windows");
+  await expect(page.locator(".support-block")).toContainText("Found a bug or have a feature idea?");
+  await expect(page.locator(".support-block a[href='https://github.com/Three-Cats-LSP/seabirds/issues']")).toBeVisible();
   await expect(page.locator(".settings-collapse")).not.toHaveAttribute(
     "open",
     "",
