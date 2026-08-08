@@ -2675,7 +2675,7 @@ body {
     padding: 11px 12px 1px;
   }
   .filter-dropdown-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-bottom: 11px;
   }
