@@ -1673,12 +1673,35 @@
 }
 .dive-group-card span { display: grid; gap: 2px; }
 .dive-group-card small { color: var(--muted); }
+.dive-group-card-actions { display: flex !important; align-items: center; gap: 7px; }
+.dive-group-card-actions button { min-height: 30px; padding: 5px 9px; font-size: 12px; }
 .remove-dive-group {
   min-width: 30px;
   min-height: 30px;
   padding: 0;
   color: #b84232;
 }
+.dive-groups-editor-card,
+.dive-groups-list-card { margin-top: 18px; }
+.dive-group-form { margin-top: 18px; }
+.dive-group-rule-fields {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.dive-group-rule-fields[hidden] { display: none; }
+.dive-group-rule-fields label { display: grid; gap: 7px; }
+.group-editor-help { margin: 0; color: var(--muted); font-size: 12px; }
+.dive-group-editor-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.dive-group-editor-actions .primary { margin-left: auto; }
 .dive-groups-field {
   display: grid;
   gap: 6px;
@@ -1713,6 +1736,13 @@
   }
   .backup-block .backup-actions {
     max-width: 290px;
+  }
+  .dive-group-rule-fields {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
+  }
+  .dive-group-editor-actions button {
+    min-width: 0;
   }
 }
 .date-filter-row {

@@ -43,6 +43,16 @@ test("starts all modules and navigates", async ({ page }) => {
   await expect(page.locator("#masterGearPage .master-gear")).toBeVisible();
   await page.getByRole("button", { name: /Back to Settings/ }).click();
   await expect(page.locator("#settingsMain")).toBeVisible();
+  await page.getByRole("button", { name: "Manage groups" }).click();
+  await expect(page.locator("#diveGroupsPage")).toBeVisible();
+  await expect(page.locator("#diveGroupEditor")).toHaveCount(0);
+  await page.locator("#diveGroupName").fill("Weekend dives");
+  await page.locator("#diveGroupType").selectOption("manual");
+  await expect(page.locator("#diveGroupRuleFields")).toBeHidden();
+  await page.getByRole("button", { name: "Save group" }).click();
+  await expect(page.locator("#diveGroupsLibrary")).toContainText("Weekend dives");
+  await page.getByRole("button", { name: /Back to Settings/ }).click();
+  await expect(page.locator("#settingsMain")).toBeVisible();
 });
 
 test("collapses the welcome summary on mobile", async ({ page }) => {
