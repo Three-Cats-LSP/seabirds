@@ -70,6 +70,18 @@ test("calculates GF99 samples with the ZHL profile engine", async ({
   expect(result.every((point) => Number.isFinite(point.gf99))).toBeTruthy();
   expect(Math.max(...result.map((point) => point.gf99))).toBeGreaterThan(0);
 });
+test("uses the detected dive computer in default imported titles", async ({ page }) => {
+  const dives = await page.evaluate(() =>
+    window.SeaBirds.Core.normalizeState({
+      dives: [
+        { id: "teric", computer: "Teric", site: "Perdix dive 48" },
+        { id: "edited", computer: "Teric", site: "Perdix dive 47", userEdited: true },
+      ],
+    }).dives,
+  );
+  expect(dives[0].site).toBe("Teric dive 48");
+  expect(dives[1].site).toBe("Perdix dive 47");
+});
 test("paginates dives and filters by year and month", async ({ page }) => {
   await page.evaluate(() =>
     window.SeaBirds.Core.commit((state) => {

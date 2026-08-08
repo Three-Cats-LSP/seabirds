@@ -487,7 +487,7 @@
   }
   const salinityFromDensity = (density) =>
     density === 1000 ? "Fresh" : "Salt";
-  function parseDive(raw, fallbackNumber) {
+  function parseDive(raw, fallbackNumber, computerName = "Shearwater") {
     const records = [];
     for (let offset = 0; offset + 32 <= raw.length; offset += 32)
       records.push({ type: raw[offset], offset });
@@ -573,7 +573,7 @@
     return {
       date: started.toISOString().slice(0, 10),
       time: started.toISOString().slice(11, 16),
-      site: `Perdix dive ${fallbackNumber}`,
+      site: `${String(computerName).replace(/^Shearwater\s+/i, "").trim() || "Shearwater"} dive ${fallbackNumber}`,
       location: "",
       depth: maxDepth,
       avgDepth: sampleCount ? depthSum / sampleCount : 0,
@@ -646,7 +646,11 @@
         );
         dives.push({
           id: `shearwater-${serial}-${entry.fingerprint}`,
-          ...parseDive(raw, entries.length - index),
+          ...parseDive(
+            raw,
+            entries.length - index,
+            connection.device.name || "Shearwater",
+          ),
           computer: connection.device.name || "Shearwater Perdix",
           computerSerial: serial,
           computerFirmware: firmware,
