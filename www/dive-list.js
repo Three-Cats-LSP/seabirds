@@ -163,6 +163,14 @@
     );
     filterSummary("yearFilterSummary", "All", yearFilters);
     filterSummary("monthFilterSummary", "All", monthFilters);
+    groupFilters = renderGroup(
+      "groupFilters",
+      "",
+      "group-filter",
+      Core.getState().diveGroups.map((group) => group.name),
+      groupFilters,
+    );
+    filterSummary("groupFilterSummary", "All", groupFilters);
     renderSortFilters();
     modeFilters = renderGroup(
       "modeFilters",
@@ -184,13 +192,6 @@
       "type-filter",
       ["Shore/Beach", "Boat", "N/A"],
       typeFilters,
-    );
-    groupFilters = renderGroup(
-      "groupFilters",
-      "Groups",
-      "group-filter",
-      Core.getState().diveGroups.map((group) => group.name),
-      groupFilters,
     );
   }
   function renderPagination(total, totalPages) {

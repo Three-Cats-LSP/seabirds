@@ -2474,7 +2474,7 @@ body {
   }
 }
 .toolbar {
-  grid-template-columns: minmax(180px, 1fr) 150px 160px;
+  grid-template-columns: minmax(180px, 1fr) 150px 160px 160px;
 }
 .filter-dropdown {
   position: relative;

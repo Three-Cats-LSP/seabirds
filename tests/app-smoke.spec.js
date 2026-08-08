@@ -180,7 +180,7 @@ test("filters manual and automatic dive groups", async ({ page }) => {
     }),
   );
   await expect(page.locator("#groupFilters")).toContainText("Okinawa");
-  await page.locator(".logbook-filter-collapse summary").click();
+  await page.locator("#groupFilter summary").click();
   await page.locator("#groupFilters").getByLabel("Okinawa").check();
   await expect(page.locator("#allDives .dive-row")).toHaveCount(1);
   await expect(page.locator("#allDives")).toContainText("Rule dive");
