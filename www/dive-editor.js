@@ -59,12 +59,12 @@
       groups = Core.getState().diveGroups || [],
       matches = Core.feature("diveList")?.matchesGroup;
     if (!target) return;
-    target.innerHTML = `<legend>Groups</legend>${groups.length ? groups.map((group) => {
+    target.innerHTML = `<legend>Groups</legend>${groups.length ? `<div class="dive-group-choice-list">${groups.map((group) => {
       const automatic = group.type === "rule";
       const checked = automatic ? matches?.(d, group) : (d.groupIds || []).includes(group.id);
       const detail = automatic ? `${group.field}: ${group.value}` : "Manual";
-      return `<label><input type="checkbox" data-dive-group="${Core.esc(group.id)}" ${checked ? "checked" : ""} ${automatic ? "disabled" : ""}> ${Core.esc(group.name)} <small>${Core.esc(detail)}</small></label>`;
-    }).join("") : '<small>Create dive groups in Settings to organize this logbook.</small>'}`;
+      return `<label class="dive-group-choice${automatic ? " is-automatic" : ""}"><input type="checkbox" data-dive-group="${Core.esc(group.id)}" ${checked ? "checked" : ""} ${automatic ? "disabled" : ""}><span><b>${Core.esc(group.name)}</b><small>${Core.esc(detail)}</small></span></label>`;
+    }).join("")}</div>` : '<small class="dive-group-empty">Create dive groups in Settings to organize this logbook.</small>'}`;
   }
   function fill(d) {
     const state = Core.getState(),
