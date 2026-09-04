@@ -1,6 +1,6 @@
 [package]
 name = "seabirds"
-version = "1.1.1"
+version = "1.1.2"
 description = "SeaBirds native dive log"
 authors = ["Three Cats LSP"]
 edition = "2021"

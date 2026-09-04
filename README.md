@@ -1,11 +1,11 @@
 # SeaBirds
 
-**SeaBirds 1.1.1** is a free, open-source dive log and profile viewer for Shearwater dive computers. It lets you download dives, explore detailed profiles, organise your logbook, and keep it available across Android, Windows, and the web.
+**SeaBirds 1.1.2** is a free, open-source dive log and profile viewer for Shearwater dive computers. It lets you download dives, explore detailed profiles, organise your logbook, and keep it available across Android, Windows, and the web.
 
 ## Get SeaBirds
 
 - **Web app:** [threecats-lsp.com/seabirds](https://threecats-lsp.com/seabirds/)
-- **Android APK and Windows installer:** [GitHub Releases](https://github.com/Three-Cats-LSP/seabirds/releases/tag/v1.1.1)
+- **Android APK and Windows installer:** [GitHub Releases](https://github.com/Three-Cats-LSP/seabirds/releases/tag/v1.1.2)
 - **Source code and issues:** [github.com/Three-Cats-LSP/seabirds](https://github.com/Three-Cats-LSP/seabirds)
 
 ## What SeaBirds does
