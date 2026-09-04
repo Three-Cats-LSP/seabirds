@@ -28,6 +28,7 @@ SeaBirds supports the following Shearwater families:
 - Perdix
 - Perdix AI
 - Perdix 2
+- Perdix 3
 - Teric
 - Petrel 2
 - Petrel 3

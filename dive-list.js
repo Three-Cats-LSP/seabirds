@@ -25,6 +25,7 @@
         perdix: "Perdix",
         "perdix ai": "Perdix AI",
         "perdix 2": "Perdix 2",
+        "perdix 3": "Perdix 3",
         teric: "Teric",
         "petrel 2": "Petrel 2",
         "petrel 3": "Petrel 3",
